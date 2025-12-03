@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         display: ['Playfair Display', 'serif'],
+        nohemi: ['Nohemi', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

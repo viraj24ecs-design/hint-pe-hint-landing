@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
+import hintpehintlogo2 from "@/assets/HintPeHintHorizontal.png";
 
 const Header = () => {
   return (
@@ -7,11 +8,11 @@ const Header = () => {
       <div className="container mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <div className="flex items-center">
-            <span className="font-display text-xl lg:text-2xl font-semibold text-text-heading tracking-tight">
-              Hint Pe Hint
-            </span>
-          </div>
+        <img 
+            src={hintpehintlogo2} 
+            alt="Hint Pe Hint Logo" 
+            className="h-60 lg:h-70 w-auto mt-6"
+          />
 
           {/* Navigation */}
           <nav className="flex items-center gap-2 lg:gap-4">
