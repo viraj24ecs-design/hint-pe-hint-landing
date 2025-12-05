@@ -17,7 +17,7 @@ const HeroSection = () => {
              <img 
                src={hintPeHintLogo} 
                alt="Hint Pe Hint" 
-               className="w-64 sm:w-80 lg:w-96 xl:w-[450px] h-auto mx-auto lg:mx-0"
+               className="w-[400px] sm:w-[400px] lg:w-96 xl:w-[450px] h-auto mx-auto lg:mx-0"
              />
            </div>
             
@@ -28,7 +28,7 @@ const HeroSection = () => {
               Play This Game And Help The Underprivileged
             </p>
             
-            <Button variant="hero" size="2xl" className="w-full sm:w-auto lg:px-16 lg:py-6 lg:text-2xl lg:mt-8 lg:ml-[100px] ">
+            <Button variant="hero" size="xl" className="w-full sm:w-auto lg:px-16 lg:py-6 lg:text-2xl lg:mt-8 lg:ml-[50px] ">
               Play 
             </Button>
           </div>
