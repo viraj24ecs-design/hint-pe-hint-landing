@@ -6,24 +6,32 @@ const jwt = require('jsonwebtoken');
 let cachedDb = null;
 
 async function connectToDatabase() {
-  if (cachedDb && mongoose.connection.readyState === 1) {
+  try {
+    // Return existing connection if available
+    if (cachedDb && mongoose.connection.readyState === 1) {
+      return cachedDb;
+    }
+
+    const MONGODB_URI = process.env.MONGODB_URI;
+    
+    if (!MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not set');
+    }
+    
+    // Only connect if not already connecting or connected
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(MONGODB_URI, {
+        serverSelectionTimeoutMS: 30000, // 30 seconds
+        socketTimeoutMS: 45000,
+      });
+    }
+
+    cachedDb = mongoose.connection;
     return cachedDb;
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw new Error(`Failed to connect to MongoDB: ${error.message}`);
   }
-
-  const MONGODB_URI = process.env.MONGODB_URI;
-  
-  if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI environment variable is not set');
-  }
-  
-  if (mongoose.connection.readyState === 0) {
-    await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-    });
-  }
-
-  cachedDb = mongoose.connection;
-  return cachedDb;
 }
 
 // User Schema
