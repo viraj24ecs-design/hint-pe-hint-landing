@@ -6,13 +6,21 @@ const jwt = require('jsonwebtoken');
 let cachedDb = null;
 
 async function connectToDatabase() {
-  if (cachedDb) {
+  if (cachedDb && mongoose.connection.readyState === 1) {
     return cachedDb;
   }
 
-  const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/hint-pe-hint';
+  const MONGODB_URI = process.env.MONGODB_URI;
   
-  await mongoose.connect(MONGODB_URI);
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI environment variable is not set');
+  }
+  
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
+  }
 
   cachedDb = mongoose.connection;
   return cachedDb;
@@ -77,6 +85,9 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 module.exports = async (req, res) => {
+  // Set Content-Type header first
+  res.setHeader('Content-Type', 'application/json');
+  
   // Handle CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -240,6 +251,14 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('API Error:', error);
-    return res.status(500).json({ error: 'Internal server error', details: error.message });
+    
+    // Set proper content type for error response
+    res.setHeader('Content-Type', 'application/json');
+    
+    return res.status(500).json({ 
+      error: 'Internal server error', 
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
