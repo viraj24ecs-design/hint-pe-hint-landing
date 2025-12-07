@@ -28,7 +28,10 @@ interface SignupData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API_URL = 'http://localhost:5001/api/auth';
+// Use environment-aware API URL
+const API_URL = import.meta.env.PROD 
+  ? '/api/auth'  // Production: Use relative path for Vercel
+  : 'http://localhost:5001/api/auth';  // Development: Use localhost
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
