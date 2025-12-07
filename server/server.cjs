@@ -9,14 +9,19 @@ const app = express();
 
 // CORS Configuration - MUST be before other middleware
 app.use(cors({
-  origin: [
-    'http://localhost:8080', 
-    'http://localhost:5173', 
-    'http://127.0.0.1:8080', 
-    'http://192.168.0.113:8080',
-    /\.vercel\.app$/, // Allow all Vercel preview/production URLs
-    /\.onrender\.com$/ // Allow Render if you use it
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost and 192.168.x.x network
+    if (origin.startsWith('http://localhost') || 
+        origin.startsWith('http://127.0.0.1') || 
+        origin.match(/^http:\/\/192\.168\.\d+\.\d+/)) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
