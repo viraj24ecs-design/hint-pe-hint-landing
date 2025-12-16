@@ -1,8 +1,28 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import AuthDialog from "@/components/AuthDialog";
 import readerImage from "@/assets/AmrutD.png";
 import hintPeHintLogo from "@/assets/HintPeHint.png";
 
 const HeroSection = () => {
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+
+  const handlePlayClick = () => {
+    if (isLoggedIn) {
+      navigate("/game");
+    } else {
+      setShowAuthDialog(true);
+    }
+  };
+
+  const handleAuthSuccess = () => {
+    navigate("/game");
+  };
+
   return (
     <section className="min-h-screen flex items-center pt-20 lg:pt-0 bg-background">
       <div className="w-full max-w-[1400px] mx-auto pl-6 lg:pl-12">
@@ -28,7 +48,12 @@ const HeroSection = () => {
               Play This Game And Help The Underprivileged
             </p>
             
-            <Button variant="hero" size="xl" className="w-full sm:w-auto lg:px-16 lg:py-6 lg:text-2xl lg:mt-8 lg:ml-[50px] ">
+            <Button 
+              variant="hero" 
+              size="xl" 
+              className="w-full sm:w-auto lg:px-16 lg:py-6 lg:text-2xl lg:mt-8 lg:ml-[50px]"
+              onClick={handlePlayClick}
+            >
               Play 
             </Button>
           </div>
@@ -45,6 +70,13 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+
+      {/* Auth Dialog */}
+      <AuthDialog
+        open={showAuthDialog}
+        onOpenChange={setShowAuthDialog}
+        onSuccess={handleAuthSuccess}
+      />
     </section>
   );
 };
