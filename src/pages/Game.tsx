@@ -31,7 +31,7 @@ const Game = () => {
             {user && (
               <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-2 rounded-full shadow-lg">
                 <Coins className="w-5 h-5" />
-                <span className="font-bold text-lg">{user.charityCoins}</span>
+                <span className="font-bold text-lg">{user.charityCoins ?? 0}</span>
                 <span className="text-sm">Charity Coins</span>
               </div>
             )}

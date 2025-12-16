@@ -31,6 +31,31 @@ interface SignupData {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// OFFLINE MODE - Set to true for testing without backend
+const OFFLINE_MODE = import.meta.env.VITE_OFFLINE_MODE === 'true' || false;
+
+// Mock users for offline testing
+const MOCK_USERS = [
+  {
+    userId: 'USER001',
+    username: 'testuser',
+    name: 'Test User',
+    email: 'test@example.com',
+    dateOfBirth: '1990-01-01',
+    password: 'password123',
+    charityCoins: 50,
+  },
+  {
+    userId: 'USER002',
+    username: 'demo',
+    name: 'Demo User',
+    email: 'demo@example.com',
+    dateOfBirth: '1995-05-15',
+    password: 'demo123',
+    charityCoins: 100,
+  },
+];
+
 // Use environment-aware API URL
 const API_URL = import.meta.env.PROD 
   ? '/api/auth'  // Production: Use relative path for Vercel
@@ -53,13 +78,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // Check if user is already logged in (token in localStorage)
     const token = localStorage.getItem('authToken');
     if (token) {
-      fetchUserProfile(token);
+      if (OFFLINE_MODE) {
+        // In offline mode, restore user from localStorage
+        const savedUser = localStorage.getItem('offlineUser');
+        if (savedUser) {
+          setUser(JSON.parse(savedUser));
+          setIsLoggedIn(true);
+        }
+        setLoading(false);
+      } else {
+        fetchUserProfile(token);
+      }
     } else {
       setLoading(false);
     }
   }, []);
 
   const fetchUserProfile = async (token: string) => {
+    if (OFFLINE_MODE) return;
+    
     try {
       const response = await fetch(`${API_URL}/profile`, {
         headers: {
@@ -83,6 +120,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
+    // OFFLINE MODE
+    if (OFFLINE_MODE) {
+      const mockUser = MOCK_USERS.find(
+        u => u.username === username && u.password === password
+      );
+
+      if (mockUser) {
+        const { password: _, ...userWithoutPassword } = mockUser;
+        setUser(userWithoutPassword);
+        setIsLoggedIn(true);
+        localStorage.setItem('authToken', 'offline-mock-token');
+        localStorage.setItem('offlineUser', JSON.stringify(userWithoutPassword));
+        console.log('🔧 OFFLINE MODE: Logged in as', username);
+        return { success: true };
+      } else {
+        return { success: false, error: 'Invalid username or password (offline mode)' };
+      }
+    }
+
+    // ONLINE MODE
     try {
       const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
@@ -109,6 +166,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signup = async (userData: SignupData): Promise<{ success: boolean; error?: string }> => {
+    // OFFLINE MODE
+    if (OFFLINE_MODE) {
+      const newUser = {
+        userId: `USER${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+        username: userData.username,
+        name: userData.name,
+        email: userData.email,
+        dateOfBirth: userData.dateOfBirth,
+        charityCoins: 0,
+      };
+
+      setUser(newUser);
+      setIsLoggedIn(true);
+      localStorage.setItem('authToken', 'offline-mock-token');
+      localStorage.setItem('offlineUser', JSON.stringify(newUser));
+      console.log('🔧 OFFLINE MODE: Signed up as', userData.username);
+      return { success: true };
+    }
+
+    // ONLINE MODE
     try {
       console.log('Attempting signup to:', `${API_URL}/signup`);
       console.log('Signup data:', { ...userData, password: '***', confirmPassword: '***' });
@@ -141,11 +218,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = () => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('offlineUser');
     setIsLoggedIn(false);
     setUser(null);
   };
 
   const updateCoins = async (coinsToAdd: number): Promise<{ success: boolean; error?: string }> => {
+    // OFFLINE MODE
+    if (OFFLINE_MODE) {
+      if (!user) {
+        return { success: false, error: 'Not authenticated' };
+      }
+
+      const updatedUser = {
+        ...user,
+        charityCoins: (user.charityCoins || 0) + coinsToAdd,
+      };
+
+      setUser(updatedUser);
+      localStorage.setItem('offlineUser', JSON.stringify(updatedUser));
+      console.log('🔧 OFFLINE MODE: Added', coinsToAdd, 'coins. Total:', updatedUser.charityCoins);
+      return { success: true };
+    }
+
+    // ONLINE MODE
     try {
       const token = localStorage.getItem('authToken');
       if (!token) {
