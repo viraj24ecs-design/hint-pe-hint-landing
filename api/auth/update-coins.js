@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // MongoDB Connection with caching
@@ -45,16 +44,6 @@ const userSchema = new mongoose.Schema({
   charityCoins: { type: Number, default: 0, min: 0 },
 });
 
-userSchema.pre('save', async function() {
-  if (!this.isModified('password')) return;
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
-
-userSchema.methods.comparePassword = async function(candidatePassword) {
-  return await bcrypt.compare(candidatePassword, this.password);
-};
-
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 export default async (req, res) => {
@@ -74,56 +63,46 @@ export default async (req, res) => {
   try {
     await connectToDatabase();
 
-    const { username, name, email, dateOfBirth, password, confirmPassword } = req.body;
-
-    if (!username || !name || !email || !dateOfBirth || !password || !confirmPassword) {
-      return res.status(400).json({ error: 'All fields are required' });
+    // Get token from Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'No token provided' });
     }
 
-    if (password !== confirmPassword) {
-      return res.status(400).json({ error: 'Passwords do not match' });
+    const token = authHeader.split(' ')[1];
+
+    // Verify token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-in-production');
+    } catch (error) {
+      return res.status(401).json({ error: 'Invalid or expired token' });
     }
 
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    const { coinsToAdd } = req.body;
+
+    if (typeof coinsToAdd !== 'number' || coinsToAdd < 0) {
+      return res.status(400).json({ error: 'Invalid coin amount' });
     }
 
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+    const user = await User.findOne({ userId: decoded.userId });
 
-    if (existingUser) {
-      if (existingUser.username === username) {
-        return res.status(400).json({ error: 'Username already exists' });
-      }
-      if (existingUser.email === email) {
-        return res.status(400).json({ error: 'Email already exists' });
-      }
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
     }
 
-    const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const user = new User({ userId, username, name, email, dateOfBirth: new Date(dateOfBirth), password });
+    user.charityCoins = (user.charityCoins || 0) + coinsToAdd;
     await user.save();
 
-    const token = jwt.sign(
-      { userId: user.userId, username: user.username },
-      process.env.JWT_SECRET || 'your-secret-key-change-in-production',
-      { expiresIn: '7d' }
-    );
+    console.log(`💰 User ${user.username} earned ${coinsToAdd} coins. Total: ${user.charityCoins}`);
 
-    return res.status(201).json({
-      message: 'User created successfully',
-      token,
-      user: { 
-        userId: user.userId, 
-        username: user.username, 
-        name: user.name, 
-        email: user.email, 
-        dateOfBirth: user.dateOfBirth,
-        charityCoins: user.charityCoins || 0
-      }
+    return res.status(200).json({
+      message: 'Coins updated successfully',
+      charityCoins: user.charityCoins,
     });
 
   } catch (error) {
-    console.error('Signup Error:', error);
+    console.error('Update Coins Error:', error);
     res.setHeader('Content-Type', 'application/json');
     return res.status(500).json({ 
       error: 'Internal server error', 

@@ -70,6 +70,7 @@ router.post('/signup', async (req, res) => {
         name: user.name,
         email: user.email,
         dateOfBirth: user.dateOfBirth,
+        charityCoins: user.charityCoins || 0,
       },
     });
   } catch (error) {
@@ -127,6 +128,7 @@ router.post('/login', async (req, res) => {
         dateOfBirth: user.dateOfBirth,
         lastLogin: user.lastLogin,
         loginCount: user.loginCount,
+        charityCoins: user.charityCoins || 0,
       },
     });
   } catch (error) {
@@ -160,6 +162,7 @@ router.get('/profile', async (req, res) => {
         dateOfBirth: user.dateOfBirth,
         lastLogin: user.lastLogin,
         loginCount: user.loginCount,
+        charityCoins: user.charityCoins || 0,
       },
     });
   } catch (error) {
@@ -172,7 +175,7 @@ router.get('/profile', async (req, res) => {
 router.get('/users-activity', async (req, res) => {
   try {
     const users = await User.find()
-      .select('userId username name email lastLogin loginCount createdAt')
+      .select('userId username name email lastLogin loginCount createdAt charityCoins')
       .sort({ lastLogin: -1 }); // Most recent login first
 
     res.json({
@@ -185,11 +188,49 @@ router.get('/users-activity', async (req, res) => {
         createdAt: user.createdAt,
         lastLogin: user.lastLogin || 'Never logged in',
         loginCount: user.loginCount || 0,
+        charityCoins: user.charityCoins || 0,
       })),
     });
   } catch (error) {
     console.error('Users activity error:', error);
     res.status(500).json({ error: 'Error fetching user activity' });
+  }
+});
+
+// Update user coins (for game mechanics)
+router.post('/update-coins', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-this');
+    const { coinsToAdd } = req.body;
+
+    if (typeof coinsToAdd !== 'number' || coinsToAdd < 0) {
+      return res.status(400).json({ error: 'Invalid coin amount' });
+    }
+
+    const user = await User.findOne({ userId: decoded.userId });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    user.charityCoins = (user.charityCoins || 0) + coinsToAdd;
+    await user.save();
+
+    console.log(`💰 User ${user.username} earned ${coinsToAdd} coins. Total: ${user.charityCoins}`);
+
+    res.json({
+      message: 'Coins updated successfully',
+      charityCoins: user.charityCoins,
+    });
+  } catch (error) {
+    console.error('Update coins error:', error);
+    res.status(500).json({ error: 'Error updating coins' });
   }
 });
 

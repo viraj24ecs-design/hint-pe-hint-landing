@@ -73,6 +73,11 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  charityCoins: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
 });
 
 // Hash password before saving
@@ -174,6 +179,7 @@ module.exports = async (req, res) => {
           name: user.name,
           email: user.email,
           dateOfBirth: user.dateOfBirth,
+          charityCoins: user.charityCoins || 0,
         }
       });
     }
@@ -220,6 +226,7 @@ module.exports = async (req, res) => {
           name: user.name,
           email: user.email,
           dateOfBirth: user.dateOfBirth,
+          charityCoins: user.charityCoins || 0,
         }
       });
     }
@@ -250,6 +257,7 @@ module.exports = async (req, res) => {
           name: user.name,
           email: user.email,
           dateOfBirth: user.dateOfBirth,
+          charityCoins: user.charityCoins || 0,
         }
       });
     }

@@ -45,6 +45,11 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  charityCoins: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
 });
 
 // Hash password before saving

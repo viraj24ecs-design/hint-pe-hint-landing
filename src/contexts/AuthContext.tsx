@@ -6,6 +6,7 @@ interface User {
   name: string;
   email: string;
   dateOfBirth: string;
+  charityCoins: number;
 }
 
 interface AuthContextType {
@@ -15,6 +16,8 @@ interface AuthContextType {
   signup: (userData: SignupData) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   loading: boolean;
+  updateCoins: (coinsToAdd: number) => Promise<{ success: boolean; error?: string }>;
+  refreshUser: () => Promise<void>;
 }
 
 interface SignupData {
@@ -142,8 +145,46 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
   };
 
+  const updateCoins = async (coinsToAdd: number): Promise<{ success: boolean; error?: string }> => {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        return { success: false, error: 'Not authenticated' };
+      }
+
+      const response = await fetch(`${API_URL}/update-coins`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ coinsToAdd }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Update user's coin count in state
+        setUser(prev => prev ? { ...prev, charityCoins: data.charityCoins } : null);
+        return { success: true };
+      } else {
+        return { success: false, error: data.error || 'Failed to update coins' };
+      }
+    } catch (error) {
+      console.error('Update coins error:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  };
+
+  const refreshUser = async () => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      await fetchUserProfile(token);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, signup, logout, loading }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, signup, logout, loading, updateCoins, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -42,6 +42,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   createdAt: { type: Date, default: Date.now },
   loginCount: { type: Number, default: 0 },
+  charityCoins: { type: Number, default: 0, min: 0 },
 });
 
 userSchema.pre('save', async function() {
@@ -103,7 +104,14 @@ export default async (req, res) => {
     return res.status(200).json({
       message: 'Login successful',
       token,
-      user: { userId: user.userId, username: user.username, name: user.name, email: user.email, dateOfBirth: user.dateOfBirth }
+      user: { 
+        userId: user.userId, 
+        username: user.username, 
+        name: user.name, 
+        email: user.email, 
+        dateOfBirth: user.dateOfBirth,
+        charityCoins: user.charityCoins || 0
+      }
     });
 
   } catch (error) {
