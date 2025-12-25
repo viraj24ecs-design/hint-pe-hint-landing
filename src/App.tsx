@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Game from "./pages/Game";
+import TrialBookGame from "./pages/TrialBookGame";
+import RichDadPoorDadGame from "./pages/RichDadPoorDadGame";
+import AtomicHabitsGame from "./pages/AtomicHabitsGame";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +23,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/game" element={<Game />} />
+            <Route path="/game/trial-book" element={<TrialBookGame />} />
+            <Route path="/game/rich-dad-poor-dad" element={<RichDadPoorDadGame />} />
+            <Route path="/game/atomic-habits" element={<AtomicHabitsGame />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

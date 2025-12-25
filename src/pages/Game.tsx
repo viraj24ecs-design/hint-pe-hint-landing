@@ -2,9 +2,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Coins } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import TrialBookImg from "@/assets/TrialBook.png";
+import RichDadPoorDadImg from "@/assets/RichDadPoorDad.png";
+import AtomicHabitsImg from "@/assets/AtomicHabits.png";
 
 const Game = () => {
-  const { user, logout, updateCoins } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -12,12 +16,29 @@ const Game = () => {
     navigate("/");
   };
 
-  // Temporary function to test coin addition (will be replaced with actual game logic)
-  const handleTestAddCoins = async () => {
-    const result = await updateCoins(10);
-    if (result.success) {
-      console.log("Coins added successfully!");
+  const books = [
+    {
+      id: "trial-book",
+      title: "Trial Book",
+      image: TrialBookImg,
+      route: "/game/trial-book"
+    },
+    {
+      id: "rich-dad-poor-dad",
+      title: "Rich Dad Poor Dad",
+      image: RichDadPoorDadImg,
+      route: "/game/rich-dad-poor-dad"
+    },
+    {
+      id: "atomic-habits",
+      title: "Atomic Habits",
+      image: AtomicHabitsImg,
+      route: "/game/atomic-habits"
     }
+  ];
+
+  const handleBookClick = (route: string) => {
+    navigate(route);
   };
 
   return (
@@ -49,19 +70,38 @@ const Game = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center space-y-4">
-            <h2 className="text-4xl font-bold text-text-heading">
-              Game Area
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-text-heading mb-4">
+              Choose Your Book
             </h2>
             <p className="text-lg text-muted-foreground">
-              Game functionality will be added here
+              Select a book to start playing and earning charity coins
             </p>
-            
-            {/* Temporary test button - remove this later */}
-            <Button onClick={handleTestAddCoins} className="mt-4">
-              Test: Add 10 Coins
-            </Button>
+          </div>
+
+          {/* Book Selection Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {books.map((book) => (
+              <Card 
+                key={book.id}
+                className="cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden"
+                onClick={() => handleBookClick(book.route)}
+              >
+                <CardContent className="p-0">
+                  <div className="aspect-[3/4] overflow-hidden bg-gray-100">
+                    <img 
+                      src={book.image} 
+                      alt={book.title}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-4 text-center">
+                    <h3 className="text-xl font-bold">{book.title}</h3>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </main>
