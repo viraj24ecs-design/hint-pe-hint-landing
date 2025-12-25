@@ -43,6 +43,11 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   loginCount: { type: Number, default: 0 },
   charityCoins: { type: Number, default: 0, min: 0 },
+  bookProgress: {
+    trialBook: { type: Number, default: 0, min: 0, max: 100 },
+    richDadPoorDad: { type: Number, default: 0, min: 0, max: 100 },
+    atomicHabits: { type: Number, default: 0, min: 0, max: 100 },
+  },
 });
 
 userSchema.pre('save', async function() {
@@ -118,7 +123,12 @@ export default async (req, res) => {
         name: user.name, 
         email: user.email, 
         dateOfBirth: user.dateOfBirth,
-        charityCoins: user.charityCoins || 0
+        charityCoins: user.charityCoins || 0,
+        bookProgress: user.bookProgress || {
+          trialBook: 0,
+          richDadPoorDad: 0,
+          atomicHabits: 0,
+        }
       }
     });
 

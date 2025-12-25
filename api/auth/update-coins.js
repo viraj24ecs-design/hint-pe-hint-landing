@@ -42,6 +42,11 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   loginCount: { type: Number, default: 0 },
   charityCoins: { type: Number, default: 0, min: 0 },
+  bookProgress: {
+    trialBook: { type: Number, default: 0, min: 0, max: 100 },
+    richDadPoorDad: { type: Number, default: 0, min: 0, max: 100 },
+    atomicHabits: { type: Number, default: 0, min: 0, max: 100 },
+  },
 });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
