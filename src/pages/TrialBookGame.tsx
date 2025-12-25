@@ -16,7 +16,7 @@ const GAME_DATA = {
         "Hint 2 text here - Edit this",
         "Hint 3 text here - Edit this",
       ],
-      correctAnswerIndex: 0, // Index of correct answer in answers array (0-11)
+      correctAnswerIndex: 3, // Index of correct answer in answers array (0-11)
     },
     {
       roundNumber: 2,
@@ -43,7 +43,7 @@ const GAME_DATA = {
         "Round 4 - Hint 2 text here - Edit this",
         "Round 4 - Hint 3 text here - Edit this",
       ],
-      correctAnswerIndex: 3,
+      correctAnswerIndex: 0,
     },
     {
       roundNumber: 5,
