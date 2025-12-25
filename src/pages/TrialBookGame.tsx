@@ -12,107 +12,107 @@ const GAME_DATA = {
     {
       roundNumber: 1,
       hints: [
-        "Hint 1 text here - Edit this",
-        "Hint 2 text here - Edit this",
-        "Hint 3 text here - Edit this",
+        "Hint 1: Great for prioritizing important tasks.",
+        "Hint 2: Varsha runs an E-Laundry startup in Pune. She found that only a few of her customers contribute to majority of her revenue.",
+        "Hint 3: This is the 80/20 rule where a few causes lead to most outcomes.",
       ],
-      correctAnswerIndex: 3, // Index of correct answer in answers array (0-11)
+      correctAnswerIndex: 4, // Index of correct answer in answers array (0-11)
     },
     {
       roundNumber: 2,
       hints: [
-        "Round 2 - Hint 1 text here - Edit this",
-        "Round 2 - Hint 2 text here - Edit this",
-        "Round 2 - Hint 3 text here - Edit this",
-      ],
-      correctAnswerIndex: 1,
-    },
-    {
-      roundNumber: 3,
-      hints: [
-        "Round 3 - Hint 1 text here - Edit this",
-        "Round 3 - Hint 2 text here - Edit this",
-        "Round 3 - Hint 3 text here - Edit this",
-      ],
-      correctAnswerIndex: 2,
-    },
-    {
-      roundNumber: 4,
-      hints: [
-        "Round 4 - Hint 1 text here - Edit this",
-        "Round 4 - Hint 2 text here - Edit this",
-        "Round 4 - Hint 3 text here - Edit this",
+        "Hint 1: The mind’s power plays a huge role in healing.",
+        "Hint 2: When Amir Khan says \"All is Well\" in 3 idiots, he is trying to create this effect",
+        "Hint 3: A doctor gave sugar pills instead of real medicines to his patients",
       ],
       correctAnswerIndex: 0,
     },
     {
+      roundNumber: 3,
+      hints: [
+        "Hint 1: Are u binge watching on Netflix? Then welcome to quadrant 4",
+        "Hint 2: Is it urgent? is it important?",
+        "Hint 3: Delegate quadrant 3, delete quadrant 4",
+      ],
+      correctAnswerIndex: 9,
+    },
+    {
+      roundNumber: 4,
+      hints: [
+        "Hint 1: Named after the Italian word for tomato.",
+        "Hint 2: Katrina, a designer in Chennai, used to get distracted by WA and youtube while working on her designs. now she works for 25 minutes non-stop, then takes 5-minute breaks.",
+        "Hint 3: Katrina is now thankful to the kitchen timer.",
+      ],
+      correctAnswerIndex: 6,
+    },
+    {
       roundNumber: 5,
       hints: [
-        "Round 5 - Hint 1 text here - Edit this",
-        "Round 5 - Hint 2 text here - Edit this",
-        "Round 5 - Hint 3 text here - Edit this",
+        "Hint 1: A small focus leads to most success.",
+        "Hint 2: Why check off all the items on your to-do list when only a few can take care of all!",
+        "Hint 3: Your phone may have 60 apps, but you use only 15",
       ],
       correctAnswerIndex: 4,
     },
     {
       roundNumber: 6,
       hints: [
-        "Round 6 - Hint 1 text here - Edit this",
-        "Round 6 - Hint 2 text here - Edit this",
-        "Round 6 - Hint 3 text here - Edit this",
+        "Hint 1: I never forget to wear night dress before bed. I always forget to do my night brushing.",
+        "Hint 2: So I keep the toothbrush in the pocket of my night dress",
+        "Hint 3: A concept from James Clear's Atomic Habits.",
       ],
-      correctAnswerIndex: 5,
+      correctAnswerIndex: 1,
     },
     {
       roundNumber: 7,
       hints: [
-        "Round 7 - Hint 1 text here - Edit this",
-        "Round 7 - Hint 2 text here - Edit this",
-        "Round 7 - Hint 3 text here - Edit this",
+        "Hint 1: After BahubaIi 1, we desperately waited for years to know \"Kattapa ne bahubali ko kyu mara\"",
+        "Hint 2: Because Bahubali 1 was an incomplete story",
+        "Hint 3: It’s difficult to recollect an answer just 1 week after the exams are over",
       ],
-      correctAnswerIndex: 6,
+      correctAnswerIndex: 3,
     },
     {
       roundNumber: 8,
       hints: [
-        "Round 8 - Hint 1 text here - Edit this",
-        "Round 8 - Hint 2 text here - Edit this",
-        "Round 8 - Hint 3 text here - Edit this",
+        "Hint 1: Venky says to himself \"I will read 1 page everyday\" instead of saying \"I will read 4 books a month\"",
+        "Hint 2: Jeff Olson has written the book of the same name",
+        "Hint 3: This slight advantage of saving Rs.500 every month made him a crorepati in 20 years",
       ],
-      correctAnswerIndex: 7,
+      correctAnswerIndex: 5,
     },
     {
       roundNumber: 9,
       hints: [
-        "Round 9 - Hint 1 text here - Edit this",
-        "Round 9 - Hint 2 text here - Edit this",
-        "Round 9 - Hint 3 text here - Edit this",
+        "Hint 1: Metaphor for trust and goodwill.",
+        "Hint 2: Your wife will love you 10 times more if you invest in it",
+        "Hint 3: Used in Stephen Covey’s 7 Habits of Highly Effective People.",
       ],
-      correctAnswerIndex: 8,
+      correctAnswerIndex: 7,
     },
     {
       roundNumber: 10,
       hints: [
-        "Round 10 - Hint 1 text here - Edit this",
-        "Round 10 - Hint 2 text here - Edit this",
-        "Round 10 - Hint 3 text here - Edit this",
+        "Hint 1: Sunita, a wildlife photographer in Kerala, found her purpose of life where her passion met mission and profession.",
+        "Hint 2: Guides many in finding life’s true purpose.",
+        "Hint 3: It’s a Japanese word",
       ],
-      correctAnswerIndex: 9,
+      correctAnswerIndex: 11,
     },
   ],
   answers: [
-    "Answer Box 1 - Edit this",
-    "Answer Box 2 - Edit this",
-    "Answer Box 3 - Edit this",
-    "Answer Box 4 - Edit this",
-    "Answer Box 5 - Edit this",
-    "Answer Box 6 - Edit this",
-    "Answer Box 7 - Edit this",
-    "Answer Box 8 - Edit this",
-    "Answer Box 9 - Edit this",
-    "Answer Box 10 - Edit this",
-    "Decoy Answer 1 - Edit this",
-    "Decoy Answer 2 - Edit this",
+    "Placebo Effect", //round 2            b0         q2
+    "Habit Stacking", //round 6            b1         q6
+    "xyz", //round x                       b2         qx
+    "Zeigarnik Effect", //round 1 and 5    b3         q7
+    "Pareto Principle", //         b4         q5 & q1
+    "The Slight Edge", //         b5         q8
+    "Pomodoro Technique", //round 4        b6         q4
+    "Emotional Bank Account", //         b7         q9
+    "xyz", //         b8         qx
+    "Eisenhower Matrix", //round 3         b9         q3
+    "xyz", //       b10        qx
+    "Ikigai", //       b11        q10
   ],
 };
 
@@ -150,10 +150,10 @@ const TrialBookGame = () => {
     setIsRevealed(true);
     setSelectedAnswer(GAME_DATA.rounds[currentRound].correctAnswerIndex);
     
-    // Move to next round after 7 seconds
+    // Move to next round after 3 seconds
     setTimeout(() => {
       moveToNextRound();
-    }, 7000);
+    }, 3000);
   };
 
   const handleAnswerClick = async (answerIndex: number) => {
@@ -187,10 +187,10 @@ const TrialBookGame = () => {
 
     setIsRevealed(true);
 
-    // Move to next round after 7 seconds
+    // Move to next round after 3 seconds
     setTimeout(() => {
       moveToNextRound();
-    }, 7000);
+    }, 3000);
   };
 
   const moveToNextRound = async () => {
