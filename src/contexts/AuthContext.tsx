@@ -321,6 +321,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { success: false, error: 'Not authenticated' };
       }
 
+      console.log('📊 Updating book progress:', { bookId, progress });
+      console.log('🔗 API URL:', `${API_URL}/update-progress`);
+
       const response = await fetch(`${API_URL}/update-progress`, {
         method: 'POST',
         headers: {
@@ -330,7 +333,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         body: JSON.stringify({ bookId, progress }),
       });
 
+      console.log('📡 Response status:', response.status);
+
       const data = await response.json();
+      console.log('📦 Response data:', data);
 
       if (response.ok) {
         // Update user's book progress in state

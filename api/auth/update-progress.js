@@ -1,9 +1,60 @@
-const jwt = require('jsonwebtoken');
-const User = require('../../server/models/User.cjs');
+import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
+
+// MongoDB Connection with caching
+let cachedDb = null;
+
+async function connectToDatabase() {
+  try {
+    if (cachedDb && mongoose.connection.readyState === 1) {
+      return cachedDb;
+    }
+
+    const MONGODB_URI = process.env.MONGODB_URI;
+    
+    if (!MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not set');
+    }
+    
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(MONGODB_URI, {
+        serverSelectionTimeoutMS: 30000,
+        socketTimeoutMS: 45000,
+      });
+    }
+
+    cachedDb = mongoose.connection;
+    return cachedDb;
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw new Error(`Failed to connect to MongoDB: ${error.message}`);
+  }
+}
+
+// User Schema (must match server schema)
+const userSchema = new mongoose.Schema({
+  userId: { type: String, required: true, unique: true },
+  username: { type: String, required: true, unique: true },
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  dateOfBirth: { type: Date, required: true },
+  password: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now },
+  lastLogin: { type: Date },
+  loginCount: { type: Number, default: 0 },
+  charityCoins: { type: Number, default: 0, min: 0 },
+  bookProgress: {
+    trialBook: { type: Number, default: 0, min: 0, max: 100 },
+    richDadPoorDad: { type: Number, default: 0, min: 0, max: 100 },
+    atomicHabits: { type: Number, default: 0, min: 0, max: 100 },
+  },
+});
+
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -24,6 +75,9 @@ module.exports = async (req, res) => {
   }
 
   try {
+    // Connect to database
+    await connectToDatabase();
+
     // Get token from Authorization header
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -78,6 +132,11 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Update progress error:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack,
+    });
     
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({ error: 'Invalid token' });
@@ -87,6 +146,9 @@ module.exports = async (req, res) => {
       return res.status(401).json({ error: 'Token expired' });
     }
 
-    return res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ 
+      error: 'Server error',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 };
