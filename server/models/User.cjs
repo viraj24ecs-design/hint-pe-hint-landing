@@ -50,6 +50,26 @@ const userSchema = new mongoose.Schema({
     default: 0,
     min: 0,
   },
+  bookProgress: {
+    trialBook: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+    richDadPoorDad: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+    atomicHabits: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
+  },
 });
 
 // Hash password before saving

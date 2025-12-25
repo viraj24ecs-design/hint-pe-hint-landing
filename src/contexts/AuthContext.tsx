@@ -1,5 +1,11 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
+interface BookProgress {
+  trialBook: number;
+  richDadPoorDad: number;
+  atomicHabits: number;
+}
+
 interface User {
   userId: string;
   username: string;
@@ -7,6 +13,7 @@ interface User {
   email: string;
   dateOfBirth: string;
   charityCoins: number;
+  bookProgress?: BookProgress;
 }
 
 interface AuthContextType {
@@ -17,6 +24,7 @@ interface AuthContextType {
   logout: () => void;
   loading: boolean;
   updateCoins: (coinsToAdd: number) => Promise<{ success: boolean; error?: string }>;
+  updateBookProgress: (bookId: string, progress: number) => Promise<{ success: boolean; error?: string }>;
   refreshUser: () => Promise<void>;
 }
 
@@ -44,6 +52,11 @@ const MOCK_USERS = [
     dateOfBirth: '1990-01-01',
     password: 'password123',
     charityCoins: 50,
+    bookProgress: {
+      trialBook: 0,
+      richDadPoorDad: 0,
+      atomicHabits: 0,
+    },
   },
   {
     userId: 'USER002',
@@ -53,6 +66,11 @@ const MOCK_USERS = [
     dateOfBirth: '1995-05-15',
     password: 'demo123',
     charityCoins: 100,
+    bookProgress: {
+      trialBook: 0,
+      richDadPoorDad: 0,
+      atomicHabits: 0,
+    },
   },
 ];
 
@@ -272,6 +290,61 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const updateBookProgress = async (bookId: string, progress: number): Promise<{ success: boolean; error?: string }> => {
+    // OFFLINE MODE
+    if (OFFLINE_MODE) {
+      if (!user) {
+        return { success: false, error: 'Not authenticated' };
+      }
+
+      const updatedUser = {
+        ...user,
+        bookProgress: {
+          ...user.bookProgress,
+          trialBook: user.bookProgress?.trialBook || 0,
+          richDadPoorDad: user.bookProgress?.richDadPoorDad || 0,
+          atomicHabits: user.bookProgress?.atomicHabits || 0,
+          [bookId]: Math.min(100, Math.max(0, progress)),
+        },
+      };
+
+      setUser(updatedUser);
+      localStorage.setItem('offlineUser', JSON.stringify(updatedUser));
+      console.log('🔧 OFFLINE MODE: Updated', bookId, 'progress to', progress);
+      return { success: true };
+    }
+
+    // ONLINE MODE
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        return { success: false, error: 'Not authenticated' };
+      }
+
+      const response = await fetch(`${API_URL}/update-progress`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ bookId, progress }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Update user's book progress in state
+        setUser(prev => prev ? { ...prev, bookProgress: data.bookProgress } : null);
+        return { success: true };
+      } else {
+        return { success: false, error: data.error || 'Failed to update progress' };
+      }
+    } catch (error) {
+      console.error('Update progress error:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  };
+
   const refreshUser = async () => {
     const token = localStorage.getItem('authToken');
     if (token) {
@@ -280,7 +353,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, signup, logout, loading, updateCoins, refreshUser }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, signup, logout, loading, updateCoins, updateBookProgress, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

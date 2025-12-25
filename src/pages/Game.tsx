@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Coins } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import TrialBookImg from "@/assets/TrialBook.png";
 import RichDadPoorDadImg from "@/assets/RichDadPoorDad.png";
 import AtomicHabitsImg from "@/assets/AtomicHabits.png";
@@ -18,22 +19,25 @@ const Game = () => {
 
   const books = [
     {
-      id: "trial-book",
+      id: "trialBook",
       title: "Trial Book",
       image: TrialBookImg,
-      route: "/game/trial-book"
+      route: "/game/trial-book",
+      progress: user?.bookProgress?.trialBook || 0,
     },
     {
-      id: "rich-dad-poor-dad",
+      id: "richDadPoorDad",
       title: "Rich Dad Poor Dad",
       image: RichDadPoorDadImg,
-      route: "/game/rich-dad-poor-dad"
+      route: "/game/rich-dad-poor-dad",
+      progress: user?.bookProgress?.richDadPoorDad || 0,
     },
     {
-      id: "atomic-habits",
+      id: "atomicHabits",
       title: "Atomic Habits",
       image: AtomicHabitsImg,
-      route: "/game/atomic-habits"
+      route: "/game/atomic-habits",
+      progress: user?.bookProgress?.atomicHabits || 0,
     }
   ];
 
@@ -96,8 +100,15 @@ const Game = () => {
                       className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                     />
                   </div>
-                  <div className="p-4 text-center">
-                    <h3 className="text-xl font-bold">{book.title}</h3>
+                  <div className="p-4 space-y-3">
+                    <h3 className="text-xl font-bold text-center">{book.title}</h3>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-sm text-muted-foreground">
+                        <span>Progress</span>
+                        <span>{book.progress}%</span>
+                      </div>
+                      <Progress value={book.progress} className="h-2" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>

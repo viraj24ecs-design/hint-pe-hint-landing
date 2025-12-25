@@ -2,10 +2,16 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Coins, ArrowLeft } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
 
 const TrialBookGame = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateBookProgress } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const bookId = "trialBook";
+  const currentProgress = user?.bookProgress?.trialBook || 0;
 
   const handleLogout = () => {
     logout();
@@ -14,6 +20,24 @@ const TrialBookGame = () => {
 
   const handleBack = () => {
     navigate("/game");
+  };
+
+  const handleTestProgress = async () => {
+    const newProgress = Math.min(100, currentProgress + 10);
+    const result = await updateBookProgress(bookId, newProgress);
+    
+    if (result.success) {
+      toast({
+        title: "Progress Updated!",
+        description: `Trial Book progress is now ${newProgress}%`,
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: result.error || "Failed to update progress",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -56,14 +80,34 @@ const TrialBookGame = () => {
             Back to Books
           </Button>
 
+          {/* Progress Bar */}
+          <div className="mb-8 space-y-2">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Your Progress</h3>
+              <span className="text-lg font-bold text-primary">{currentProgress}%</span>
+            </div>
+            <Progress value={currentProgress} className="h-3" />
+          </div>
+
           {/* Book Title */}
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-4 mb-8">
             <h2 className="text-5xl font-bold text-text-heading">
               Trial Book
             </h2>
             <p className="text-lg text-muted-foreground">
               Game content for Trial Book will be added here
             </p>
+          </div>
+
+          {/* Test Button */}
+          <div className="flex justify-center">
+            <Button 
+              onClick={handleTestProgress}
+              size="lg"
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+            >
+              Increase Progress by 10%
+            </Button>
           </div>
         </div>
       </main>
