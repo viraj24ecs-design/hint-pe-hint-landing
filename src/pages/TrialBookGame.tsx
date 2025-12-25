@@ -150,10 +150,10 @@ const TrialBookGame = () => {
     setIsRevealed(true);
     setSelectedAnswer(GAME_DATA.rounds[currentRound].correctAnswerIndex);
     
-    // Move to next round after 3 seconds
+    // Move to next round after 1 second
     setTimeout(() => {
       moveToNextRound();
-    }, 3000);
+    }, 1000);
   };
 
   const handleAnswerClick = async (answerIndex: number) => {
@@ -187,10 +187,10 @@ const TrialBookGame = () => {
 
     setIsRevealed(true);
 
-    // Move to next round after 3 seconds
+    // Move to next round after 1 second
     setTimeout(() => {
       moveToNextRound();
-    }, 3000);
+    }, 1000);
   };
 
   const moveToNextRound = async () => {
