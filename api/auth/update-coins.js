@@ -86,7 +86,7 @@ export default async (req, res) => {
 
     const { coinsToAdd } = req.body;
 
-    if (typeof coinsToAdd !== 'number' || coinsToAdd < 0) {
+    if (typeof coinsToAdd !== 'number') {
       return res.status(400).json({ error: 'Invalid coin amount' });
     }
 
@@ -96,10 +96,11 @@ export default async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    user.charityCoins = (user.charityCoins || 0) + coinsToAdd;
+    const newTotal = (user.charityCoins || 0) + coinsToAdd;
+    user.charityCoins = Math.max(0, newTotal); // Ensure coins never go below 0
     await user.save();
 
-    console.log(`💰 User ${user.username} earned ${coinsToAdd} coins. Total: ${user.charityCoins}`);
+    console.log(`💰 User ${user.username} ${coinsToAdd > 0 ? 'earned' : 'lost'} ${Math.abs(coinsToAdd)} coins. Total: ${user.charityCoins}`);
 
     return res.status(200).json({
       message: 'Coins updated successfully',

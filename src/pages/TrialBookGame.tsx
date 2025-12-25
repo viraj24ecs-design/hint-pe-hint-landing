@@ -173,13 +173,7 @@ const TrialBookGame = () => {
       coinsChange = isCorrect ? 20 : -20;
     }
 
-    // Ensure coins don't go below 0
-    const currentCoins = user?.charityCoins || 0;
-    if (currentCoins + coinsChange < 0) {
-      coinsChange = -currentCoins; // Only deduct what's available
-    }
-
-    // Update coins
+    // Update coins (updateCoins function handles ensuring coins don't go below 0)
     if (coinsChange !== 0) {
       await updateCoins(coinsChange);
     }

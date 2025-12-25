@@ -248,9 +248,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return { success: false, error: 'Not authenticated' };
       }
 
+      const newTotal = (user.charityCoins || 0) + coinsToAdd;
       const updatedUser = {
         ...user,
-        charityCoins: (user.charityCoins || 0) + coinsToAdd,
+        charityCoins: Math.max(0, newTotal), // Ensure coins never go below 0
       };
 
       setUser(updatedUser);
