@@ -1,7 +1,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Coins } from "lucide-react";
+import { Coins, Lock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import TrialBookImg from "@/assets/TrialBook.png";
@@ -24,6 +24,7 @@ const Game = () => {
       image: TrialBookImg,
       route: "/game/trial-book",
       progress: user?.bookProgress?.trialBook || 0,
+      isLocked: false,
     },
     {
       id: "richDadPoorDad",
@@ -31,6 +32,7 @@ const Game = () => {
       image: RichDadPoorDadImg,
       route: "/game/rich-dad-poor-dad",
       progress: user?.bookProgress?.richDadPoorDad || 0,
+      isLocked: true,
     },
     {
       id: "atomicHabits",
@@ -38,11 +40,14 @@ const Game = () => {
       image: AtomicHabitsImg,
       route: "/game/atomic-habits",
       progress: user?.bookProgress?.atomicHabits || 0,
+      isLocked: true,
     }
   ];
 
-  const handleBookClick = (route: string) => {
-    navigate(route);
+  const handleBookClick = (route: string, isLocked: boolean) => {
+    if (!isLocked) {
+      navigate(route);
+    }
   };
 
   return (
@@ -89,26 +94,47 @@ const Game = () => {
             {books.map((book) => (
               <Card 
                 key={book.id}
-                className="cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden"
-                onClick={() => handleBookClick(book.route)}
+                className={`transition-all duration-300 overflow-hidden relative ${
+                  book.isLocked 
+                    ? 'opacity-60 cursor-not-allowed' 
+                    : 'cursor-pointer hover:shadow-xl hover:-translate-y-2'
+                }`}
+                onClick={() => handleBookClick(book.route, book.isLocked)}
               >
                 <CardContent className="p-0">
-                  <div className="aspect-[3/4] overflow-hidden bg-gray-100">
+                  <div className="aspect-[3/4] overflow-hidden bg-gray-100 relative">
                     <img 
                       src={book.image} 
                       alt={book.title}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      className={`w-full h-full object-cover transition-transform duration-300 ${
+                        book.isLocked ? 'grayscale' : 'hover:scale-105'
+                      }`}
                     />
+                    {book.isLocked && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <Lock className="w-16 h-16 text-white" />
+                      </div>
+                    )}
                   </div>
                   <div className="p-4 space-y-3">
-                    <h3 className="text-xl font-bold text-center">{book.title}</h3>
-                    <div className="space-y-1">
-                      <div className="flex justify-between text-sm text-muted-foreground">
-                        <span>Progress</span>
-                        <span>{book.progress}%</span>
-                      </div>
-                      <Progress value={book.progress} className="h-2" />
+                    <div className="flex items-center justify-center gap-2">
+                      <h3 className="text-xl font-bold text-center">{book.title}</h3>
+                      {book.isLocked && <Lock className="w-5 h-5 text-muted-foreground" />}
                     </div>
+                    {!book.isLocked && (
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-sm text-muted-foreground">
+                          <span>Progress</span>
+                          <span>{book.progress}%</span>
+                        </div>
+                        <Progress value={book.progress} className="h-2" />
+                      </div>
+                    )}
+                    {book.isLocked && (
+                      <p className="text-sm text-center text-muted-foreground">
+                        Complete Trial Book to unlock
+                      </p>
+                    )}
                   </div>
                 </CardContent>
               </Card>
