@@ -260,12 +260,12 @@ const TrialBookGame = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-8 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
           {/* Back Button */}
           <Button 
             variant="ghost" 
-            className="mb-6"
+            className="mb-4 sm:mb-6"
             onClick={handleBack}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
@@ -273,26 +273,26 @@ const TrialBookGame = () => {
           </Button>
 
           {/* Progress Bar */}
-          <div className="mb-8 space-y-2">
+          <div className="mb-4 sm:mb-8 space-y-2">
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Your Progress</h3>
-              <span className="text-lg font-bold text-primary">{currentProgress}%</span>
+              <h3 className="text-sm sm:text-lg font-semibold">Your Progress</h3>
+              <span className="text-sm sm:text-lg font-bold text-primary">{currentProgress}%</span>
             </div>
-            <Progress value={currentProgress} className="h-3" />
+            <Progress value={currentProgress} className="h-2 sm:h-3" />
           </div>
 
           {gameCompleted ? (
             // Game Completed Screen
-            <div className="text-center space-y-6 py-12">
-              <h2 className="text-5xl font-bold text-green-600">🎉 Congratulations! 🎉</h2>
-              <p className="text-2xl">You've completed the Trial Book!</p>
-              <p className="text-xl text-muted-foreground">
+            <div className="text-center space-y-4 sm:space-y-6 py-8 sm:py-12">
+              <h2 className="text-3xl sm:text-5xl font-bold text-green-600">🎉 Congratulations! 🎉</h2>
+              <p className="text-xl sm:text-2xl">You've completed the Trial Book!</p>
+              <p className="text-lg sm:text-xl text-muted-foreground">
                 You earned a total of {user?.charityCoins || 0} Charity Coins
               </p>
               <Button 
                 size="lg"
                 onClick={handleBack}
-                className="mt-8"
+                className="mt-6 sm:mt-8"
               >
                 Back to Book Selection
               </Button>
@@ -301,26 +301,26 @@ const TrialBookGame = () => {
             // Game Play Screen
             <>
               {/* Round and Hint Display */}
-              <div className="mb-8 text-center space-y-4">
-                <h2 className="text-4xl font-bold">
+              <div className="mb-4 sm:mb-8 text-center space-y-3 sm:space-y-4">
+                <h2 className="text-2xl sm:text-4xl font-bold">
                   Round {GAME_DATA.rounds[currentRound].roundNumber}
                 </h2>
-                <div className="bg-card border-2 border-primary rounded-lg p-6 shadow-lg">
-                  <h3 className="text-xl font-semibold mb-2">
+                <div className="bg-card border-2 border-primary rounded-lg p-3 sm:p-6 shadow-lg">
+                  <h3 className="text-base sm:text-xl font-semibold mb-1 sm:mb-2">
                     Hint {currentHint + 1}:
                   </h3>
-                  <p className="text-2xl">
+                  <p className="text-sm sm:text-xl md:text-2xl leading-relaxed break-words">
                     {GAME_DATA.rounds[currentRound].hints[currentHint]}
                   </p>
                 </div>
                 
                 {/* Next Hint / Reveal Answer Button */}
-                <div className="flex justify-center">
+                <div className="flex justify-center py-2">
                   {currentHint < 2 ? (
                     <Button
                       onClick={handleNextHint}
                       size="lg"
-                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
+                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-sm sm:text-base"
                       disabled={isRevealed}
                     >
                       Next hint
@@ -329,7 +329,7 @@ const TrialBookGame = () => {
                     <Button
                       onClick={handleRevealAnswer}
                       size="lg"
-                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold"
+                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-sm sm:text-base"
                       disabled={isRevealed}
                     >
                       Reveal answer
@@ -339,16 +339,16 @@ const TrialBookGame = () => {
               </div>
 
               {/* Answer Boxes Grid (3x4) */}
-              <div className="grid grid-cols-3 gap-4 max-w-4xl mx-auto">
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-4xl mx-auto pb-4">
                 {GAME_DATA.answers.map((answer, index) => (
                   <Button
                     key={index}
                     onClick={() => handleAnswerClick(index)}
                     disabled={selectedAnswer !== null || isRevealed}
-                    className={`h-24 text-lg font-semibold transition-all ${getAnswerStyle(index)}`}
+                    className={`min-h-[5rem] sm:min-h-[6rem] h-auto text-[10px] sm:text-sm md:text-base font-semibold transition-all leading-tight px-1 sm:px-2 py-2 sm:py-3 whitespace-normal break-words flex items-center justify-center ${getAnswerStyle(index)}`}
                     variant="outline"
                   >
-                    {answer}
+                    <span className="line-clamp-4">{answer}</span>
                   </Button>
                 ))}
               </div>
