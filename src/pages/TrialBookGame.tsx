@@ -43,7 +43,7 @@ const createConfetti = () => {
 // Buttons that are answered correctly disappear FOREVER and never come back in future rounds
 
 const GAME_DATA = {
-  imagePath: "/public/VishalBG.PNG", // Single image for entire game (2:3 aspect ratio, 1024x1536px)
+  imagePath: "/VishalBG.PNG", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
   rounds: [
     {
       roundNumber: 1,
@@ -126,6 +126,7 @@ const TrialBookGame = () => {
   const [wrongButtons, setWrongButtons] = useState<number[]>([]); // Buttons marked as wrong in current round
   const [isProcessing, setIsProcessing] = useState(false); // Prevent clicks during animation
   const [gameCompleted, setGameCompleted] = useState(false);
+  const [clickedButtonId, setClickedButtonId] = useState<number | null>(null); // Instant feedback on click
   
   // Animation states
   const [showConfetti, setShowConfetti] = useState(false);
@@ -179,11 +180,17 @@ const TrialBookGame = () => {
     // Don't allow clicking if processing or if this button was already marked wrong
     if (isProcessing || wrongButtons.includes(buttonId)) return;
 
+    // INSTANT FEEDBACK: Show black background with white text immediately
+    setClickedButtonId(buttonId);
+
     const correctBtnId = GAME_DATA.rounds[currentRound].correctButtonId;
     const isCorrect = buttonId === correctBtnId;
 
     // Prevent further clicks during animation
     setIsProcessing(true);
+
+    // Small delay to show the clicked state before processing
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     // New scoring system: +60 for correct, -20 for wrong
     const coinsChange = isCorrect ? 60 : -20;
@@ -209,7 +216,8 @@ const TrialBookGame = () => {
       // Play success sound
       playSound('correct');
       
-      // Show button as green first
+      // Show button as green
+      setClickedButtonId(null);
       setCorrectButtonId(buttonId);
       
       // Trigger confetti after 300ms
@@ -231,6 +239,7 @@ const TrialBookGame = () => {
     } else {
       // If wrong, show vignette effect and shake button
       playSound('wrong');
+      setClickedButtonId(null);
       setShowVignette(true);
       setShakingButtonId(buttonId);
       setWrongButtons(prev => [...prev, buttonId]);
@@ -274,6 +283,11 @@ const TrialBookGame = () => {
   };
 
   const getButtonStyle = (buttonId: number) => {
+    // INSTANT FEEDBACK: Show black background with white text when clicked
+    if (clickedButtonId === buttonId) {
+      return "bg-black text-white border-black";
+    }
+    
     // Check if this is the correct button being shown as green
     if (correctButtonId === buttonId) {
       return "bg-green-500 text-white border-green-600 animate-pulse";
