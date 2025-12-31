@@ -6,6 +6,15 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthDialog from "@/components/AuthDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import TrialBookImg from "@/assets/TrialBook.png";
 import RichDadPoorDadImg from "@/assets/RichDadPoorDad.png";
 import AtomicHabitsImg from "@/assets/AtomicHabits.png";
@@ -14,6 +23,7 @@ const Index = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   const books = [
     {
@@ -23,6 +33,7 @@ const Index = () => {
       route: "/game/trial-book",
       progress: user?.bookProgress?.trialBook || 0,
       isLocked: false,
+      requiresLogin: false,
     },
     {
       id: "richDadPoorDad",
@@ -30,7 +41,8 @@ const Index = () => {
       image: RichDadPoorDadImg,
       route: "/game/rich-dad-poor-dad",
       progress: user?.bookProgress?.richDadPoorDad || 0,
-      isLocked: !user,
+      isLocked: false, // Always unlocked
+      requiresLogin: !user, // But requires login if not logged in
     },
     {
       id: "atomicHabits",
@@ -38,11 +50,17 @@ const Index = () => {
       image: AtomicHabitsImg,
       route: "/game/atomic-habits",
       progress: user?.bookProgress?.atomicHabits || 0,
-      isLocked: !user,
+      isLocked: false, // Always unlocked
+      requiresLogin: !user, // But requires login if not logged in
     }
   ];
 
-  const handleBookClick = (route: string, isLocked: boolean) => {
+  const handleBookClick = (route: string, isLocked: boolean, requiresLogin: boolean) => {
+    if (requiresLogin) {
+      // Show login prompt dialog
+      setShowLoginPrompt(true);
+      return;
+    }
     if (!isLocked) {
       navigate(route);
     }
@@ -108,11 +126,13 @@ const Index = () => {
               <Card 
                 key={book.id}
                 className={`transition-all duration-300 overflow-hidden relative ${
-                  book.isLocked 
+                  book.requiresLogin 
+                    ? 'cursor-pointer hover:shadow-xl hover:-translate-y-2' 
+                    : book.isLocked 
                     ? 'opacity-60 cursor-not-allowed' 
                     : 'cursor-pointer hover:shadow-xl hover:-translate-y-2'
                 }`}
-                onClick={() => handleBookClick(book.route, book.isLocked)}
+                onClick={() => handleBookClick(book.route, book.isLocked, book.requiresLogin)}
               >
                 <CardContent className="p-0">
                   <div className="aspect-[3/4] overflow-hidden bg-gray-100 relative">
@@ -134,7 +154,7 @@ const Index = () => {
                       <h3 className="text-xl font-bold text-center">{book.title}</h3>
                       {book.isLocked && <Lock className="w-5 h-5 text-muted-foreground" />}
                     </div>
-                    {!book.isLocked && (
+                    {(!book.isLocked && !book.requiresLogin) && (
                       <div className="space-y-1">
                         <div className="flex justify-between text-sm text-muted-foreground">
                           <span>Progress</span>
@@ -143,9 +163,14 @@ const Index = () => {
                         <Progress value={book.progress} className="h-2" />
                       </div>
                     )}
-                    {book.isLocked && (
+                    {book.requiresLogin && (
                       <p className="text-sm text-center text-muted-foreground">
-                        {!user ? "Log in to play this book" : "Complete Trial Book to unlock"}
+                        Log in to play this book
+                      </p>
+                    )}
+                    {book.isLocked && !book.requiresLogin && (
+                      <p className="text-sm text-center text-muted-foreground">
+                        Complete Trial Book to unlock
                       </p>
                     )}
                   </div>
@@ -155,6 +180,34 @@ const Index = () => {
           </div>
         </div>
       </main>
+
+      {/* Login Prompt Dialog */}
+      <AlertDialog open={showLoginPrompt} onOpenChange={setShowLoginPrompt}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Please log in to play</AlertDialogTitle>
+            <AlertDialogDescription>
+              You need to log in or sign up to access this book. Create an account to track your progress and save your charity coins!
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => setShowLoginPrompt(false)}
+              className="bg-gray-500 hover:bg-gray-600"
+            >
+              Cancel
+            </AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => {
+                setShowLoginPrompt(false);
+                setShowAuthDialog(true);
+              }}
+            >
+              Log In / Sign Up
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Auth Dialog */}
       <AuthDialog 
