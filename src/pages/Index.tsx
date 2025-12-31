@@ -5,7 +5,6 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import AuthDialog from "@/components/AuthDialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +22,6 @@ import CharityCoinsIcon from "@/assets/Charitycoins.png";
 const Index = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showCoinsDialog, setShowCoinsDialog] = useState(false);
 
@@ -124,7 +122,7 @@ const Index = () => {
                 Logout
               </Button>
             ) : (
-              <Button onClick={() => setShowAuthDialog(true)}>
+              <Button onClick={() => navigate("/auth")}>
                 Sign In / Sign Up
               </Button>
             )}
@@ -231,7 +229,7 @@ const Index = () => {
             <AlertDialogAction
               onClick={() => {
                 setShowLoginPrompt(false);
-                setShowAuthDialog(true);
+                navigate("/auth");
               }}
             >
               Log In / Sign Up
@@ -262,7 +260,7 @@ const Index = () => {
                 <AlertDialogAction
                   onClick={() => {
                     setShowCoinsDialog(false);
-                    setShowAuthDialog(true);
+                    navigate("/auth");
                   }}
                 >
                   Log In / Sign Up
@@ -330,13 +328,6 @@ const Index = () => {
           )}
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* Auth Dialog */}
-      <AuthDialog 
-        open={showAuthDialog} 
-        onOpenChange={setShowAuthDialog}
-        onSuccess={() => setShowAuthDialog(false)}
-      />
     </div>
   );
 };
