@@ -128,6 +128,10 @@ const TrialBookGame = () => {
   const [gameCompleted, setGameCompleted] = useState(false);
   const [clickedButtonId, setClickedButtonId] = useState<number | null>(null); // Instant feedback on click
   
+  // Temporary coins tracking (frontend only during gameplay)
+  const [tempCoinsEarned, setTempCoinsEarned] = useState(0); // Coins earned in this session
+  const [displayCoins, setDisplayCoins] = useState(user?.charityCoins ?? 0); // What user sees in UI
+  
   // Animation states
   const [showConfetti, setShowConfetti] = useState(false);
   const [showVignette, setShowVignette] = useState(false);
@@ -135,7 +139,6 @@ const TrialBookGame = () => {
   const [shakingButtonId, setShakingButtonId] = useState<number | null>(null);
   
   // Guest user state
-  const [guestCoins, setGuestCoins] = useState(0);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showExitWarning, setShowExitWarning] = useState(false);
@@ -195,14 +198,9 @@ const TrialBookGame = () => {
     // New scoring system: +60 for correct, -20 for wrong
     const coinsChange = isCorrect ? 60 : -20;
 
-    // Update coins
-    if (isGuest) {
-      // For guest users, just update UI coins (no backend)
-      setGuestCoins(prev => Math.max(0, prev + coinsChange));
-    } else {
-      // For logged-in users, update backend
-      await updateCoins(coinsChange);
-    }
+    // Update temporary coins (frontend only, no backend call)
+    setTempCoinsEarned(prev => prev + coinsChange);
+    setDisplayCoins(prev => Math.max(0, prev + coinsChange));
 
     // Show feedback
     toast({
@@ -266,14 +264,21 @@ const TrialBookGame = () => {
         await updateBookProgress(bookId, newProgress);
       }
     } else {
-      // Game completed
+      // Game completed - NOW update backend with all coins earned
       setGameCompleted(true);
       
       if (!isGuest) {
+        // Update progress to 100%
         await updateBookProgress(bookId, 100);
+        
+        // Update coins in backend (single call with total earned)
+        if (tempCoinsEarned !== 0) {
+          await updateCoins(tempCoinsEarned);
+        }
+        
         toast({
           title: "🎉 Congratulations!",
-          description: "You've completed the Trial Book!",
+          description: `You've completed the Trial Book and earned ${tempCoinsEarned} Charity Coins!`,
         });
       } else {
         // Show login prompt for guest users
@@ -352,7 +357,7 @@ const TrialBookGame = () => {
             {/* Charity Coins Display - Compact */}
             <div className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
               <Coins className="w-3 h-3 sm:w-5 sm:h-5" />
-              <span className="font-bold text-xs sm:text-lg">{isGuest ? guestCoins : (user?.charityCoins ?? 0)}</span>
+              <span className="font-bold text-xs sm:text-lg">{displayCoins}</span>
               <span className="text-xs hidden sm:inline">Coins</span>
             </div>
             {user ? (
@@ -391,7 +396,7 @@ const TrialBookGame = () => {
               <h2 className="text-2xl sm:text-4xl font-bold text-green-600">🎉 Congratulations! 🎉</h2>
               <p className="text-lg sm:text-xl">You've completed the Trial Book!</p>
               <p className="text-base sm:text-lg text-muted-foreground">
-                You earned a total of {isGuest ? guestCoins : (user?.charityCoins || 0)} Charity Coins
+                You earned {tempCoinsEarned} Charity Coins in this game!
               </p>
               <Button 
                 size="lg"
@@ -480,7 +485,7 @@ const TrialBookGame = () => {
             <AlertDialogTitle>🎉 Game Completed!</AlertDialogTitle>
             <AlertDialogDescription className="space-y-4">
               <p className="text-lg">
-                Congratulations! You've earned <span className="font-bold text-yellow-600">{guestCoins} Charity Coins</span>
+                Congratulations! You've earned <span className="font-bold text-yellow-600">{tempCoinsEarned} Charity Coins</span>
               </p>
               <p>
                 Would you like to log in to save these coins to your account? 
@@ -544,7 +549,7 @@ const TrialBookGame = () => {
           setShowAuthDialog(false);
           toast({
             title: "Welcome!",
-            description: `Your ${guestCoins} coins have been noted. Start a new game to earn more!`,
+            description: `Your ${tempCoinsEarned} coins have been noted. Start a new game to earn more!`,
           });
         }}
       />
