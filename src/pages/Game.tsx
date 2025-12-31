@@ -32,7 +32,7 @@ const Game = () => {
       image: RichDadPoorDadImg,
       route: "/game/rich-dad-poor-dad",
       progress: user?.bookProgress?.richDadPoorDad || 0,
-      isLocked: true,
+      isLocked: false,
     },
     {
       id: "atomicHabits",
@@ -40,7 +40,7 @@ const Game = () => {
       image: AtomicHabitsImg,
       route: "/game/atomic-habits",
       progress: user?.bookProgress?.atomicHabits || 0,
-      isLocked: true,
+      isLocked: false,
     }
   ];
 
