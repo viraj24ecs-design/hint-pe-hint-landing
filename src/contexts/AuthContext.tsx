@@ -4,6 +4,9 @@ interface BookProgress {
   trialBook: number;
   richDadPoorDad: number;
   atomicHabits: number;
+  book4?: number;
+  book5?: number;
+  book6?: number;
 }
 
 interface User {

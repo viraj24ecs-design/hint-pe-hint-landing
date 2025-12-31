@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Coins, ArrowLeft } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AuthDialog from "@/components/AuthDialog";
 import {
   AlertDialog,
@@ -15,116 +15,102 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import correctSound from "@/assets/correct-6033.mp3";
+import wrongSound from "@/assets/wrong.mp3";
 
-// Game data structure - EDIT THESE VALUES
+// Confetti configuration
+const createConfetti = () => {
+  const confettiCount = 100; // 2x increase from 50 to 100
+  const confetti = [];
+  const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff1493'];
+  
+  for (let i = 0; i < confettiCount; i++) {
+    confetti.push({
+      id: i,
+      left: Math.random() * 100,
+      animationDelay: Math.random() * 0.5,
+      backgroundColor: colors[Math.floor(Math.random() * colors.length)],
+      transform: `rotate(${Math.random() * 360}deg)`,
+    });
+  }
+  return confetti;
+};
+
+// Game data structure - 10 buttons total, each round reveals one more
+// Round 1: Button 1 is correct (button ID 0)
+// Round 2: Button 2 is correct (button ID 1)
+// ... and so on
+// Buttons that are answered correctly disappear FOREVER and never come back in future rounds
+
 const GAME_DATA = {
+  imagePath: "/public/VishalBG.PNG", // Single image for entire game (2:3 aspect ratio, 1024x1536px)
   rounds: [
     {
       roundNumber: 1,
-      hints: [
-        "Hint 1: Great for prioritizing important tasks.",
-        "Hint 2: Varsha runs an E-Laundry startup in Pune. She found that only a few of her customers contribute to majority of her revenue.",
-        "Hint 3: This is the 80/20 rule where a few causes lead to most outcomes.",
-      ],
-      correctAnswerIndex: 4, // Index of correct answer in answers array (0-11)
+      hint: "This is hint for round 1. Edit this text to your actual hint.",
+      correctButtonId: 0, // Button 1 (ID 0) is correct in round 1
     },
     {
       roundNumber: 2,
-      hints: [
-        "Hint 1: The mind’s power plays a huge role in healing.",
-        "Hint 2: When Amir Khan says \"All is Well\" in 3 idiots, he is trying to create this effect",
-        "Hint 3: A doctor gave sugar pills instead of real medicines to his patients",
-      ],
-      correctAnswerIndex: 0,
+      hint: "This is hint for round 2. Edit this text to your actual hint.",
+      correctButtonId: 1, // Button 2 (ID 1) is correct in round 2
     },
     {
       roundNumber: 3,
-      hints: [
-        "Hint 1: Are u binge watching on Netflix? Then welcome to quadrant 4",
-        "Hint 2: Is it urgent? is it important?",
-        "Hint 3: Delegate quadrant 3, delete quadrant 4",
-      ],
-      correctAnswerIndex: 9,
+      hint: "This is hint for round 3. Edit this text to your actual hint.",
+      correctButtonId: 2, // Button 3 (ID 2) is correct in round 3
     },
     {
       roundNumber: 4,
-      hints: [
-        "Hint 1: Named after the Italian word for tomato.",
-        "Hint 2: Katrina, a designer in Chennai, used to get distracted by WA and youtube while working on her designs. now she works for 25 minutes non-stop, then takes 5-minute breaks.",
-        "Hint 3: Katrina is now thankful to the kitchen timer.",
-      ],
-      correctAnswerIndex: 6,
+      hint: "This is hint for round 4. Edit this text to your actual hint.",
+      correctButtonId: 3, // Button 4 (ID 3) is correct in round 4
     },
     {
       roundNumber: 5,
-      hints: [
-        "Hint 1: A small focus leads to most success.",
-        "Hint 2: Why check off all the items on your to-do list when only a few can take care of all!",
-        "Hint 3: Your phone may have 60 apps, but you use only 15",
-      ],
-      correctAnswerIndex: 4,
+      hint: "This is hint for round 5. Edit this text to your actual hint.",
+      correctButtonId: 4, // Button 5 (ID 4) is correct in round 5
     },
     {
       roundNumber: 6,
-      hints: [
-        "Hint 1: I never forget to wear night dress before bed. I always forget to do my night brushing.",
-        "Hint 2: So I keep the toothbrush in the pocket of my night dress",
-        "Hint 3: A concept from James Clear's Atomic Habits.",
-      ],
-      correctAnswerIndex: 1,
+      hint: "This is hint for round 6. Edit this text to your actual hint.",
+      correctButtonId: 5, // Button 6 (ID 5) is correct in round 6
     },
     {
       roundNumber: 7,
-      hints: [
-        "Hint 1: After BahubaIi 1, we desperately waited for years to know \"Kattapa ne bahubali ko kyu mara\"",
-        "Hint 2: Because Bahubali 1 was an incomplete story",
-        "Hint 3: It’s difficult to recollect an answer just 1 week after the exams are over",
-      ],
-      correctAnswerIndex: 3,
+      hint: "This is hint for round 7. Edit this text to your actual hint.",
+      correctButtonId: 6, // Button 7 (ID 6) is correct in round 7
     },
     {
       roundNumber: 8,
-      hints: [
-        "Hint 1: Venky says to himself \"I will read 1 page everyday\" instead of saying \"I will read 4 books a month\"",
-        "Hint 2: Jeff Olson has written the book of the same name",
-        "Hint 3: This slight advantage of saving Rs.500 every month made him a crorepati in 20 years",
-      ],
-      correctAnswerIndex: 5,
+      hint: "This is hint for round 8. Edit this text to your actual hint.",
+      correctButtonId: 7, // Button 8 (ID 7) is correct in round 8
     },
     {
       roundNumber: 9,
-      hints: [
-        "Hint 1: Metaphor for trust and goodwill.",
-        "Hint 2: Your wife will love you 10 times more if you invest in it",
-        "Hint 3: Used in Stephen Covey’s 7 Habits of Highly Effective People.",
-      ],
-      correctAnswerIndex: 7,
+      hint: "This is hint for round 9. Edit this text to your actual hint.",
+      correctButtonId: 8, // Button 9 (ID 8) is correct in round 9
     },
     {
       roundNumber: 10,
-      hints: [
-        "Hint 1: Sunita, a wildlife photographer in Kerala, found her purpose of life where her passion met mission and profession.",
-        "Hint 2: Guides many in finding life’s true purpose.",
-        "Hint 3: It’s a Japanese word",
-      ],
-      correctAnswerIndex: 11,
+      hint: "This is hint for round 10. Edit this text to your actual hint.",
+      correctButtonId: 9, // Button 10 (ID 9) is correct in round 10
     },
   ],
-  answers: [
-    "Placebo Effect", //round 2            b0         q2
-    "Habit Stacking", //round 6            b1         q6
-    "xyz", //round x                       b2         qx
-    "Zeigarnik Effect", //round 1 and 5    b3         q7
-    "Pareto Principle", //         b4         q5 & q1
-    "The Slight Edge", //         b5         q8
-    "Pomodoro Technique", //round 4        b6         q4
-    "Emotional Bank Account", //         b7         q9
-    "xyz", //         b8         qx
-    "Eisenhower Matrix", //round 3         b9         q3
-    "xyz", //       b10        qx
-    "Ikigai", //       b11        q10
-  ],
 };
+
+// All 10 buttons with their text - you can edit these
+const ALL_BUTTONS = [
+  { id: 0, text: "Answer 1" },
+  { id: 1, text: "Answer 2" },
+  { id: 2, text: "Answer 3" },
+  { id: 3, text: "Answer 4" },
+  { id: 4, text: "Answer 5" },
+  { id: 5, text: "Answer 6" },
+  { id: 6, text: "Answer 7" },
+  { id: 7, text: "Answer 8" },
+  { id: 8, text: "Answer 9" },
+  { id: 9, text: "Answer 10" },
+];
 
 const TrialBookGame = () => {
   const { user, logout, updateBookProgress, updateCoins } = useAuth();
@@ -136,15 +122,22 @@ const TrialBookGame = () => {
 
   // Game state
   const [currentRound, setCurrentRound] = useState(0);
-  const [currentHint, setCurrentHint] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [poppedButtons, setPoppedButtons] = useState<number[]>([]); // Buttons that have disappeared forever
+  const [wrongButtons, setWrongButtons] = useState<number[]>([]); // Buttons marked as wrong in current round
+  const [isProcessing, setIsProcessing] = useState(false); // Prevent clicks during animation
   const [gameCompleted, setGameCompleted] = useState(false);
+  
+  // Animation states
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showVignette, setShowVignette] = useState(false);
+  const [correctButtonId, setCorrectButtonId] = useState<number | null>(null);
+  const [shakingButtonId, setShakingButtonId] = useState<number | null>(null);
   
   // Guest user state
   const [guestCoins, setGuestCoins] = useState(0);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showExitWarning, setShowExitWarning] = useState(false);
 
   const isGuest = !user;
 
@@ -154,41 +147,46 @@ const TrialBookGame = () => {
   };
 
   const handleBack = () => {
+    // Show warning dialog before exiting
+    setShowExitWarning(true);
+  };
+
+  const handleExitConfirm = () => {
+    setShowExitWarning(false);
     navigate("/");
   };
 
-  const handleNextHint = () => {
-    if (currentHint < 2) {
-      setCurrentHint(currentHint + 1);
+  // Play sound effect
+  const playSound = (type: 'correct' | 'wrong') => {
+    try {
+      if (type === 'correct') {
+        // Play the charm sound from assets
+        const audio = new Audio(correctSound);
+        audio.volume = 0.5;
+        audio.play().catch(e => console.log('Audio playback failed:', e));
+      } else {
+        // Play the wrong answer sound from assets
+        const audio = new Audio(wrongSound);
+        audio.volume = 0.5;
+        audio.play().catch(e => console.log('Audio playback failed:', e));
+      }
+    } catch (e) {
+      console.log('Audio not supported');
     }
   };
 
-  const handleRevealAnswer = () => {
-    setIsRevealed(true);
-    setSelectedAnswer(GAME_DATA.rounds[currentRound].correctAnswerIndex);
-    
-    // Move to next round after 1 second
-    setTimeout(() => {
-      moveToNextRound();
-    }, 1000);
-  };
+  const handleButtonClick = async (buttonId: number) => {
+    // Don't allow clicking if processing or if this button was already marked wrong
+    if (isProcessing || wrongButtons.includes(buttonId)) return;
 
-  const handleAnswerClick = async (answerIndex: number) => {
-    if (selectedAnswer !== null || isRevealed) return; // Already answered
+    const correctBtnId = GAME_DATA.rounds[currentRound].correctButtonId;
+    const isCorrect = buttonId === correctBtnId;
 
-    setSelectedAnswer(answerIndex);
-    const correctIndex = GAME_DATA.rounds[currentRound].correctAnswerIndex;
-    const isCorrect = answerIndex === correctIndex;
+    // Prevent further clicks during animation
+    setIsProcessing(true);
 
-    // Calculate coins based on current hint
-    let coinsChange = 0;
-    if (currentHint === 0) {
-      coinsChange = isCorrect ? 60 : -30;
-    } else if (currentHint === 1) {
-      coinsChange = isCorrect ? 40 : -20;
-    } else {
-      coinsChange = isCorrect ? 20 : -20;
-    }
+    // New scoring system: +60 for correct, -20 for wrong
+    const coinsChange = isCorrect ? 60 : -20;
 
     // Update coins
     if (isGuest) {
@@ -196,9 +194,7 @@ const TrialBookGame = () => {
       setGuestCoins(prev => Math.max(0, prev + coinsChange));
     } else {
       // For logged-in users, update backend
-      if (coinsChange !== 0) {
-        await updateCoins(coinsChange);
-      }
+      await updateCoins(coinsChange);
     }
 
     // Show feedback
@@ -208,21 +204,52 @@ const TrialBookGame = () => {
       variant: isCorrect ? "default" : "destructive",
     });
 
-    setIsRevealed(true);
-
-    // Move to next round after 1 second
-    setTimeout(() => {
-      moveToNextRound();
-    }, 1000);
+    // If correct, show confetti and pop animation
+    if (isCorrect) {
+      // Play success sound
+      playSound('correct');
+      
+      // Show button as green first
+      setCorrectButtonId(buttonId);
+      
+      // Trigger confetti after 300ms
+      setTimeout(() => {
+        setShowConfetti(true);
+      }, 300);
+      
+      // Pop button and hide confetti after animation
+      setTimeout(() => {
+        setPoppedButtons(prev => [...prev, buttonId]);
+        setShowConfetti(false);
+        setCorrectButtonId(null);
+        
+        // Move to next round after button pops
+        setTimeout(() => {
+          moveToNextRound();
+        }, 500);
+      }, 1500); // Total animation time
+    } else {
+      // If wrong, show vignette effect and shake button
+      playSound('wrong');
+      setShowVignette(true);
+      setShakingButtonId(buttonId);
+      setWrongButtons(prev => [...prev, buttonId]);
+      
+      // Remove effects after 1 second
+      setTimeout(() => {
+        setShowVignette(false);
+        setShakingButtonId(null);
+        setIsProcessing(false);
+      }, 1000);
+    }
   };
 
   const moveToNextRound = async () => {
     if (currentRound < GAME_DATA.rounds.length - 1) {
       // Move to next round
       setCurrentRound(currentRound + 1);
-      setCurrentHint(0);
-      setSelectedAnswer(null);
-      setIsRevealed(false);
+      setWrongButtons([]); // Reset wrong buttons for new round
+      setIsProcessing(false);
 
       // Update progress only for logged-in users
       if (!isGuest) {
@@ -246,152 +273,188 @@ const TrialBookGame = () => {
     }
   };
 
-  const getAnswerStyle = (answerIndex: number) => {
-    if (!isRevealed) return "";
-    
-    const correctIndex = GAME_DATA.rounds[currentRound].correctAnswerIndex;
-    
-    if (answerIndex === correctIndex) {
-      return "bg-green-500 text-white border-green-600";
+  const getButtonStyle = (buttonId: number) => {
+    // Check if this is the correct button being shown as green
+    if (correctButtonId === buttonId) {
+      return "bg-green-500 text-white border-green-600 animate-pulse";
     }
     
-    if (answerIndex === selectedAnswer && answerIndex !== correctIndex) {
-      return "bg-red-500 text-white border-red-600";
+    // Check if this button was marked as wrong
+    if (wrongButtons.includes(buttonId)) {
+      const isShaking = shakingButtonId === buttonId;
+      return `bg-red-500 text-white border-red-600 ${isShaking ? 'animate-shake' : ''}`;
     }
     
-    return "opacity-50";
+    return "bg-white border-2 border-gray-800 hover:bg-gray-100";
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b shadow-sm">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Hint Pe Hint</h1>
-          <div className="flex items-center gap-4">
-            {/* Charity Coins Display */}
-            <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-2 rounded-full shadow-lg">
-              <Coins className="w-5 h-5" />
-              <span className="font-bold text-lg">{isGuest ? guestCoins : (user?.charityCoins ?? 0)}</span>
-              <span className="text-sm">Charity Coins</span>
+    <div className="h-screen bg-background flex flex-col overflow-hidden relative" style={{ height: '100dvh' }}>
+      {/* Red Vignette Effect for Wrong Answer */}
+      {showVignette && (
+        <div 
+          className="fixed inset-0 pointer-events-none z-50 animate-vignette"
+          style={{
+            background: 'radial-gradient(circle, transparent 30%, rgba(220, 38, 38, 0.6) 100%)',
+          }}
+        />
+      )}
+      
+      {/* Confetti Animation for Correct Answer */}
+      {showConfetti && (
+        <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
+          {createConfetti().map((conf) => (
+            <div
+              key={conf.id}
+              className="absolute w-2 h-2 animate-confetti"
+              style={{
+                left: `${conf.left}%`,
+                top: '-10px',
+                backgroundColor: conf.backgroundColor,
+                animationDelay: `${conf.animationDelay}s`,
+                transform: conf.transform,
+              }}
+            />
+          ))}
+        </div>
+      )}
+      
+      {/* Fixed Header - Compact */}
+      <header className="bg-background border-b shadow-sm flex-shrink-0">
+        <div className="container mx-auto px-2 sm:px-4 py-2 flex justify-between items-center">
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Back Button */}
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleBack}
+              className="flex items-center p-1 sm:p-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <h1 className="text-sm sm:text-xl font-bold">Hint Pe Hint</h1>
+          </div>
+          <div className="flex items-center gap-2 sm:gap-4">
+            {/* Charity Coins Display - Compact */}
+            <div className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
+              <Coins className="w-3 h-3 sm:w-5 sm:h-5" />
+              <span className="font-bold text-xs sm:text-lg">{isGuest ? guestCoins : (user?.charityCoins ?? 0)}</span>
+              <span className="text-xs hidden sm:inline">Coins</span>
             </div>
-            {user && (
-              <span className="text-sm text-muted-foreground hidden sm:inline">
-                Welcome, {user.name}
-              </span>
-            )}
             {user ? (
-              <Button variant="outline" onClick={handleLogout}>
+              <Button variant="outline" size="sm" onClick={handleLogout} className="text-xs sm:text-sm">
                 Logout
               </Button>
             ) : (
-              <Button onClick={() => setShowAuthDialog(true)}>
-                Sign In / Sign Up
+              <Button size="sm" onClick={() => setShowAuthDialog(true)} className="text-xs sm:text-sm">
+                Sign In
               </Button>
             )}
           </div>
         </div>
       </header>
 
-      {/* Main Content Area with top padding to account for fixed header */}
-      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-8 pt-24 overflow-y-auto">
-        <div className="max-w-6xl mx-auto">
-          {/* Back Button */}
-          <Button 
-            variant="ghost" 
-            className="mb-4 sm:mb-6"
-            onClick={handleBack}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Books
-          </Button>
-
-          {/* Progress Bar */}
-          <div className="mb-4 sm:mb-8 space-y-2">
-            <div className="flex justify-between items-center">
-              <h3 className="text-sm sm:text-lg font-semibold">Your Progress</h3>
-              <span className="text-sm sm:text-lg font-bold text-primary">
+      {/* Main Content Area - Fills remaining space with proper overflow handling */}
+      <main className="flex-1 flex flex-col overflow-hidden px-2 sm:px-4 py-2 sm:py-3 min-h-0">
+        <div className="flex flex-col h-full max-w-6xl mx-auto w-full min-h-0">
+          {/* Progress Bar - Compact */}
+          <div className="flex-shrink-0 mb-1 sm:mb-2">
+            <div className="flex justify-between items-center mb-1">
+              <h3 className="text-xs sm:text-sm font-semibold">Progress</h3>
+              <span className="text-xs sm:text-sm font-bold text-primary">
                 {isGuest ? Math.round(((currentRound + 1) / GAME_DATA.rounds.length) * 100) : currentProgress}%
               </span>
             </div>
             <Progress 
               value={isGuest ? ((currentRound + 1) / GAME_DATA.rounds.length) * 100 : currentProgress} 
-              className="h-2 sm:h-3" 
+              className="h-1 sm:h-2" 
             />
           </div>
 
           {gameCompleted ? (
             // Game Completed Screen
-            <div className="text-center space-y-4 sm:space-y-6 py-8 sm:py-12">
-              <h2 className="text-3xl sm:text-5xl font-bold text-green-600">🎉 Congratulations! 🎉</h2>
-              <p className="text-xl sm:text-2xl">You've completed the Trial Book!</p>
-              <p className="text-lg sm:text-xl text-muted-foreground">
+            <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3 sm:space-y-4">
+              <h2 className="text-2xl sm:text-4xl font-bold text-green-600">🎉 Congratulations! 🎉</h2>
+              <p className="text-lg sm:text-xl">You've completed the Trial Book!</p>
+              <p className="text-base sm:text-lg text-muted-foreground">
                 You earned a total of {isGuest ? guestCoins : (user?.charityCoins || 0)} Charity Coins
               </p>
               <Button 
                 size="lg"
                 onClick={handleBack}
-                className="mt-6 sm:mt-8"
               >
                 Back to Book Selection
               </Button>
             </div>
           ) : (
-            // Game Play Screen
-            <>
-              {/* Round and Hint Display */}
-              <div className="mb-4 sm:mb-8 text-center space-y-3 sm:space-y-4">
-                <h2 className="text-2xl sm:text-4xl font-bold">
+            // Game Play Screen - Flexbox layout with proper scaling
+            <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+              {/* Round and Hint Display - Takes available space */}
+              <div className="flex-shrink-0 text-center mb-1 sm:mb-2 px-2">
+                <h2 className="text-base sm:text-lg md:text-2xl font-bold mb-1 sm:mb-2">
                   Round {GAME_DATA.rounds[currentRound].roundNumber}
                 </h2>
-                <div className="bg-card border-2 border-primary rounded-lg p-3 sm:p-6 shadow-lg">
-                  <h3 className="text-base sm:text-xl font-semibold mb-1 sm:mb-2">
-                    Hint {currentHint + 1}:
+                <div className="bg-card border-2 border-primary rounded-lg p-2 sm:p-3 md:p-4 shadow-lg">
+                  <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1">
+                    Hint:
                   </h3>
-                  <p className="text-sm sm:text-xl md:text-2xl leading-relaxed break-words">
-                    {GAME_DATA.rounds[currentRound].hints[currentHint]}
+                  <p className="text-[10px] sm:text-xs md:text-sm leading-tight break-words max-h-[15vh] overflow-y-auto">
+                    {GAME_DATA.rounds[currentRound].hint}
                   </p>
-                </div>
-                
-                {/* Next Hint / Reveal Answer Button */}
-                <div className="flex justify-center py-2">
-                  {currentHint < 2 ? (
-                    <Button
-                      onClick={handleNextHint}
-                      size="lg"
-                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-sm sm:text-base"
-                      disabled={isRevealed}
-                    >
-                      Next hint
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={handleRevealAnswer}
-                      size="lg"
-                      className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-sm sm:text-base"
-                      disabled={isRevealed}
-                    >
-                      Reveal answer
-                    </Button>
-                  )}
                 </div>
               </div>
 
-              {/* Answer Boxes Grid (3x4) */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-4xl mx-auto pb-4">
-                {GAME_DATA.answers.map((answer, index) => (
-                  <Button
-                    key={index}
-                    onClick={() => handleAnswerClick(index)}
-                    disabled={selectedAnswer !== null || isRevealed}
-                    className={`min-h-[5rem] sm:min-h-[6rem] h-auto text-[10px] sm:text-sm md:text-base font-semibold transition-all leading-tight px-1 sm:px-2 py-2 sm:py-3 whitespace-normal break-words flex items-center justify-center ${getAnswerStyle(index)}`}
-                    variant="outline"
-                  >
-                    <span className="line-clamp-4">{answer}</span>
-                  </Button>
-                ))}
+              {/* Image Reveal Box with Buttons - 2:3 Aspect Ratio (Portrait) - With scrolling if needed */}
+              <div className="flex-1 flex items-center justify-center px-2 sm:px-4 pb-2 min-h-0 w-full overflow-y-auto overflow-x-hidden">
+                <div 
+                  className="relative border-4 border-black rounded-2xl shadow-lg overflow-hidden my-auto" 
+                  style={{ 
+                    aspectRatio: '2/3',
+                    width: 'min(400px, 90vw)',
+                    height: 'auto',
+                  }}
+                >
+                  {/* Background Image */}
+                  <img 
+                    src={GAME_DATA.imagePath}
+                    alt="Game Image"
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                  
+                  {/* Button Grid Overlay - 5 rows x 2 columns = 10 buttons */}
+                  <div className="absolute inset-0 grid grid-rows-5 grid-cols-2 gap-0">
+                    {ALL_BUTTONS.map((button) => {
+                      const isPopped = poppedButtons.includes(button.id);
+                      
+                      // Don't render popped buttons - they disappear forever, revealing the image
+                      if (isPopped) {
+                        return <div key={button.id} className="pointer-events-none" />;
+                      }
+                      
+                      return (
+                        <button
+                          key={button.id}
+                          onClick={() => handleButtonClick(button.id)}
+                          disabled={isProcessing || wrongButtons.includes(button.id)}
+                          className={`${getButtonStyle(button.id)} 
+                            text-[7px] xs:text-[8px] sm:text-xs md:text-sm font-bold 
+                            transition-all duration-300 
+                            flex items-center justify-center 
+                            border border-black
+                            disabled:cursor-not-allowed
+                            ${button.id === 0 ? 'rounded-tl-xl' : ''}
+                            ${button.id === 1 ? 'rounded-tr-xl' : ''}
+                            ${button.id === 8 ? 'rounded-bl-xl' : ''}
+                            ${button.id === 9 ? 'rounded-br-xl' : ''}`}
+                        >
+                          <span className="line-clamp-2 px-0.5 sm:px-1">{button.text}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-            </>
+            </div>
           )}
         </div>
       </main>
@@ -428,6 +491,32 @@ const TrialBookGame = () => {
               }}
             >
               Log In / Sign Up
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Exit Warning Dialog */}
+      <AlertDialog open={showExitWarning} onOpenChange={setShowExitWarning}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Already chickening out?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Your progress will not be saved!
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogAction
+              onClick={handleExitConfirm}
+              className="bg-red-500 hover:bg-red-600"
+            >
+              Exit
+            </AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => setShowExitWarning(false)}
+              className="bg-green-500 hover:bg-green-600"
+            >
+              No, I wanna play more
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
