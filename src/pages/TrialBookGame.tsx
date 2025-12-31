@@ -5,6 +5,16 @@ import { Coins, ArrowLeft } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import AuthDialog from "@/components/AuthDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // Game data structure - EDIT THESE VALUES
 const GAME_DATA = {
@@ -130,6 +140,13 @@ const TrialBookGame = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
   const [gameCompleted, setGameCompleted] = useState(false);
+  
+  // Guest user state
+  const [guestCoins, setGuestCoins] = useState(0);
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
+
+  const isGuest = !user;
 
   const handleLogout = () => {
     logout();
@@ -137,7 +154,7 @@ const TrialBookGame = () => {
   };
 
   const handleBack = () => {
-    navigate("/game");
+    navigate("/");
   };
 
   const handleNextHint = () => {
@@ -173,9 +190,15 @@ const TrialBookGame = () => {
       coinsChange = isCorrect ? 20 : -20;
     }
 
-    // Update coins (updateCoins function handles ensuring coins don't go below 0)
-    if (coinsChange !== 0) {
-      await updateCoins(coinsChange);
+    // Update coins
+    if (isGuest) {
+      // For guest users, just update UI coins (no backend)
+      setGuestCoins(prev => Math.max(0, prev + coinsChange));
+    } else {
+      // For logged-in users, update backend
+      if (coinsChange !== 0) {
+        await updateCoins(coinsChange);
+      }
     }
 
     // Show feedback
@@ -201,18 +224,25 @@ const TrialBookGame = () => {
       setSelectedAnswer(null);
       setIsRevealed(false);
 
-      // Update progress (10% per round)
-      const newProgress = Math.min(100, ((currentRound + 1) / GAME_DATA.rounds.length) * 100);
-      await updateBookProgress(bookId, newProgress);
+      // Update progress only for logged-in users
+      if (!isGuest) {
+        const newProgress = Math.min(100, ((currentRound + 1) / GAME_DATA.rounds.length) * 100);
+        await updateBookProgress(bookId, newProgress);
+      }
     } else {
       // Game completed
       setGameCompleted(true);
-      await updateBookProgress(bookId, 100);
       
-      toast({
-        title: "🎉 Congratulations!",
-        description: "You've completed the Trial Book!",
-      });
+      if (!isGuest) {
+        await updateBookProgress(bookId, 100);
+        toast({
+          title: "🎉 Congratulations!",
+          description: "You've completed the Trial Book!",
+        });
+      } else {
+        // Show login prompt for guest users
+        setShowLoginPrompt(true);
+      }
     }
   };
 
@@ -234,33 +264,37 @@ const TrialBookGame = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="border-b">
+      {/* Fixed Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b shadow-sm">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">Hint Pe Hint</h1>
           <div className="flex items-center gap-4">
             {/* Charity Coins Display */}
+            <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-2 rounded-full shadow-lg">
+              <Coins className="w-5 h-5" />
+              <span className="font-bold text-lg">{isGuest ? guestCoins : (user?.charityCoins ?? 0)}</span>
+              <span className="text-sm">Charity Coins</span>
+            </div>
             {user && (
-              <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-4 py-2 rounded-full shadow-lg">
-                <Coins className="w-5 h-5" />
-                <span className="font-bold text-lg">{user.charityCoins ?? 0}</span>
-                <span className="text-sm">Charity Coins</span>
-              </div>
-            )}
-            {user && (
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-muted-foreground hidden sm:inline">
                 Welcome, {user.name}
               </span>
             )}
-            <Button variant="outline" onClick={handleLogout}>
-              Logout
-            </Button>
+            {user ? (
+              <Button variant="outline" onClick={handleLogout}>
+                Logout
+              </Button>
+            ) : (
+              <Button onClick={() => setShowAuthDialog(true)}>
+                Sign In / Sign Up
+              </Button>
+            )}
           </div>
         </div>
       </header>
 
-      {/* Main Content Area */}
-      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-8 overflow-y-auto">
+      {/* Main Content Area with top padding to account for fixed header */}
+      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-8 pt-24 overflow-y-auto">
         <div className="max-w-6xl mx-auto">
           {/* Back Button */}
           <Button 
@@ -276,9 +310,14 @@ const TrialBookGame = () => {
           <div className="mb-4 sm:mb-8 space-y-2">
             <div className="flex justify-between items-center">
               <h3 className="text-sm sm:text-lg font-semibold">Your Progress</h3>
-              <span className="text-sm sm:text-lg font-bold text-primary">{currentProgress}%</span>
+              <span className="text-sm sm:text-lg font-bold text-primary">
+                {isGuest ? Math.round(((currentRound + 1) / GAME_DATA.rounds.length) * 100) : currentProgress}%
+              </span>
             </div>
-            <Progress value={currentProgress} className="h-2 sm:h-3" />
+            <Progress 
+              value={isGuest ? ((currentRound + 1) / GAME_DATA.rounds.length) * 100 : currentProgress} 
+              className="h-2 sm:h-3" 
+            />
           </div>
 
           {gameCompleted ? (
@@ -287,7 +326,7 @@ const TrialBookGame = () => {
               <h2 className="text-3xl sm:text-5xl font-bold text-green-600">🎉 Congratulations! 🎉</h2>
               <p className="text-xl sm:text-2xl">You've completed the Trial Book!</p>
               <p className="text-lg sm:text-xl text-muted-foreground">
-                You earned a total of {user?.charityCoins || 0} Charity Coins
+                You earned a total of {isGuest ? guestCoins : (user?.charityCoins || 0)} Charity Coins
               </p>
               <Button 
                 size="lg"
@@ -356,6 +395,56 @@ const TrialBookGame = () => {
           )}
         </div>
       </main>
+
+      {/* Login Prompt for Guest Users */}
+      <AlertDialog open={showLoginPrompt} onOpenChange={setShowLoginPrompt}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>🎉 Game Completed!</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-4">
+              <p className="text-lg">
+                Congratulations! You've earned <span className="font-bold text-yellow-600">{guestCoins} Charity Coins</span>
+              </p>
+              <p>
+                Would you like to log in to save these coins to your account? 
+                If you don't have an account, you can sign up now!
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+            <AlertDialogAction
+              onClick={() => {
+                setShowLoginPrompt(false);
+                navigate("/");
+              }}
+              className="bg-gray-500 hover:bg-gray-600"
+            >
+              Maybe Later
+            </AlertDialogAction>
+            <AlertDialogAction
+              onClick={() => {
+                setShowLoginPrompt(false);
+                setShowAuthDialog(true);
+              }}
+            >
+              Log In / Sign Up
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Auth Dialog */}
+      <AuthDialog 
+        open={showAuthDialog} 
+        onOpenChange={setShowAuthDialog}
+        onSuccess={() => {
+          setShowAuthDialog(false);
+          toast({
+            title: "Welcome!",
+            description: `Your ${guestCoins} coins have been noted. Start a new game to earn more!`,
+          });
+        }}
+      />
     </div>
   );
 };
