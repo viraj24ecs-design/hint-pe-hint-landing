@@ -1,7 +1,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Coins, ArrowLeft } from "lucide-react";
+import { Coins, ArrowLeft, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
@@ -15,6 +15,10 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+} from "@/components/ui/dialog";
 import correctSound from "@/assets/correct-6033.mp3";
 import wrongSound from "@/assets/wrong.mp3";
 
@@ -43,11 +47,11 @@ const createConfetti = () => {
 // Buttons that are answered correctly disappear FOREVER and never come back in future rounds
 
 const GAME_DATA = {
-  imagePath: "/VishalBG.PNG", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
+  imagePath: "/How-To-Bring-Self-Discipline-To-Exercise.jpg", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
   rounds: [
     {
       roundNumber: 1,
-      hint: "This is hint for round 1. Edit this text to your actual hint.",
+      hint: "Think you're too busy to exercise? This law says skipping workouts steals time, not saves it. Without exercise, your brain drains fast—foggy focus means wasted hours. But just 30 min daily movement for 5 days (2.5 hrs total) boosts productivity so much you gain 7.5 hours of sharp focus weekly. Net gain: 5 extra hours! Exercise isn't a time cost—it's a time multiplier. Move a little, gain a lot. Your future self will thank you!",
       correctButtonId: 0, // Button 1 (ID 0) is correct in round 1
     },
     {
@@ -138,10 +142,15 @@ const TrialBookGame = () => {
   const [correctButtonId, setCorrectButtonId] = useState<number | null>(null);
   const [shakingButtonId, setShakingButtonId] = useState<number | null>(null);
   
-  // Guest user state
+  // Dialog states
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(true); // Welcome popup on game start
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showExitWarning, setShowExitWarning] = useState(false);
+  const [showCongratsDialog, setShowCongratsDialog] = useState(false);
+  const [animatedCoins, setAnimatedCoins] = useState(0); // For count-up animation
+  
+  // Guest user state
 
   const isGuest = !user;
 
@@ -159,6 +168,29 @@ const TrialBookGame = () => {
     setShowExitWarning(false);
     navigate("/");
   };
+
+  // Count-up animation for coins in congratulations dialog
+  useEffect(() => {
+    if (showCongratsDialog && tempCoinsEarned > 0) {
+      const duration = 2500; // 2.5 seconds animation
+      const steps = 60; // 60 frames for smooth animation
+      const increment = tempCoinsEarned / steps;
+      const stepDuration = duration / steps;
+      
+      let currentStep = 0;
+      const timer = setInterval(() => {
+        currentStep++;
+        if (currentStep >= steps) {
+          setAnimatedCoins(tempCoinsEarned);
+          clearInterval(timer);
+        } else {
+          setAnimatedCoins(Math.floor(increment * currentStep));
+        }
+      }, stepDuration);
+      
+      return () => clearInterval(timer);
+    }
+  }, [showCongratsDialog, tempCoinsEarned]);
 
   // Play sound effect
   const playSound = (type: 'correct' | 'wrong') => {
@@ -202,11 +234,28 @@ const TrialBookGame = () => {
     setTempCoinsEarned(prev => prev + coinsChange);
     setDisplayCoins(prev => Math.max(0, prev + coinsChange));
 
-    // Show feedback
+    // Show feedback with Vishal image - custom layout with image on left
     toast({
-      title: isCorrect ? "Correct! 🎉" : "Incorrect ❌",
-      description: `${coinsChange > 0 ? '+' : ''}${coinsChange} Charity Coins`,
+      title: "", // Empty title to prevent it from showing above
+      description: (
+        <div className="flex items-center gap-2 -ml-4">
+          <img 
+            src={isCorrect ? "/VishalPics/vishalCorrectAns.png" : "/VishalPics/VishalIncorrectAns.png"} 
+            alt={isCorrect ? "Correct" : "Incorrect"}
+            className="w-56 h-56 object-contain flex-shrink-0"
+          />
+          <div className="flex flex-col -ml-4">
+            <span className="text-base font-bold">
+              {isCorrect ? "Correct! 🎉" : "Incorrect ❌"}
+            </span>
+            <span className="text-sm">
+              {`${coinsChange > 0 ? '+' : ''}${coinsChange} Charity Coins`}
+            </span>
+          </div>
+        </div>
+      ) as any,
       variant: isCorrect ? "default" : "destructive",
+      duration: 1000, // 1 second
     });
 
     // If correct, show confetti and pop animation
@@ -276,10 +325,8 @@ const TrialBookGame = () => {
           await updateCoins(tempCoinsEarned);
         }
         
-        toast({
-          title: "🎉 Congratulations!",
-          description: `You've completed the Trial Book and earned ${tempCoinsEarned} Charity Coins!`,
-        });
+        // Show congratulations dialog
+        setShowCongratsDialog(true);
       } else {
         // Show login prompt for guest users
         setShowLoginPrompt(true);
@@ -309,6 +356,54 @@ const TrialBookGame = () => {
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden relative" style={{ height: '100dvh' }}>
+      {/* Welcome Dialog - Shown at game start */}
+      <Dialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
+        <DialogContent className="sm:max-w-[600px] p-0 gap-0">
+          {/* Close button */}
+          <button
+            onClick={() => setShowWelcomeDialog(false)}
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none z-10"
+          >
+            <X className="h-5 w-5" />
+            <span className="sr-only">Close</span>
+          </button>
+          
+          <div className="flex flex-col sm:flex-row">
+            {/* Left side - Image */}
+            <div className="w-full sm:w-1/2 bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-6">
+              <img 
+                src="/VishalPics/VishalSad.PNG" 
+                alt="Vishal needs help" 
+                className="w-full h-auto max-w-[250px] object-contain"
+              />
+            </div>
+            
+            {/* Right side - Text */}
+            <div className="w-full sm:w-1/2 p-6 sm:p-8 flex flex-col justify-center space-y-4">
+              <div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-red-600 mb-2">
+                  Uh-Oh! Vishal needs your help!
+                </h2>
+                <p className="text-base sm:text-lg text-gray-700 mb-3">
+                  Answer correctly to help him
+                </p>
+                <p className="text-sm sm:text-base text-gray-600 italic">
+                  If you win this game there is a small surprise for you in the end!
+                </p>
+              </div>
+              
+              <Button 
+                onClick={() => setShowWelcomeDialog(false)}
+                className="w-full sm:w-auto"
+                size="lg"
+              >
+                Let's Help Vishal!
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
       {/* Red Vignette Effect for Wrong Answer */}
       {showVignette && (
         <div 
@@ -360,13 +455,9 @@ const TrialBookGame = () => {
               <span className="font-bold text-xs sm:text-lg">{displayCoins}</span>
               <span className="text-xs hidden sm:inline">Coins</span>
             </div>
-            {user ? (
+            {user && (
               <Button variant="outline" size="sm" onClick={handleLogout} className="text-xs sm:text-sm">
                 Logout
-              </Button>
-            ) : (
-              <Button size="sm" onClick={() => setShowAuthDialog(true)} className="text-xs sm:text-sm">
-                Sign In
               </Button>
             )}
           </div>
@@ -540,6 +631,88 @@ const TrialBookGame = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Congratulations Dialog */}
+      <Dialog open={showCongratsDialog}>
+        <DialogContent 
+          className="max-w-full sm:max-w-2xl w-full h-[100dvh] sm:h-auto p-0 gap-0 overflow-hidden border-0 sm:border flex items-center justify-center"
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+          hideClose={true}
+        >
+          <div className="flex flex-col w-full h-full sm:h-auto overflow-y-auto sm:overflow-visible">
+            {/* Image Section */}
+            <div className="w-full bg-gradient-to-br from-green-50 to-yellow-50 flex items-center justify-center p-4 sm:p-8 flex-shrink-0">
+              <img 
+                src="/VishalPics/VishalCongrats.png" 
+                alt="Congratulations" 
+                className="w-full h-auto max-w-[200px] sm:max-w-[300px] object-contain rounded-2xl shadow-lg"
+                style={{ filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15))' }}
+              />
+            </div>
+            
+            {/* Content Section */}
+            <div className="p-4 sm:p-8 flex flex-col items-center text-center space-y-2 sm:space-y-4 flex-1 justify-center">
+              <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-green-600">
+                🎉 Congratulations! 🎉
+              </h2>
+              
+              <div className="space-y-1 sm:space-y-2">
+                <p className="text-base sm:text-xl font-bold text-gray-800">
+                  Thank you for helping Vishal!
+                </p>
+                <p className="text-sm sm:text-lg text-gray-700">
+                  This is the book he wishes you should read
+                </p>
+              </div>
+              
+              {/* Animated Coins Counter */}
+              <div className="py-2 sm:py-4">
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-600">
+                  You earned {animatedCoins} Charity Coins!
+                </p>
+              </div>
+              
+              {/* Additional Info */}
+              <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm text-gray-600 max-w-md px-2">
+                <p>
+                  All the charity coins you earned will be converted into real Rupees to help Vishal!
+                </p>
+                <p className="font-semibold text-green-600">
+                  Your knowledge helped the needy one! Keep it up!
+                </p>
+              </div>
+              
+              {/* Amazon Link */}
+              <div className="pt-2 sm:pt-4">
+                <p className="text-xs sm:text-sm text-gray-700 mb-2">
+                  Click on this affiliated link to buy this book
+                </p>
+                <a 
+                  href="https://www.amazon.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline text-sm sm:text-base font-medium"
+                >
+                  Amazon Link
+                </a>
+              </div>
+              
+              {/* Continue Button */}
+              <Button 
+                size="lg"
+                className="mt-2 sm:mt-4 px-6 sm:px-8 text-sm sm:text-base"
+                onClick={() => {
+                  setShowCongratsDialog(false);
+                  navigate("/");
+                }}
+              >
+                Continue
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Auth Dialog */}
       <AuthDialog 

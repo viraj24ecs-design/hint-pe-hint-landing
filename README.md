@@ -1,12 +1,22 @@
-# Hint Pe Hint - Educational Game Platform
+# Welcome to your Lovable project
 
-## What is Hint Pe Hint?
+## Project info
 
-An educational game initiative to make India read. Play fun games and help bring books to the underprivileged.
+**URL**: https://lovable.dev/projects/bd6d3f17-b3ef-421a-98e4-ddede169ba35
 
-## Development
+## How can I edit this code?
 
-### Working Locally
+There are several ways of editing your application.
+
+**Use Lovable**
+
+Simply visit the [Lovable Project](https://lovable.dev/projects/bd6d3f17-b3ef-421a-98e4-ddede169ba35) and start prompting.
+
+Changes made via Lovable will be committed automatically to this repo.
+
+**Use your preferred IDE**
+
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -52,8 +62,12 @@ This project is built with:
 
 ## How can I deploy this project?
 
-The project is deployed on Vercel. Push changes to the main branch to trigger automatic deployment.
+Simply open [Lovable](https://lovable.dev/projects/bd6d3f17-b3ef-421a-98e4-ddede169ba35) and click on Share -> Publish.
 
-## Custom Domain Setup
+## Can I connect a custom domain to my Lovable project?
 
-You can connect a custom domain through Vercel's domain settings in your project dashboard.
+Yes, you can!
+
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)

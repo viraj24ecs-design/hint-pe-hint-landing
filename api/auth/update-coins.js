@@ -42,11 +42,6 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   loginCount: { type: Number, default: 0 },
   charityCoins: { type: Number, default: 0, min: 0 },
-  bookProgress: {
-    trialBook: { type: Number, default: 0, min: 0, max: 100 },
-    richDadPoorDad: { type: Number, default: 0, min: 0, max: 100 },
-    atomicHabits: { type: Number, default: 0, min: 0, max: 100 },
-  },
 });
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
@@ -86,7 +81,7 @@ export default async (req, res) => {
 
     const { coinsToAdd } = req.body;
 
-    if (typeof coinsToAdd !== 'number') {
+    if (typeof coinsToAdd !== 'number' || coinsToAdd < 0) {
       return res.status(400).json({ error: 'Invalid coin amount' });
     }
 
@@ -96,11 +91,10 @@ export default async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const newTotal = (user.charityCoins || 0) + coinsToAdd;
-    user.charityCoins = Math.max(0, newTotal); // Ensure coins never go below 0
+    user.charityCoins = (user.charityCoins || 0) + coinsToAdd;
     await user.save();
 
-    console.log(`💰 User ${user.username} ${coinsToAdd > 0 ? 'earned' : 'lost'} ${Math.abs(coinsToAdd)} coins. Total: ${user.charityCoins}`);
+    console.log(`💰 User ${user.username} earned ${coinsToAdd} coins. Total: ${user.charityCoins}`);
 
     return res.status(200).json({
       message: 'Coins updated successfully',

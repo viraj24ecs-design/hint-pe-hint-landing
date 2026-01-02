@@ -1,15 +1,10 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Coins, Lock } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import TrialBookImg from "@/assets/TrialBook.png";
-import RichDadPoorDadImg from "@/assets/RichDadPoorDad.png";
-import AtomicHabitsImg from "@/assets/AtomicHabits.png";
+import { Coins } from "lucide-react";
 
 const Game = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateCoins } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -17,43 +12,18 @@ const Game = () => {
     navigate("/");
   };
 
-  const books = [
-    {
-      id: "trialBook",
-      title: "Trial Book",
-      image: TrialBookImg,
-      route: "/game/trial-book",
-      progress: user?.bookProgress?.trialBook || 0,
-      isLocked: false,
-    },
-    {
-      id: "richDadPoorDad",
-      title: "Rich Dad Poor Dad",
-      image: RichDadPoorDadImg,
-      route: "/game/rich-dad-poor-dad",
-      progress: user?.bookProgress?.richDadPoorDad || 0,
-      isLocked: false,
-    },
-    {
-      id: "atomicHabits",
-      title: "Atomic Habits",
-      image: AtomicHabitsImg,
-      route: "/game/atomic-habits",
-      progress: user?.bookProgress?.atomicHabits || 0,
-      isLocked: false,
-    }
-  ];
-
-  const handleBookClick = (route: string, isLocked: boolean) => {
-    if (!isLocked) {
-      navigate(route);
+  // Temporary function to test coin addition (will be replaced with actual game logic)
+  const handleTestAddCoins = async () => {
+    const result = await updateCoins(10);
+    if (result.success) {
+      console.log("Coins added successfully!");
     }
   };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Fixed Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background border-b shadow-sm">
+      {/* Header */}
+      <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <h1 className="text-2xl font-bold">Hint Pe Hint</h1>
           <div className="flex items-center gap-4">
@@ -66,7 +36,7 @@ const Game = () => {
               </div>
             )}
             {user && (
-              <span className="text-sm text-muted-foreground hidden sm:inline">
+              <span className="text-sm text-muted-foreground">
                 Welcome, {user.name}
               </span>
             )}
@@ -77,68 +47,21 @@ const Game = () => {
         </div>
       </header>
 
-      {/* Main Content Area with top padding to account for fixed header */}
-      <main className="flex-1 container mx-auto px-4 py-8 pt-24">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-text-heading mb-4">
-              Choose Your Book
+      {/* Main Content Area */}
+      <main className="flex-1 container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center h-full">
+          <div className="text-center space-y-4">
+            <h2 className="text-4xl font-bold text-text-heading">
+              Game Area
             </h2>
             <p className="text-lg text-muted-foreground">
-              Select a book to start playing and earning charity coins
+              Game functionality will be added here
             </p>
-          </div>
-
-          {/* Book Selection Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {books.map((book) => (
-              <Card 
-                key={book.id}
-                className={`transition-all duration-300 overflow-hidden relative ${
-                  book.isLocked 
-                    ? 'opacity-60 cursor-not-allowed' 
-                    : 'cursor-pointer hover:shadow-xl hover:-translate-y-2'
-                }`}
-                onClick={() => handleBookClick(book.route, book.isLocked)}
-              >
-                <CardContent className="p-0">
-                  <div className="aspect-[3/4] overflow-hidden bg-gray-100 relative">
-                    <img 
-                      src={book.image} 
-                      alt={book.title}
-                      className={`w-full h-full object-cover transition-transform duration-300 ${
-                        book.isLocked ? 'grayscale' : 'hover:scale-105'
-                      }`}
-                    />
-                    {book.isLocked && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <Lock className="w-16 h-16 text-white" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4 space-y-3">
-                    <div className="flex items-center justify-center gap-2">
-                      <h3 className="text-xl font-bold text-center">{book.title}</h3>
-                      {book.isLocked && <Lock className="w-5 h-5 text-muted-foreground" />}
-                    </div>
-                    {!book.isLocked && (
-                      <div className="space-y-1">
-                        <div className="flex justify-between text-sm text-muted-foreground">
-                          <span>Progress</span>
-                          <span>{book.progress}%</span>
-                        </div>
-                        <Progress value={book.progress} className="h-2" />
-                      </div>
-                    )}
-                    {book.isLocked && (
-                      <p className="text-sm text-center text-muted-foreground">
-                        Complete Trial Book to unlock
-                      </p>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+            
+            {/* Temporary test button - remove this later */}
+            <Button onClick={handleTestAddCoins} className="mt-4">
+              Test: Add 10 Coins
+            </Button>
           </div>
         </div>
       </main>
