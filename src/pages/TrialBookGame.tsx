@@ -52,68 +52,68 @@ const GAME_DATA = {
     {
       roundNumber: 1,
       hint: "Think you're too busy to exercise? This law says skipping workouts steals time, not saves it. Without exercise, your brain drains fast—foggy focus means wasted hours. But just 30 min daily movement for 5 days (2.5 hrs total) boosts productivity so much you gain 7.5 hours of sharp focus weekly. Net gain: 5 extra hours! Exercise isn't a time cost—it's a time multiplier. Move a little, gain a lot. Your future self will thank you!",
-      correctButtonId: 0, // Button 1 (ID 0) is correct in round 1
+      correctButtonId: 4, // Button 1 (ID 0) is correct in round 1
     },
     {
       roundNumber: 2,
-      hint: "This is hint for round 2. Edit this text to your actual hint.",
-      correctButtonId: 1, // Button 2 (ID 1) is correct in round 2
+      hint: "Planning perfect workouts—6 days/week, no cheat meals? The P of Perfectionism kills motivation! Miss one day and you feel like a failure, so you quit. Look for P of Persistence. Aim for \"good enough\"—20 min most days beats zero. Life brings headaches, soreness, bad sleep. Perfection says \"all or nothing\" and makes you crash. Persistence says \"some beats none\" and builds real habits. Ditch flawless dreams. Embrace messy, consistent action—that's how you win..",
+      correctButtonId: 0, // Button 2 (ID 1) is correct in round 2
     },
     {
       roundNumber: 3,
-      hint: "This is hint for round 3. Edit this text to your actual hint.",
-      correctButtonId: 2, // Button 3 (ID 2) is correct in round 3
+      hint: "Postponing workouts? Make NOT exercising more awkward than doing it! Sleep in workout clothes—you're dressed when the alarm rings, easier to move than change back. Place your alarm across the room—standing up kills inertia, might as well exercise. Public commitment is nuclear: announce your plan to friends. Skip it? Face their teasing for weeks! Discomfort beats laziness. Make procrastination uncomfortable, and discipline becomes easy.",
+      correctButtonId: 9, // Button 3 (ID 2) is correct in round 3
     },
     {
       roundNumber: 4,
-      hint: "This is hint for round 4. Edit this text to your actual hint.",
-      correctButtonId: 3, // Button 4 (ID 3) is correct in round 4
+      hint: "Author positions physical excellence as the foundational habit that positively influences all other areas of life. Unlike other self-discipline targets, exercise builds a “reserve of discipline” that transfers to other domains like work, relationships, and personal projects. The reasoning is captured in the phrase “without a healthy body, nothing else matters” - physical fitness provides the energy and mental resilience that makes tackling all other goals significantly easier.",
+      correctButtonId: 6, // Button 4 (ID 3) is correct in round 4
     },
     {
       roundNumber: 5,
-      hint: "This is hint for round 5. Edit this text to your actual hint.",
-      correctButtonId: 4, // Button 5 (ID 4) is correct in round 5
+      hint: "Think “play,” not punishment. If workouts feel like torture, you won’t stick with them. Choose fun movement that excites you—dance, sport, parkour, cycling, anything that makes time fly. When exercise feels like joy, not grind, your brain wants more and habits become automatic. Ditch “no pain, no gain.” Pick activities that make you smile, sweat, and say, “Let’s do that again tomorrow!”.",
+      correctButtonId: 3, // Button 5 (ID 4) is correct in round 5
     },
     {
       roundNumber: 6,
-      hint: "This is hint for round 6. Edit this text to your actual hint.",
-      correctButtonId: 5, // Button 6 (ID 5) is correct in round 6
+      hint: "Ever pumped yourself up for exercise with dreams of Hritik Roshan’s six pack abs? Martin Meadows warns about this fallacy — that sneaky trap where fantasy feels so good, you never actually start! You get a motivation high from imagining the win, but skip the sweat. I will start exercising from 1st of the next month.",
+      correctButtonId: 1, // Button 6 (ID 5) is correct in round 6
     },
     {
       roundNumber: 7,
-      hint: "This is hint for round 7. Edit this text to your actual hint.",
-      correctButtonId: 6, // Button 7 (ID 6) is correct in round 7
+      hint: "The book reveals that the most common type of motivation people use to exercise is usually ineffective. Meadows distinguishes between external rewards like appearance, praise, weight loss and internal desires like feeling energized, enjoying movement, personal growth. While external factors work temporarily, they create fragile commitment that collapses when results plateau or life gets busy. Inner burning desire produces sustainable, fulfilling outcomes because it fosters deeper connection to the activity itself.",
+      correctButtonId: 8, // Button 7 (ID 6) is correct in round 7
     },
     {
       roundNumber: 8,
-      hint: "This is hint for round 8. Edit this text to your actual hint.",
-      correctButtonId: 7, // Button 8 (ID 7) is correct in round 8
+      hint: "Planning rest and recovery is an essential discipline technique, not a weakness. Planning rewards after long workouts or scheduling complete rest days actually strengthens exercise adherence by preventing burnout and overtraining. This reframes rest from “cheating” to strategic recovery, making the overall routine sustainable. By building rest and recovery into the plan rather than taking it as failure, practitioners maintain psychological momentum even during breaks.",
+      correctButtonId: 5, // Button 8 (ID 7) is correct in round 8
     },
     {
       roundNumber: 9,
-      hint: "This is hint for round 9. Edit this text to your actual hint.",
-      correctButtonId: 8, // Button 9 (ID 8) is correct in round 9
+      hint: "Struggling to fit in workouts? Use this idea: attach tiny exercises to routines you already do. After brushing, do 10 push-ups. While sipping morning coffee, add 5 minutes of stretches. After dinner, take a 15-minute walk listening to audio summaries. Existing habits become automatic triggers, so you skip motivation battles. Your daily routines turn into stealth workout launchpads.",
+      correctButtonId: 7, // Button 9 (ID 8) is correct in round 9
     },
     {
       roundNumber: 10,
-      hint: "This is hint for round 10. Edit this text to your actual hint.",
-      correctButtonId: 9, // Button 10 (ID 9) is correct in round 10
+      hint: "Some people exercise consistently because they have this mindset: the tiniest workout that still counts. No 1-hour blasts—just 2–3 minutes that feel “too easy to skip.” Five squats and ten jumping jacks after brushing, or three deep breaths plus one surya namaskar post-chai. Small wins beat huge plans that die in a week. Tiny, consistent effort builds momentum, then naturally grows over time.",
+      correctButtonId: 2, // Button 10 (ID 9) is correct in round 10
     },
   ],
 };
 
 // All 10 buttons with their text - you can edit these
 const ALL_BUTTONS = [
-  { id: 0, text: "Answer 1" },
-  { id: 1, text: "Answer 2" },
-  { id: 2, text: "Answer 3" },
-  { id: 3, text: "Answer 4" },
-  { id: 4, text: "Answer 5" },
-  { id: 5, text: "Answer 6" },
-  { id: 6, text: "Answer 7" },
-  { id: 7, text: "Answer 8" },
-  { id: 8, text: "Answer 9" },
-  { id: 9, text: "Answer 10" },
+  { id: 0, text: "Wrong P Right P" },
+  { id: 1, text: "False Hope Syndrome" },
+  { id: 2, text: "Minimum Effective Dose" },
+  { id: 3, text: "Excercise without \"work\"" },
+  { id: 4, text: "Time Loss Paradox" },
+  { id: 5, text: "Scheduled Recovery" },
+  { id: 6, text: "Keystone Habit Foundation" },
+  { id: 7, text: "Habit Stacking" },
+  { id: 8, text: "Intrinsic Motivation" },
+  { id: 9, text: "Uncomfortable Procrastination trick" },
 ];
 
 const TrialBookGame = () => {
