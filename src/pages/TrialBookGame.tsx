@@ -324,13 +324,10 @@ const TrialBookGame = () => {
         if (tempCoinsEarned !== 0) {
           await updateCoins(tempCoinsEarned);
         }
-        
-        // Show congratulations dialog
-        setShowCongratsDialog(true);
-      } else {
-        // Show login prompt for guest users
-        setShowLoginPrompt(true);
       }
+      
+      // Show congratulations dialog for ALL users (both logged-in and guests)
+      setShowCongratsDialog(true);
     }
   };
 
@@ -635,40 +632,40 @@ const TrialBookGame = () => {
       {/* Congratulations Dialog */}
       <Dialog open={showCongratsDialog}>
         <DialogContent 
-          className="max-w-full sm:max-w-2xl w-full h-[100dvh] sm:h-auto p-0 gap-0 overflow-hidden border-0 sm:border flex items-center justify-center"
+          className="w-[95vw] max-w-[95vw] sm:max-w-2xl h-[90vh] max-h-[90vh] sm:h-auto p-0 gap-0 flex flex-col"
           onPointerDownOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
           hideClose={true}
         >
-          <div className="flex flex-col w-full h-full sm:h-auto overflow-y-auto sm:overflow-visible">
+          <div className="flex flex-col w-full h-full overflow-y-auto overflow-x-hidden">
             {/* Image Section */}
-            <div className="w-full bg-gradient-to-br from-green-50 to-yellow-50 flex items-center justify-center p-4 sm:p-8 flex-shrink-0">
+            <div className="w-full bg-gradient-to-br from-green-50 to-yellow-50 flex items-center justify-center p-3 sm:p-6 md:p-8 flex-shrink-0">
               <img 
                 src="/VishalPics/VishalCongrats.png" 
                 alt="Congratulations" 
-                className="w-full h-auto max-w-[200px] sm:max-w-[300px] object-contain rounded-2xl shadow-lg"
+                className="w-full h-auto max-w-[150px] sm:max-w-[250px] md:max-w-[300px] object-contain rounded-xl sm:rounded-2xl shadow-lg"
                 style={{ filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15))' }}
               />
             </div>
             
-            {/* Content Section */}
-            <div className="p-4 sm:p-8 flex flex-col items-center text-center space-y-2 sm:space-y-4 flex-1 justify-center">
-              <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-green-600">
+            {/* Content Section - Scrollable */}
+            <div className="px-3 py-3 sm:px-6 sm:py-6 md:p-8 flex flex-col items-center text-center space-y-2 sm:space-y-3 md:space-y-4 flex-1 overflow-y-auto">
+              <h2 className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold text-green-600">
                 🎉 Congratulations! 🎉
               </h2>
               
               <div className="space-y-1 sm:space-y-2">
-                <p className="text-base sm:text-xl font-bold text-gray-800">
+                <p className="text-sm sm:text-lg md:text-xl font-bold text-gray-800">
                   Thank you for helping Vishal!
                 </p>
-                <p className="text-sm sm:text-lg text-gray-700">
+                <p className="text-xs sm:text-base md:text-lg text-gray-700">
                   This is the book he wishes you should read
                 </p>
               </div>
               
               {/* Animated Coins Counter */}
-              <div className="py-2 sm:py-4">
-                <p className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-600">
+              <div className="py-1 sm:py-3 md:py-4">
+                <p className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-yellow-600">
                   You earned {animatedCoins} Charity Coins!
                 </p>
               </div>
@@ -682,17 +679,36 @@ const TrialBookGame = () => {
                   Your knowledge helped the needy one! Keep it up!
                 </p>
               </div>
+
+              {/* Guest User Sign Up Prompt */}
+              {isGuest && (
+                <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-2 sm:p-3 md:p-4 max-w-md w-full mx-2">
+                  <p className="text-xs sm:text-sm text-gray-700 mb-1.5 sm:mb-2">
+                    💡 <span className="font-semibold">Sign up now</span> to save your coins and track your progress!
+                  </p>
+                  <Button 
+                    size="sm"
+                    className="w-full bg-yellow-500 hover:bg-yellow-600 text-xs sm:text-sm"
+                    onClick={() => {
+                      setShowCongratsDialog(false);
+                      setShowAuthDialog(true);
+                    }}
+                  >
+                    Sign Up / Log In
+                  </Button>
+                </div>
+              )}
               
               {/* Amazon Link */}
-              <div className="pt-2 sm:pt-4">
-                <p className="text-xs sm:text-sm text-gray-700 mb-2">
+              <div className="pt-1 sm:pt-3 md:pt-4">
+                <p className="text-xs sm:text-sm text-gray-700 mb-1 sm:mb-2">
                   Click on this affiliated link to buy this book
                 </p>
                 <a 
                   href="https://www.amazon.com" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline text-sm sm:text-base font-medium"
+                  className="text-blue-600 hover:text-blue-800 underline text-xs sm:text-sm md:text-base font-medium"
                 >
                   Amazon Link
                 </a>
@@ -701,7 +717,7 @@ const TrialBookGame = () => {
               {/* Continue Button */}
               <Button 
                 size="lg"
-                className="mt-2 sm:mt-4 px-6 sm:px-8 text-sm sm:text-base"
+                className="mt-2 sm:mt-3 md:mt-4 px-4 sm:px-6 md:px-8 text-xs sm:text-sm md:text-base"
                 onClick={() => {
                   setShowCongratsDialog(false);
                   navigate("/");
