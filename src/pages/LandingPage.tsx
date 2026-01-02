@@ -3,18 +3,20 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthDialog from "@/components/AuthDialog";
-import { User, LogOut, Coins as CoinsIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { User, LogOut, Coins as CoinsIcon, ChevronLeft, ChevronRight, X } from "lucide-react";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const LandingPage = () => {
   const { user, isLoggedIn, logout } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showProfilePopover, setShowProfilePopover] = useState(false);
+  const [showCoinsDialog, setShowCoinsDialog] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<"left" | "right">("right"); // Track swipe direction
   const navigate = useNavigate();
@@ -38,6 +40,24 @@ const LandingPage = () => {
       .toUpperCase()
       .slice(0, 2);
   };
+
+  // Charity coin levels from 0 to 10k
+  const coinLevels = [
+    { name: "Beginner", coins: 0 },
+    { name: "Novice", coins: 500 },
+    { name: "Learner", coins: 1000 },
+    { name: "Explorer", coins: 2000 },
+    { name: "Scholar", coins: 3000 },
+    { name: "Expert", coins: 4500 },
+    { name: "Master", coins: 6000 },
+    { name: "Champion", coins: 7500 },
+    { name: "Legend", coins: 9000 },
+    { name: "Hero", coins: 10000 },
+  ];
+
+  const userCoins = user?.charityCoins ?? 0;
+  const maxCoins = 10000;
+  const progressPercentage = (userCoins / maxCoins) * 100;
 
   // 12 Books array - customize titles, images, and routes here
   const books = [
@@ -81,7 +101,10 @@ const LandingPage = () => {
           
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Charity Coins Display */}
-            <button className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
+            <button 
+              onClick={() => setShowCoinsDialog(true)}
+              className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
+            >
               <img 
                 src="https://img.icons8.com/emoji/48/coin-emoji.png" 
                 alt="coin"
@@ -169,30 +192,30 @@ const LandingPage = () => {
       </header>
 
       {/* Main Content - Books Carousel */}
-      <main className="flex-1 flex items-center justify-center p-4">
+      <main className="flex-1 flex items-center justify-center px-2 sm:px-4 py-4">
         <div className="w-full max-w-4xl">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8">Choose Your Book</h2>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-8">Choose Your Book</h2>
           
           {/* Books Carousel Container */}
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4">
             {/* Previous Button */}
             <Button
               variant="outline"
               size="icon"
               onClick={handlePrevious}
               disabled={currentIndex === 0}
-              className="h-12 w-12 rounded-full flex-shrink-0"
+              className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full flex-shrink-0"
             >
-              <ChevronLeft className="h-6 w-6" />
+              <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
             </Button>
 
             {/* Books Display - Always shows 3 books */}
-            <div className="flex gap-4 justify-center items-center overflow-hidden">
+            <div className="flex gap-1 sm:gap-2 md:gap-4 justify-center items-center overflow-hidden">
               {visibleBooks.map((book, index) => (
                 <button
                   key={`${book.id}-${currentIndex}-${direction}`}
                   onClick={() => handleBookClick(book.route)}
-                  className={`flex flex-col items-center gap-2 p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all duration-200 w-[180px] bg-white animate-in fade-in ${
+                  className={`flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-3 md:p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all duration-200 w-[100px] sm:w-[140px] md:w-[180px] bg-white animate-in fade-in ${
                     direction === "right" ? "slide-in-from-right-10" : "slide-in-from-left-10"
                   }`}
                   style={{
@@ -210,14 +233,14 @@ const LandingPage = () => {
                         className="w-full h-full object-contain"
                       />
                     ) : (
-                      <span className="text-gray-400 text-sm">Book Cover</span>
+                      <span className="text-gray-400 text-xs sm:text-sm">Book Cover</span>
                     )}
                   </div>
                   
                   {/* Book Title - Multi-line with auto-scaling text */}
-                  <p className="text-sm font-semibold text-center w-full px-1 leading-tight line-clamp-3 break-words"
+                  <p className="text-[0.65rem] sm:text-sm font-semibold text-center w-full px-0.5 sm:px-1 leading-tight line-clamp-3 break-words"
                      style={{
-                       fontSize: book.title.length > 20 ? '0.75rem' : book.title.length > 15 ? '0.8rem' : '0.875rem'
+                       fontSize: book.title.length > 20 ? 'clamp(0.6rem, 2vw, 0.75rem)' : book.title.length > 15 ? 'clamp(0.65rem, 2vw, 0.8rem)' : 'clamp(0.7rem, 2vw, 0.875rem)'
                      }}
                   >
                     {book.title}
@@ -232,14 +255,14 @@ const LandingPage = () => {
               size="icon"
               onClick={handleNext}
               disabled={currentIndex >= books.length - 3}
-              className="h-12 w-12 rounded-full flex-shrink-0"
+              className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full flex-shrink-0"
             >
-              <ChevronRight className="h-6 w-6" />
+              <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
             </Button>
           </div>
 
           {/* Carousel Indicator */}
-          <div className="flex justify-center gap-2 mt-6">
+          <div className="flex justify-center gap-1 sm:gap-2 mt-4 sm:mt-6">
             {Array.from({ length: books.length - 2 }).map((_, index) => (
               <div
                 key={index}
@@ -258,6 +281,114 @@ const LandingPage = () => {
         onOpenChange={setShowAuthDialog}
         onSuccess={handleAuthSuccess}
       />
+
+      {/* Charity Coins Dialog */}
+      <Dialog open={showCoinsDialog} onOpenChange={setShowCoinsDialog}>
+        <DialogContent className="w-[95vw] h-[90vh] sm:w-[90vw] sm:h-[85vh] max-w-6xl p-0 m-0 overflow-hidden">
+          <div className="relative w-full h-full bg-gradient-to-br from-yellow-50 to-orange-50 flex flex-col overflow-hidden">
+            {/* Close Button */}
+            <button
+              onClick={() => setShowCoinsDialog(false)}
+              className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 p-1.5 sm:p-2 bg-white rounded-full shadow-lg hover:bg-gray-100 transition-colors"
+            >
+              <X className="w-4 h-4 sm:w-6 sm:h-6" />
+            </button>
+
+            {/* Header Section */}
+            <div className="flex-shrink-0 px-4 py-4 sm:px-8 sm:py-6 text-center space-y-2 sm:space-y-4">
+              <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-orange-600">
+                💰 Charity Coins
+              </h2>
+              
+              <div className="space-y-1 sm:space-y-2 max-w-2xl mx-auto px-2">
+                <p className="text-base sm:text-xl md:text-2xl font-semibold text-gray-800">
+                  1 Charity Coin = ₹0.75
+                </p>
+                <p className="text-xs sm:text-base md:text-lg text-gray-700 leading-snug">
+                  Each coin you earn converts to real money to help the needy and differently abled gems of India!
+                </p>
+                <p className="text-sm sm:text-lg md:text-xl font-bold text-orange-600">
+                  Play more, Earn more, Help more!
+                </p>
+              </div>
+
+              <div className="text-center py-2 sm:py-4">
+                <p className="text-xs sm:text-sm text-gray-600 mb-1">Your Progress</p>
+                <p className="text-2xl sm:text-4xl font-bold text-yellow-600">{userCoins} / {maxCoins}</p>
+              </div>
+            </div>
+
+            {/* Scrollable Progress Bar Section */}
+            <div className="flex-1 overflow-hidden px-2 sm:px-4">
+              <div className="h-full flex items-center">
+                <div className="w-full overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-orange-400 scrollbar-track-gray-200">
+                  {/* Progress Bar Container */}
+                  <div className="relative mx-4" style={{ minWidth: 'max(100%, 1200px)', height: '150px' }}>
+                    {/* Background Bar */}
+                    <div className="absolute top-1/2 left-0 right-0 h-3 sm:h-4 bg-gray-300 rounded-full transform -translate-y-1/2">
+                      {/* Active Progress Bar */}
+                      <div 
+                        className="h-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 rounded-full transition-all duration-500"
+                        style={{ width: `${progressPercentage}%` }}
+                      />
+                    </div>
+
+                    {/* Level Markers */}
+                    {coinLevels.map((level, index) => {
+                      const position = (level.coins / maxCoins) * 100;
+                      const isUnlocked = userCoins >= level.coins;
+                      
+                      return (
+                        <div
+                          key={level.name}
+                          className="absolute transform -translate-x-1/2"
+                          style={{ 
+                            left: `${position}%`,
+                            top: '50%',
+                            transform: 'translate(-50%, -50%)'
+                          }}
+                        >
+                          {/* Level Name Above */}
+                          <div className="absolute bottom-full mb-2 sm:mb-4 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                            <p className={`text-xs sm:text-sm font-bold ${isUnlocked ? 'text-orange-600' : 'text-gray-500'}`}>
+                              {level.name}
+                            </p>
+                            <p className={`text-[10px] sm:text-xs ${isUnlocked ? 'text-orange-500' : 'text-gray-400'}`}>
+                              {level.coins.toLocaleString()}
+                            </p>
+                          </div>
+
+                          {/* Big Dot */}
+                          <div 
+                            className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 sm:border-4 transition-all duration-300 ${
+                              isUnlocked 
+                                ? 'bg-gradient-to-br from-yellow-400 to-orange-500 border-white shadow-lg scale-110' 
+                                : 'bg-gray-300 border-gray-400'
+                            }`}
+                          >
+                            {isUnlocked && (
+                              <div className="w-full h-full flex items-center justify-center text-white text-[10px] sm:text-xs font-bold">
+                                ✓
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Scroll Hint */}
+                  <div className="text-center mt-4 sm:mt-8">
+                    <p className="text-xs sm:text-sm text-gray-500 animate-pulse">
+                      ← Scroll sideways to see all levels →
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
