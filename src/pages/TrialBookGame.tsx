@@ -316,12 +316,35 @@ const TrialBookGame = () => {
       setGameCompleted(true);
       
       if (!isGuest) {
-        // Update progress to 100%
-        await updateBookProgress(bookId, 100);
-        
-        // Update coins in backend (single call with total earned)
-        if (tempCoinsEarned !== 0) {
-          await updateCoins(tempCoinsEarned);
+        try {
+          // Update progress to 100%
+          await updateBookProgress(bookId, 100);
+          
+          // Update coins in backend (single call with total earned)
+          if (tempCoinsEarned !== 0) {
+            const result = await updateCoins(tempCoinsEarned);
+            if (result.success) {
+              console.log(`✅ Successfully updated ${tempCoinsEarned} coins to backend`);
+              toast({
+                title: "Coins Saved!",
+                description: `${tempCoinsEarned} Charity Coins have been added to your account.`,
+              });
+            } else {
+              console.error('❌ Failed to update coins:', result.error);
+              toast({
+                title: "Warning",
+                description: "Coins may not have been saved. Please check your connection.",
+                variant: "destructive",
+              });
+            }
+          }
+        } catch (error) {
+          console.error('❌ Error updating game completion:', error);
+          toast({
+            title: "Error",
+            description: "Failed to save your progress. Please try again.",
+            variant: "destructive",
+          });
         }
       }
       
