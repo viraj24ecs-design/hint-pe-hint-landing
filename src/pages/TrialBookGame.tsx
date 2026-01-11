@@ -598,7 +598,7 @@ const TrialBookGame = () => {
                 {/* Additional Info */}
                 <div className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-600 max-w-2xl px-4">
                   <p>
-                    All the charity coins you earned will be converted into real Rupees to help Vishal!
+                    Thank you for playing Hint Pe Hint and helping Vishal. Your correct answers have not only earned you Charity Coins but have also made a positive impact!
                   </p>
                   <p className="font-semibold text-green-600 text-base sm:text-lg">
                     Your knowledge helped the needy one! Keep it up!
@@ -655,7 +655,7 @@ const TrialBookGame = () => {
               {/* Round and Hint Display - Takes available space */}
               <div className="flex-shrink-0 text-center mb-1 sm:mb-2 px-2">
                 <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2">
-                  Round {GAME_DATA.rounds[currentRound].roundNumber}
+                  Concept {GAME_DATA.rounds[currentRound].roundNumber}
                 </h2>
                 <div className="bg-card border-2 border-primary rounded-lg p-3 sm:p-4 md:p-5 shadow-lg">
                   <div className="relative">
