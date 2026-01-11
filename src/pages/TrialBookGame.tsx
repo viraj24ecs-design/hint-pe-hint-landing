@@ -137,7 +137,7 @@ const ALL_BUTTONS = [
 ];
 
 const TrialBookGame = () => {
-  const { user, logout, updateBookProgress, updateCoins } = useAuth();
+  const { user, logout, updateBookProgress, updateCoins, refreshUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -155,6 +155,13 @@ const TrialBookGame = () => {
   // Temporary coins tracking (frontend only during gameplay)
   const [tempCoinsEarned, setTempCoinsEarned] = useState(0); // Coins earned in this session
   const [displayCoins, setDisplayCoins] = useState(user?.charityCoins ?? 0); // What user sees in UI
+  
+  // Sync displayCoins with user's actual coins from backend
+  useEffect(() => {
+    if (user?.charityCoins !== undefined) {
+      setDisplayCoins(user.charityCoins);
+    }
+  }, [user?.charityCoins]);
   
   // Animation states
   const [showConfetti, setShowConfetti] = useState(false);
@@ -345,6 +352,8 @@ const TrialBookGame = () => {
             const result = await updateCoins(tempCoinsEarned);
             if (result.success) {
               console.log(`✅ Successfully updated ${tempCoinsEarned} coins to backend`);
+              // Refresh user data to get latest coins from backend
+              await refreshUser();
               toast({
                 title: "Coins Saved!",
                 description: `${tempCoinsEarned} Charity Coins have been added to your account.`,
