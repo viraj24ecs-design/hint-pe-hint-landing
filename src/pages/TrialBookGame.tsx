@@ -190,20 +190,10 @@ const TrialBookGame = () => {
     setShowExitWarning(true);
   };
 
-  const handleExitConfirm = async () => {
+  const handleExitConfirm = () => {
     setShowExitWarning(false);
-    
-    // Save coins before exiting if user is logged in and has earned/lost coins
-    if (!isGuest && tempCoinsEarned !== 0) {
-      try {
-        await updateCoins(tempCoinsEarned);
-        await refreshUser();
-        console.log(`✅ Saved ${tempCoinsEarned} coins before exit`);
-      } catch (error) {
-        console.error('❌ Failed to save coins on exit:', error);
-      }
-    }
-    
+    // Exit WITHOUT saving coins - coins revert to original value
+    // User chose to quit mid-game, so no coins are saved
     navigate("/");
   };
 
