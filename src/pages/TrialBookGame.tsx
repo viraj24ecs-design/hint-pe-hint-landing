@@ -155,6 +155,8 @@ const TrialBookGame = () => {
   // Temporary coins tracking (frontend only during gameplay)
   const [tempCoinsEarned, setTempCoinsEarned] = useState(0); // Coins earned in this session
   const [displayCoins, setDisplayCoins] = useState(user?.charityCoins ?? 0); // What user sees in UI
+  const [isCountingCoins, setIsCountingCoins] = useState(false); // For wobble/glow animation
+  const [coinGlowColor, setCoinGlowColor] = useState<'green' | 'red' | null>(null); // Glow color
   
   // Sync displayCoins with user's actual coins from backend
   useEffect(() => {
@@ -162,6 +164,36 @@ const TrialBookGame = () => {
       setDisplayCoins(user.charityCoins);
     }
   }, [user?.charityCoins]);
+
+  // Animated coin counter function
+  const animateCoinChange = (change: number) => {
+    const isPositive = change > 0;
+    setCoinGlowColor(isPositive ? 'green' : 'red');
+    setIsCountingCoins(true);
+    
+    const startValue = displayCoins;
+    const endValue = Math.max(0, displayCoins + change);
+    const duration = 850; // 0.85 seconds (between 0.7 and 1 second)
+    const steps = 30; // Number of animation frames
+    const stepDuration = duration / steps;
+    const increment = (endValue - startValue) / steps;
+    
+    let currentStep = 0;
+    const timer = setInterval(() => {
+      currentStep++;
+      if (currentStep >= steps) {
+        setDisplayCoins(endValue);
+        clearInterval(timer);
+        // Stop wobble and glow after counting finishes
+        setTimeout(() => {
+          setIsCountingCoins(false);
+          setCoinGlowColor(null);
+        }, 100);
+      } else {
+        setDisplayCoins(Math.round(startValue + increment * currentStep));
+      }
+    }, stepDuration);
+  };
   
   // Animation states
   const [showConfetti, setShowConfetti] = useState(false);
@@ -320,30 +352,31 @@ const TrialBookGame = () => {
 
     // Update temporary coins (frontend only, no backend call)
     setTempCoinsEarned(prev => prev + coinsChange);
-    setDisplayCoins(prev => Math.max(0, prev + coinsChange));
+    // Animate the coin counter with wobble and glow
+    animateCoinChange(coinsChange);
 
     // Show feedback with Vishal image - custom layout with image on left
     toast({
       title: "", // Empty title to prevent it from showing above
       description: (
-        <div className="flex items-center gap-2 -ml-4">
+        <div className="flex items-center gap-4 -ml-8">
           <img 
             src={isCorrect ? "/VishalPics/vishalCorrectAns.webp" : "/VishalPics/VishalIncorrectAns.webp"} 
             alt={isCorrect ? "Correct" : "Incorrect"}
-            className="w-56 h-56 object-contain flex-shrink-0"
+            className="w-44 h-44 object-contain flex-shrink-0"
           />
-          <div className="flex flex-col -ml-4">
-            <span className="text-base font-bold">
+          <div className="flex flex-col -ml-4 gap-1">
+            <span className={`text-lg font-extrabold ${isCorrect ? 'text-green-700 bg-green-100' : 'text-red-700 bg-red-100/60'} px-2 py-1 rounded-md`}>
               {isCorrect ? "Correct! 🎉" : "Incorrect ❌"}
             </span>
-            <span className="text-sm">
+            <span className={`text-base font-bold ${isCorrect ? 'text-green-700 bg-green-100' : 'text-red-700 bg-red-100/60'} px-2 py-1 rounded-md`}>
               {`${coinsChange > 0 ? '+' : ''}${coinsChange} Charity Coins`}
             </span>
           </div>
         </div>
       ) as any,
       variant: isCorrect ? "default" : "destructive",
-      duration: 1000, // 1 second
+      duration: 3000, // 1 second
     });
 
     // If correct, show confetti and pop animation
@@ -533,8 +566,16 @@ const TrialBookGame = () => {
             <h1 className="text-sm sm:text-xl font-bold">Hint Pe Hint</h1>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            {/* Charity Coins Display - Compact */}
-            <div className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg">
+            {/* Charity Coins Display - Compact with animation */}
+            <div 
+              className={`flex items-center gap-1 sm:gap-2 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg transition-all duration-300 z-[60]
+                ${isCountingCoins ? 'animate-coin-pulse' : ''}
+                ${coinGlowColor === 'green' 
+                  ? 'bg-gradient-to-r from-lime-400 to-emerald-400 shadow-[0_0_25px_rgba(132,204,22,0.9)]' 
+                  : coinGlowColor === 'red' 
+                    ? 'bg-gradient-to-r from-red-400 to-red-600 shadow-[0_0_25px_rgba(239,68,68,0.9)]' 
+                    : 'bg-gradient-to-r from-yellow-400 to-yellow-600'}`}
+            >
               <Coins className="w-3 h-3 sm:w-5 sm:h-5" />
               <span className="font-bold text-xs sm:text-lg">{displayCoins}</span>
               <span className="text-xs hidden sm:inline">Coins</span>
