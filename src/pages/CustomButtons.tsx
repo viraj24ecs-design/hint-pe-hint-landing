@@ -61,28 +61,22 @@ const Custombuttons = () => {
             </div>
         
         {/*SVG def*/}
-        <svg width="0" height="0">
-            <defs>
-                <clipPath id="curvedPuzzle2" clipPathUnits="objectBoundingBox">
-                    <path d="  M 0 0
-                            L 1 0
-                            L 1 0.35
-                            C 1 0.45, 0.90 0.30, 0.80 0.40
-                            C 0.80 0.40, 0.75 0.45, 0.75 0.50
-                            C 0.73 0.75, 0.82 0.80, 1 0.70
-                            L 1 0.85
-                            L 0.55 0.85
-                            C 0.55 0.90, 0.65 0.95, 0.55 1.05
-                            C 0.65 0.90, 0.53 1.20, 0.33 1.02
-                            C 0.25 0.95, 0.40 0.85, 0.25 0.85
-                            L 0 0.85
-                            Z" />
-                </clipPath>
-            </defs>
+   <svg width="0" height="0">
+                <defs>
+                    {/* Square using ABSOLUTE commands */}
+                    <clipPath id="squareClip" clipPathUnits="obj">
+                        <path d="
+                            
+                            
+                            
+                        " />
+                    </clipPath>
+                </defs>
             </svg>
-            </div>
-            </div>
+        </div>
+        </div>
     );
 };
+
 
 export default Custombuttons;

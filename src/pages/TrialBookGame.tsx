@@ -427,6 +427,12 @@ const TrialBookGame = () => {
       setCurrentRound(currentRound + 1);
       setWrongButtons([]); // Reset wrong buttons for new round
       setIsProcessing(false);
+      
+      // Reset scroll position for hint paragraph
+      setScrollPosition(0);
+      if (hintRef.current) {
+        hintRef.current.scrollTop = 0;
+      }
 
       // Update progress only for logged-in users
       if (!isGuest) {
@@ -703,7 +709,7 @@ const TrialBookGame = () => {
                     <p 
                        ref={hintRef}
                        onScroll={handleHintScroll}
-                       className="text-sm sm:text-base md:text-lg leading-relaxed break-words max-h-[18vh] overflow-y-auto pr-4 sm:pr-2 overscroll-contain touch-pan-y"
+                       className="text-sm sm:text-base md:text-lg leading-relaxed break-words max-h-[18vh] overflow-y-auto pr-4 sm:pr-2 overscroll-contain touch-pan-y text-justify"
                        style={{
                          scrollbarWidth: 'thin',
                          scrollbarColor: '#374151 #e5e7eb',
@@ -718,7 +724,8 @@ const TrialBookGame = () => {
                         className="w-full bg-gray-800 rounded-full transition-all duration-100"
                         style={{
                           height: `${scrollThumbHeight}%`,
-                          transform: `translateY(${scrollPosition * ((100 - scrollThumbHeight) / 100)}%)`
+                          top: `${scrollPosition * (100 - scrollThumbHeight) / 100}%`,
+                          position: 'absolute'
                         }}
                       ></div>
                     </div>
@@ -761,7 +768,7 @@ const TrialBookGame = () => {
                           onClick={() => handleButtonClick(button.id)}
                           disabled={isProcessing || wrongButtons.includes(button.id)}
                           className={`${getButtonStyle(button.id)} 
-                            text-[10px] xs:text-[11px] sm:text-sm md:text-base font-medium 
+                            text-[13.5px] xs:text-[15px] sm:text-[19px] md:text-[22px] font-medium 
                             transition-all duration-300 
                             flex items-center justify-center 
                             border-[0.5px] border-black/70
@@ -772,7 +779,7 @@ const TrialBookGame = () => {
                             ${button.id === 8 ? 'rounded-bl-xl' : ''}
                             ${button.id === 9 ? 'rounded-br-xl' : ''}`}
                         >
-                          <span className="text-center leading-tight break-words hyphens-auto px-1">{button.text}</span>
+                          <span className="text-center leading-[1.1] px-1 overflow-hidden" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
                         </button>
                       );
                     })}
