@@ -8,6 +8,7 @@ import LandingPage from "./pages/LandingPage";
 import Game from "./pages/Game";
 import TrialBookGame from "./pages/TrialBookGame";
 import NotFound from "./pages/NotFound";
+import Custombuttons from "./pages/CustomButtons";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
             <Route path="/" element={<LandingPage />} />
             <Route path="/game" element={<Game />} />
             <Route path="/game/trial-book" element={<TrialBookGame />} />
+            <Route path="/custom-buttons" element={<Custombuttons />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
