@@ -174,3 +174,48 @@
     transform: scale(1);
   }
 }
+
+/* Custom scrollbar styles - mobile only */
+@media (max-width: 639px) {
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #e5e7eb;
+    border-radius: 10px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 10px;
+    border: 2px solid #e5e7eb;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #1f2937;
+  }
+}
+
+/* Hide custom scrollbar on desktop */
+@media (min-width: 640px) {
+  .scrollbar-thin {
+    scrollbar-width: auto;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Game container size - mobile is 20% smaller */
+.game-container {
+  width: min(320px, 72vw);
+}
+
+@media (min-width: 640px) {
+  .game-container {
+    width: min(400px, 90vw);
+  }
+}

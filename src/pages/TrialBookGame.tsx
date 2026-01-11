@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Coins, ArrowLeft, X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import AuthDialog from "@/components/AuthDialog";
 import {
   AlertDialog,
@@ -176,6 +176,26 @@ const TrialBookGame = () => {
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [animatedCoins, setAnimatedCoins] = useState(0); // For count-up animation
   const [isSavingCoins, setIsSavingCoins] = useState(false); // Prevent multiple clicks on "Back to Book Selection"
+  
+  // Scroll tracking for hint box
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const [scrollThumbHeight, setScrollThumbHeight] = useState(33); // percentage
+  const hintRef = useRef<HTMLParagraphElement>(null);
+  
+  // Handle scroll event for custom scrollbar
+  const handleHintScroll = (e: React.UIEvent<HTMLParagraphElement>) => {
+    const element = e.currentTarget;
+    const scrollTop = element.scrollTop;
+    const scrollHeight = element.scrollHeight;
+    const clientHeight = element.clientHeight;
+    
+    if (scrollHeight > clientHeight) {
+      const scrollPercent = (scrollTop / (scrollHeight - clientHeight)) * 100;
+      const thumbHeight = (clientHeight / scrollHeight) * 100;
+      setScrollPosition(scrollPercent);
+      setScrollThumbHeight(thumbHeight);
+    }
+  };
   
   // Guest user state
 
@@ -419,7 +439,7 @@ const TrialBookGame = () => {
   };
 
   return (
-    <div className="h-screen bg-background flex flex-col overflow-hidden relative" style={{ height: '100dvh' }}>
+    <div className="h-screen bg-background flex flex-col overflow-hidden relative overscroll-none" style={{ height: '100dvh', overscrollBehavior: 'none' }}>
       {/* Welcome Dialog - Shown at game start */}
       <Dialog open={showWelcomeDialog} onOpenChange={setShowWelcomeDialog}>
         <DialogContent className="sm:max-w-[600px] p-0 gap-0">
@@ -519,11 +539,6 @@ const TrialBookGame = () => {
               <span className="font-bold text-xs sm:text-lg">{displayCoins}</span>
               <span className="text-xs hidden sm:inline">Coins</span>
             </div>
-            {user && (
-              <Button variant="outline" size="sm" onClick={handleLogout} className="text-xs sm:text-sm">
-                Logout
-              </Button>
-            )}
           </div>
         </div>
       </header>
@@ -639,26 +654,43 @@ const TrialBookGame = () => {
             <div className="flex-1 flex flex-col overflow-hidden min-h-0">
               {/* Round and Hint Display - Takes available space */}
               <div className="flex-shrink-0 text-center mb-1 sm:mb-2 px-2">
-                <h2 className="text-base sm:text-lg md:text-2xl font-bold mb-1 sm:mb-2">
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-1 sm:mb-2">
                   Round {GAME_DATA.rounds[currentRound].roundNumber}
                 </h2>
-                <div className="bg-card border-2 border-primary rounded-lg p-2 sm:p-3 md:p-4 shadow-lg">
-                  <h3 className="text-xs sm:text-sm md:text-base font-semibold mb-1">
-                    Hint:
-                  </h3>
-                  <p className="text-[10px] sm:text-xs md:text-sm leading-tight break-words max-h-[15vh] overflow-y-auto">
-                    {GAME_DATA.rounds[currentRound].hint}
-                  </p>
+                <div className="bg-card border-2 border-primary rounded-lg p-3 sm:p-4 md:p-5 shadow-lg">
+                  <div className="relative">
+                    <p 
+                       ref={hintRef}
+                       onScroll={handleHintScroll}
+                       className="text-sm sm:text-base md:text-lg leading-relaxed break-words max-h-[18vh] overflow-y-auto pr-4 sm:pr-2 overscroll-contain touch-pan-y"
+                       style={{
+                         scrollbarWidth: 'thin',
+                         scrollbarColor: '#374151 #e5e7eb',
+                         WebkitOverflowScrolling: 'touch',
+                         overscrollBehavior: 'contain'
+                       }}>
+                      {GAME_DATA.rounds[currentRound].hint}
+                    </p>
+                    {/* Dynamic scroll indicator bar for mobile */}
+                    <div className="absolute right-0 top-0 bottom-0 w-2 bg-gray-300 rounded-full sm:hidden">
+                      <div 
+                        className="w-full bg-gray-800 rounded-full transition-all duration-100"
+                        style={{
+                          height: `${scrollThumbHeight}%`,
+                          transform: `translateY(${scrollPosition * ((100 - scrollThumbHeight) / 100)}%)`
+                        }}
+                      ></div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
               {/* Image Reveal Box with Buttons - 2:3 Aspect Ratio (Portrait) - With scrolling if needed */}
               <div className="flex-1 flex items-center justify-center px-2 sm:px-4 pb-2 min-h-0 w-full overflow-y-auto overflow-x-hidden">
                 <div 
-                  className="relative border-4 border-black rounded-2xl shadow-lg overflow-hidden my-auto" 
+                  className="relative border-4 border-black rounded-2xl shadow-lg overflow-hidden my-auto game-container" 
                   style={{ 
                     aspectRatio: '2/3',
-                    width: 'min(400px, 90vw)',
                     height: 'auto',
                   }}
                 >
@@ -685,7 +717,7 @@ const TrialBookGame = () => {
                           onClick={() => handleButtonClick(button.id)}
                           disabled={isProcessing || wrongButtons.includes(button.id)}
                           className={`${getButtonStyle(button.id)} 
-                            text-[7px] xs:text-[8px] sm:text-xs md:text-sm font-bold 
+                            text-[14px] xs:text-[15px] sm:text-sm md:text-base font-bold 
                             transition-all duration-300 
                             flex items-center justify-center 
                             border border-black
@@ -695,7 +727,7 @@ const TrialBookGame = () => {
                             ${button.id === 8 ? 'rounded-bl-xl' : ''}
                             ${button.id === 9 ? 'rounded-br-xl' : ''}`}
                         >
-                          <span className="line-clamp-2 px-0.5 sm:px-1">{button.text}</span>
+                          <span className="line-clamp-2 px-1 sm:px-2">{button.text}</span>
                         </button>
                       );
                     })}
