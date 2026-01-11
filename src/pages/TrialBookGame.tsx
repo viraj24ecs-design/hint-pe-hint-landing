@@ -175,6 +175,7 @@ const TrialBookGame = () => {
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [animatedCoins, setAnimatedCoins] = useState(0); // For count-up animation
+  const [isSavingCoins, setIsSavingCoins] = useState(false); // Prevent multiple clicks on "Back to Book Selection"
   
   // Guest user state
 
@@ -200,6 +201,10 @@ const TrialBookGame = () => {
   // Handler for "Back to Book Selection" button on completion screen
   // This is where coins get saved to backend
   const handleBackToBooks = async () => {
+    // Prevent multiple clicks
+    if (isSavingCoins) return;
+    setIsSavingCoins(true);
+    
     if (!isGuest && tempCoinsEarned !== 0) {
       try {
         // Save all coins earned in this session to backend
@@ -623,8 +628,9 @@ const TrialBookGame = () => {
                   size="lg"
                   className="mt-4 sm:mt-6 px-8 sm:px-10 md:px-12 py-6 text-base sm:text-lg"
                   onClick={handleBackToBooks}
+                  disabled={isSavingCoins}
                 >
-                  Back to Book Selection
+                  {isSavingCoins ? "Saving..." : "Back to Book Selection"}
                 </Button>
               </div>
             </div>
