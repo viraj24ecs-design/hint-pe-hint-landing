@@ -208,13 +208,35 @@ const TrialBookGame = () => {
   };
 
   // Handler for "Back to Book Selection" button on completion screen
+  // This is where coins get saved to backend
   const handleBackToBooks = async () => {
-    // Refresh user data to ensure we have the latest coins
-    if (!isGuest) {
+    if (!isGuest && tempCoinsEarned !== 0) {
       try {
-        await refreshUser();
+        // Save all coins earned in this session to backend
+        const result = await updateCoins(tempCoinsEarned);
+        if (result.success) {
+          console.log(`✅ Successfully saved ${tempCoinsEarned} coins to backend`);
+          // Refresh user data to get latest coins from backend
+          await refreshUser();
+          toast({
+            title: "Coins Saved!",
+            description: `${tempCoinsEarned} Charity Coins have been added to your account.`,
+          });
+        } else {
+          console.error('❌ Failed to save coins:', result.error);
+          toast({
+            title: "Warning",
+            description: "Coins may not have been saved. Please check your connection.",
+            variant: "destructive",
+          });
+        }
       } catch (error) {
-        console.error('Failed to refresh user:', error);
+        console.error('❌ Error saving coins:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save your coins. Please try again.",
+          variant: "destructive",
+        });
       }
     }
     navigate("/");
@@ -364,41 +386,16 @@ const TrialBookGame = () => {
         await updateBookProgress(bookId, newProgress);
       }
     } else {
-      // Game completed - NOW update backend with all coins earned
+      // Game completed - just show completion screen
+      // Coins will be saved when user clicks "Back to Book Selection"
       setGameCompleted(true);
       
       if (!isGuest) {
         try {
           // Update progress to 100%
           await updateBookProgress(bookId, 100);
-          
-          // Update coins in backend (single call with total earned)
-          if (tempCoinsEarned !== 0) {
-            const result = await updateCoins(tempCoinsEarned);
-            if (result.success) {
-              console.log(`✅ Successfully updated ${tempCoinsEarned} coins to backend`);
-              // Refresh user data to get latest coins from backend
-              await refreshUser();
-              toast({
-                title: "Coins Saved!",
-                description: `${tempCoinsEarned} Charity Coins have been added to your account.`,
-              });
-            } else {
-              console.error('❌ Failed to update coins:', result.error);
-              toast({
-                title: "Warning",
-                description: "Coins may not have been saved. Please check your connection.",
-                variant: "destructive",
-              });
-            }
-          }
         } catch (error) {
-          console.error('❌ Error updating game completion:', error);
-          toast({
-            title: "Error",
-            description: "Failed to save your progress. Please try again.",
-            variant: "destructive",
-          });
+          console.error('❌ Error updating progress:', error);
         }
       }
       
