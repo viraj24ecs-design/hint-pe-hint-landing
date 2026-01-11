@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Playfair Display', 'serif'],
+        sans: ['Nohemi', 'system-ui', 'sans-serif'],
+        display: ['Nohemi', 'sans-serif'],
         nohemi: ['Nohemi', 'sans-serif'],
       },
       colors: {

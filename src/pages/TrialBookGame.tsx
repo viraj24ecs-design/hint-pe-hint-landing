@@ -685,13 +685,16 @@ const TrialBookGame = () => {
                 </div>
               </div>
 
-              {/* Image Reveal Box with Buttons - 2:3 Aspect Ratio (Portrait) - With scrolling if needed */}
-              <div className="flex-1 flex items-center justify-center px-2 sm:px-4 pb-2 min-h-0 w-full overflow-y-auto overflow-x-hidden">
+              {/* Image Reveal Box with Buttons - 2:3 Aspect Ratio (Portrait) - Auto-scales to fit screen */}
+              <div className="flex-1 flex items-center justify-center px-2 sm:px-4 pb-2 min-h-0 w-full overflow-hidden">
                 <div 
-                  className="relative border-4 border-black rounded-2xl shadow-lg overflow-hidden my-auto game-container" 
+                  className="relative border border-black rounded-2xl shadow-lg overflow-hidden" 
                   style={{ 
                     aspectRatio: '2/3',
-                    height: 'auto',
+                    height: '100%',
+                    maxHeight: '100%',
+                    width: 'auto',
+                    maxWidth: 'min(400px, 90vw)',
                   }}
                 >
                   {/* Background Image */}
@@ -717,17 +720,18 @@ const TrialBookGame = () => {
                           onClick={() => handleButtonClick(button.id)}
                           disabled={isProcessing || wrongButtons.includes(button.id)}
                           className={`${getButtonStyle(button.id)} 
-                            text-[14px] xs:text-[15px] sm:text-sm md:text-base font-bold 
+                            text-[10px] xs:text-[11px] sm:text-sm md:text-base font-medium 
                             transition-all duration-300 
                             flex items-center justify-center 
-                            border border-black
+                            border-[0.5px] border-black/70
                             disabled:cursor-not-allowed
+                            p-1
                             ${button.id === 0 ? 'rounded-tl-xl' : ''}
                             ${button.id === 1 ? 'rounded-tr-xl' : ''}
                             ${button.id === 8 ? 'rounded-bl-xl' : ''}
                             ${button.id === 9 ? 'rounded-br-xl' : ''}`}
                         >
-                          <span className="line-clamp-2 px-1 sm:px-2">{button.text}</span>
+                          <span className="text-center leading-tight break-words hyphens-auto px-1">{button.text}</span>
                         </button>
                       );
                     })}

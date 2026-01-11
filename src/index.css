@@ -1,14 +1,38 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Nohemi Font Family */
 @font-face {
   font-family: 'Nohemi';
-  src: url('/Nohemi-Medium-BF6438cc5883899.ttf') format('truetype');
+  src: url('@/assets/Nohemi-Medium-BF6438cc5883899.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('@/assets/Nohemi-Medium-BF6438cc5883899.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('@/assets/Nohemi-ExtraBold-BF6438cc5881baf.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Nohemi';
+  src: url('@/assets/Nohemi-ExtraBold-BF6438cc5881baf.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* Premium Apple-style design system */
@@ -128,7 +152,8 @@
 
 @layer utilities {
   .font-display {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Nohemi', sans-serif;
+    font-weight: 700;
   }
 
   .animate-fade-in {
@@ -206,16 +231,5 @@
   
   .scrollbar-thin::-webkit-scrollbar {
     display: none;
-  }
-}
-
-/* Game container size - mobile is 20% smaller */
-.game-container {
-  width: min(320px, 72vw);
-}
-
-@media (min-width: 640px) {
-  .game-container {
-    width: min(400px, 90vw);
   }
 }
