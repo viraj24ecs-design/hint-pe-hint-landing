@@ -1,4 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
+
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Coins, ArrowLeft, X } from "lucide-react";
@@ -21,6 +22,25 @@ import {
 } from "@/components/ui/dialog";
 import correctSound from "@/assets/correct-6033.mp3";
 import wrongSound from "@/assets/wrong.mp3";
+
+
+
+
+
+const preloadImages = [
+  "/VishalPics/VishalBG.webp",
+  "/VishalPics/VishalCongrats.webp",
+  "/VishalPics/vishalCorrectAns.webp",
+  "/VishalPics/VishalIncorrectAns.webp",
+  "/VishalPics/VishalSad.webp",
+];
+
+const preload = ()=> {
+  preloadImages.forEach((src) => {
+    const img = new Image();
+    img.src = src;
+  });
+}
 
 // Confetti configuration
 const createConfetti = () => {
