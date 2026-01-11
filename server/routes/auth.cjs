@@ -209,7 +209,7 @@ router.post('/update-coins', async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key-change-this');
     const { coinsToAdd } = req.body;
 
-    if (typeof coinsToAdd !== 'number' || coinsToAdd < 0) {
+    if (typeof coinsToAdd !== 'number') {
       return res.status(400).json({ error: 'Invalid coin amount' });
     }
 
@@ -219,10 +219,11 @@ router.post('/update-coins', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    user.charityCoins = (user.charityCoins || 0) + coinsToAdd;
+    // Allow negative values but ensure total doesn't go below 0
+    user.charityCoins = Math.max(0, (user.charityCoins || 0) + coinsToAdd);
     await user.save();
 
-    console.log(`💰 User ${user.username} earned ${coinsToAdd} coins. Total: ${user.charityCoins}`);
+    console.log(`💰 User ${user.username} coins changed by ${coinsToAdd}. Total: ${user.charityCoins}`);
 
     res.json({
       message: 'Coins updated successfully',

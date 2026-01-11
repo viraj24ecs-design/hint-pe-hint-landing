@@ -190,8 +190,33 @@ const TrialBookGame = () => {
     setShowExitWarning(true);
   };
 
-  const handleExitConfirm = () => {
+  const handleExitConfirm = async () => {
     setShowExitWarning(false);
+    
+    // Save coins before exiting if user is logged in and has earned/lost coins
+    if (!isGuest && tempCoinsEarned !== 0) {
+      try {
+        await updateCoins(tempCoinsEarned);
+        await refreshUser();
+        console.log(`✅ Saved ${tempCoinsEarned} coins before exit`);
+      } catch (error) {
+        console.error('❌ Failed to save coins on exit:', error);
+      }
+    }
+    
+    navigate("/");
+  };
+
+  // Handler for "Back to Book Selection" button on completion screen
+  const handleBackToBooks = async () => {
+    // Refresh user data to ensure we have the latest coins
+    if (!isGuest) {
+      try {
+        await refreshUser();
+      } catch (error) {
+        console.error('Failed to refresh user:', error);
+      }
+    }
     navigate("/");
   };
 
@@ -610,7 +635,7 @@ const TrialBookGame = () => {
                 <Button 
                   size="lg"
                   className="mt-4 sm:mt-6 px-8 sm:px-10 md:px-12 py-6 text-base sm:text-lg"
-                  onClick={() => navigate("/")}
+                  onClick={handleBackToBooks}
                 >
                   Back to Book Selection
                 </Button>
