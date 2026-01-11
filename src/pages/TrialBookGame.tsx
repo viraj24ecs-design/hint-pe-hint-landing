@@ -239,7 +239,7 @@ const TrialBookGame = () => {
       description: (
         <div className="flex items-center gap-2 -ml-4">
           <img 
-            src={isCorrect ? "/VishalPics/vishalCorrectAns.png" : "/VishalPics/VishalIncorrectAns.png"} 
+            src={isCorrect ? "/VishalPics/vishalCorrectAns.webp" : "/VishalPics/VishalIncorrectAns.webp"} 
             alt={isCorrect ? "Correct" : "Incorrect"}
             className="w-56 h-56 object-contain flex-shrink-0"
           />
@@ -390,7 +390,7 @@ const TrialBookGame = () => {
             {/* Left side - Image */}
             <div className="w-full sm:w-1/2 bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-6">
               <img 
-                src="/VishalPics/VishalSad.PNG" 
+                src="/VishalPics/VishalSad.webp" 
                 alt="Vishal needs help" 
                 className="w-full h-auto max-w-[250px] object-contain"
               />
@@ -505,7 +505,7 @@ const TrialBookGame = () => {
               {/* Vishal Congratulations Image Section */}
               <div className="w-full bg-gradient-to-br from-green-50 to-yellow-50 flex items-center justify-center p-4 sm:p-6 md:p-8 flex-shrink-0">
                 <img 
-                  src="/VishalPics/VishalCongrats.png" 
+                  src="/VishalPics/VishalCongrats.webp" 
                   alt="Congratulations" 
                   className="w-full h-auto max-w-[200px] sm:max-w-[300px] md:max-w-[400px] object-contain rounded-xl sm:rounded-2xl shadow-lg"
                   style={{ filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15))' }}
