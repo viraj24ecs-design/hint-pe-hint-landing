@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent pull-to-refresh on mobile */
+html, body {
+  overscroll-behavior-y: contain;
+}
+
 /* Nohemi Font Family */
 @font-face {
   font-family: 'Nohemi';

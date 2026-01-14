@@ -229,6 +229,74 @@ const TrialBookGame = () => {
     }
   };
   
+  // Lock body scroll during game session to prevent accidental refresh
+  useEffect(() => {
+    if (!gameCompleted) {
+      // Lock scroll
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+      document.body.style.height = '100%';
+      document.body.style.top = '0';
+      document.body.style.left = '0';
+      document.documentElement.style.overflow = 'hidden';
+      
+      // Prevent pull-to-refresh on touch devices
+      const preventPullToRefresh = (e: TouchEvent) => {
+        // Allow scrolling inside the hint paragraph
+        const target = e.target as HTMLElement;
+        const isInsideHintBox = target.closest('[data-hint-scroll]');
+        
+        if (!isInsideHintBox) {
+          // If not inside hint box, prevent all touch move
+          if (e.touches.length === 1) {
+            e.preventDefault();
+          }
+        }
+      };
+      
+      // Prevent overscroll/bounce effect
+      const preventOverscroll = (e: TouchEvent) => {
+        const target = e.target as HTMLElement;
+        const scrollableElement = target.closest('[data-hint-scroll]') as HTMLElement;
+        
+        if (scrollableElement) {
+          const { scrollTop, scrollHeight, clientHeight } = scrollableElement;
+          const touchY = e.touches[0].clientY;
+          const atTop = scrollTop <= 0;
+          const atBottom = scrollTop + clientHeight >= scrollHeight;
+          
+          // Store touch start position
+          (scrollableElement as any)._touchStartY = touchY;
+        }
+      };
+      
+      document.addEventListener('touchmove', preventPullToRefresh, { passive: false });
+      document.addEventListener('touchstart', preventOverscroll, { passive: true });
+      
+      return () => {
+        document.removeEventListener('touchmove', preventPullToRefresh);
+        document.removeEventListener('touchstart', preventOverscroll);
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+        document.body.style.height = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.documentElement.style.overflow = '';
+      };
+    } else {
+      // Unlock scroll when game is completed
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+      document.body.style.height = '';
+      document.body.style.top = '';
+      document.body.style.left = '';
+      document.documentElement.style.overflow = '';
+    }
+  }, [gameCompleted]);
+  
   // Guest user state
 
   const isGuest = !user;
@@ -709,6 +777,7 @@ const TrialBookGame = () => {
                     <p 
                        ref={hintRef}
                        onScroll={handleHintScroll}
+                       data-hint-scroll
                        className="text-sm sm:text-base md:text-lg leading-relaxed break-words max-h-[18vh] overflow-y-auto pr-4 sm:pr-2 overscroll-contain touch-pan-y text-justify"
                        style={{
                          scrollbarWidth: 'thin',
