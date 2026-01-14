@@ -9,6 +9,8 @@ type ToasterToast = ToastProps & {
   id: string;
   title?: React.ReactNode;
   description?: React.ReactNode;
+  // when true, the toast UI should NOT render the close (X) button
+  hideClose?: boolean;
   action?: ToastActionElement;
 };
 

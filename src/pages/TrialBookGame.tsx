@@ -423,31 +423,6 @@ const TrialBookGame = () => {
     // Animate the coin counter with wobble and glow
     animateCoinChange(coinsChange);
 
-    // Show feedback with Vishal image - custom layout with image on left
-    toast({
-      title: "", // Empty title to prevent it from showing above
-      description: (
-        <div className="flex items-center gap-4 -ml-8">
-          <img 
-            src={isCorrect ? "/VishalPics/vishalCorrectAns.webp" : "/VishalPics/VishalIncorrectAns.webp"} 
-            alt={isCorrect ? "Correct" : "Incorrect"}
-            className="w-44 h-44 object-contain flex-shrink-0"
-          />
-          <div className="flex flex-col -ml-4 gap-1">
-            <span className={`text-lg font-extrabold ${isCorrect ? 'text-green-700 bg-green-100' : 'text-red-700 bg-red-100/60'} px-2 py-1 rounded-md`}>
-              {isCorrect ? "Correct! 🎉" : "Incorrect ❌"}
-            </span>
-            <span className={`text-base font-bold ${isCorrect ? 'text-green-700 bg-green-100' : 'text-red-700 bg-red-100/60'} px-2 py-1 rounded-md`}>
-              {`${coinsChange > 0 ? '+' : ''}${coinsChange} Charity Coins`}
-            </span>
-          </div>
-        </div>
-      ) as any,
-      variant: isCorrect ? "default" : "destructive",
-      duration: 3000, // 1 second
-    });
-
-    // If correct, show confetti and pop animation
     if (isCorrect) {
       // Play success sound
       playSound('correct');
@@ -461,18 +436,83 @@ const TrialBookGame = () => {
         setShowConfetti(true);
       }, 300);
       
-      // Pop button and hide confetti after animation
+      // Pop button after animation (but don't auto-move to next round)
       setTimeout(() => {
         setPoppedButtons(prev => [...prev, buttonId]);
         setShowConfetti(false);
         setCorrectButtonId(null);
-        
-        // Move to next round after button pops
-        setTimeout(() => {
-          moveToNextRound();
-        }, 500);
-      }, 1500); // Total animation time
+      }, 1500);
+
+      // Handler for Next button click
+      const handleNextClick = () => {
+        toastInstance.dismiss();
+        moveToNextRound();
+      };
+
+      // Show correct answer toast with Next button - stays forever until user clicks Next
+      const toastInstance = toast({
+        title: "", // Empty title to prevent it from showing above
+        description: (
+          <div
+            className="flex flex-row items-center gap-2 w-full max-w-xs sm:max-w-md px-2 py-2"
+            style={{ minWidth: '0', maxHeight: '80vh', overflow: 'hidden' }}
+          >
+            <img
+              src="/VishalPics/vishalCorrectAns.webp"
+              alt="Correct"
+              className="w-24 h-24 sm:w-52 sm:h-52 object-contain flex-shrink-0"
+              style={{ maxWidth: '100%', height: 'auto' }}
+            />
+            <div
+              className="flex flex-col items-end gap-2 w-full justify-end"
+              style={{ overflowY: 'auto', maxHeight: '80vh' }}
+            >
+              <span className="text-base sm:text-lg font-extrabold text-green-700 bg-green-100 px-2 py-1 rounded-md text-right w-full">
+                Correct! 🎉
+              </span>
+              <span className="text-sm sm:text-base font-bold text-green-700 bg-green-100 px-2 py-1 rounded-md text-right w-full">
+                +{coinsChange} Charity Coins
+              </span>
+              <button
+                onClick={handleNextClick}
+                className="mt-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition-colors duration-200 text-sm w-full sm:w-auto self-end"
+                style={{ minWidth: '0' }}
+              >
+                Next →
+              </button>
+            </div>
+          </div>
+        ) as any,
+        variant: "default",
+        hideClose: true,
+        duration: Infinity, // Stay forever until dismissed
+      });
     } else {
+      // Show wrong answer toast (auto-dismisses after 3 seconds)
+      toast({
+        title: "", // Empty title to prevent it from showing above
+        description: (
+          <div className="flex items-center gap-4 -ml-8">
+            <img 
+              src="/VishalPics/VishalIncorrectAns.webp" 
+              alt="Incorrect"
+              className="w-44 h-44 object-contain flex-shrink-0"
+            />
+            <div className="flex flex-col -ml-4 gap-1">
+              <span className="text-lg font-extrabold text-red-700 bg-red-100/60 px-2 py-1 rounded-md">
+                Incorrect ❌
+              </span>
+              <span className="text-base font-bold text-red-700 bg-red-100/60 px-2 py-1 rounded-md">
+                {coinsChange} Charity Coins
+              </span>
+            </div>
+          </div>
+        ) as any,
+        variant: "destructive",
+        hideClose: true,
+        duration: 3000,
+      });
+
       // If wrong, show vignette effect and shake button
       playSound('wrong');
       setClickedButtonId(null);
