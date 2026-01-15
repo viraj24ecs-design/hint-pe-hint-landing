@@ -818,7 +818,7 @@ const TrialBookGame = () => {
                        ref={hintRef}
                        onScroll={handleHintScroll}
                        data-hint-scroll
-                       className="text-sm sm:text-base md:text-lg leading-relaxed break-words max-h-[18vh] overflow-y-auto pr-4 sm:pr-2 overscroll-contain touch-pan-y text-justify"
+                       className="text-sm sm:text-base md:text-lg leading-relaxed break-words max-h-[18vh] overflow-y-auto pr-4 sm:pr-2 overscroll-contain touch-pan-y text-justify font-sfpro"
                        style={{
                          scrollbarWidth: 'thin',
                          scrollbarColor: '#374151 #e5e7eb',
@@ -888,7 +888,7 @@ const TrialBookGame = () => {
                             ${button.id === 8 ? 'rounded-bl-xl' : ''}
                             ${button.id === 9 ? 'rounded-br-xl' : ''}`}
                         >
-                          <span className="text-center leading-[1.1] px-1 overflow-hidden" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
+                          <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
                         </button>
                       );
                     })}

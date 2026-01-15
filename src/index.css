@@ -40,6 +40,15 @@ html, body {
   font-display: swap;
 }
 
+/* SF Pro Display Medium - from public folder */
+@font-face {
+  font-family: 'SFProDisplayMedium';
+  src: url('/SFPRODISPLAYMEDIUM.OTF') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Premium Apple-style design system */
 
 @layer base {
@@ -159,6 +168,12 @@ html, body {
   .font-display {
     font-family: 'Nohemi', sans-serif;
     font-weight: 700;
+  }
+
+  /* SF Pro utility for concept paragraph and answer labels */
+  .font-sfpro {
+    font-family: 'SFProDisplayMedium', 'Nohemi', sans-serif;
+    font-weight: 500;
   }
 
   .animate-fade-in {
