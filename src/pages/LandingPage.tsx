@@ -43,7 +43,7 @@ const LandingPage = () => {
 
   // Charity coin levels from 0 to 10k
   const coinLevels = [
-    { name: "Beginner", coins: 0 },
+    { name: "Unranked", coins: 0 },
     { name: "Novice", coins: 500 },
     { name: "Learner", coins: 1000 },
     { name: "Explorer", coins: 2000 },
