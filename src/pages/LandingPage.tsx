@@ -72,7 +72,7 @@ const LandingPage = () => {
     { id: 9, title: "Book 8", image: "", route: "/books/book8" },
     { id: 10, title: "Book 9", image: "", route: "/books/book9" },
     { id: 11, title: "Book 10", image: "", route: "/books/book10" },
-    { id: 12, title: "Book 11", image: "", route: "/books/book12" },
+    { id: 12, title: "Book 11", image: "", route: "/books/book11" },
   ];
 
   // Show 3 books at a time
