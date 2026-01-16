@@ -62,17 +62,17 @@ const LandingPage = () => {
   // 12 Books array - customize titles, images, and routes here
   const books = [
     { id: 1, title: "How To Bring Self-Discipline To Exercise", image: "/BookPics/How-To-Bring-Self-Discipline-To-Exercise.jpg", route: "/game/trial-book" },
-    { id: 2, title: "Book 2", image: "", route: "/book/2" },
-    { id: 3, title: "Book 3", image: "", route: "/book/3" },
-    { id: 4, title: "Book 4", image: "", route: "/book/4" },
-    { id: 5, title: "Book 5", image: "", route: "/book/5" },
-    { id: 6, title: "Book 6", image: "", route: "/book/6" },
-    { id: 7, title: "Book 7", image: "", route: "/book/7" },
-    { id: 8, title: "Book 8", image: "", route: "/book/8" },
-    { id: 9, title: "Book 9", image: "", route: "/book/9" },
-    { id: 10, title: "Book 10", image: "", route: "/book/10" },
-    { id: 11, title: "Book 11", image: "", route: "/book/11" },
-    { id: 12, title: "Book 12", image: "", route: "/book/12" },
+    { id: 2, title: "Book 1", image: "", route: "/books/book1" },
+    { id: 3, title: "Book 2", image: "", route: "/books/book2" },
+    { id: 4, title: "Book 3", image: "", route: "/books/book3" },
+    { id: 5, title: "Book 4", image: "", route: "/books/book4" },
+    { id: 6, title: "Book 5", image: "", route: "/books/book5" },
+    { id: 7, title: "Book 6", image: "", route: "/books/book6" },
+    { id: 8, title: "Book 7", image: "", route: "/books/book7" },
+    { id: 9, title: "Book 8", image: "", route: "/books/book8" },
+    { id: 10, title: "Book 9", image: "", route: "/books/book9" },
+    { id: 11, title: "Book 10", image: "", route: "/books/book10" },
+    { id: 12, title: "Book 11", image: "", route: "/books/book12" },
   ];
 
   // Show 3 books at a time
