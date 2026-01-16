@@ -67,7 +67,7 @@ const createConfetti = () => {
 // Buttons that are answered correctly disappear FOREVER and never come back in future rounds
 
 const GAME_DATA = {
-  imagePath: "/Rich-Dad-Poor-Dad.png", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
+  imagePath: "/BookPics/Rich-Dad-Poor-Dad.png", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
   rounds: [
     {
       roundNumber: 1,
