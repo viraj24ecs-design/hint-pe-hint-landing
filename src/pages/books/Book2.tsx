@@ -67,74 +67,51 @@ const createConfetti = () => {
 // Buttons that are answered correctly disappear FOREVER and never come back in future rounds
 
 const GAME_DATA = {
-  imagePath: "/How-To-Bring-Self-Discipline-To-Exercise.jpg", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
+  imagePath: "/BookPics/pabg.webp", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
   rounds: [
     {
       roundNumber: 1,
-      hint: "Concpet No. 1 (Don't exceed 500 words)",
+      hint: "Our brain resists big, overwhelming goals, but it’s surprisingly easy to nudge it into action with tiny steps. When you break a huge task into something almost effortless—like reading one page, rolling out a yoga mat, or writing a single paragraph—you lower the mental resistance and make starting feel doable, which often leads to real momentum.",
       correctButtonId: 4, // Button 1 (ID 0) is correct in round 1
     },
     {
       roundNumber: 2,
-      hint: "Concpet No. 2 (Don't exceed 500 words)",
+      hint: "Setting a small intention and actually following through—like getting up at the first alarm or helping out at home despite being tired—creates a quiet but powerful sense of achievement. That simple joy you feel after completing even a tiny planned task is a reminder that deciding and doing, no matter how small, builds confidence and momentum.",
       correctButtonId: 0, // Button 2 (ID 1) is correct in round 2
     },
     {
       roundNumber: 3,
-      hint: "Concpet No. 3 (Don't exceed 500 words)",
+      hint: " While driving home, I noticed that even without consciously thinking about each move, I still followed signals, took the right turns, and parked safely, all on autopilot while my mind wandered. Later, when a calendar notification popped up, I unlocked my phone but instinctively opened WhatsApp instead—another small reminder of how much of our daily behaviour runs on habit rather than intention.",
       correctButtonId: 9, // Button 3 (ID 2) is correct in round 3
     },
     {
       roundNumber: 4,
-      hint: "Concpet No. 4 (Don't exceed 500 words)",
+      hint: "During Diwali, I planned to eat just one piece of Kaju Katli but ended up finishing the entire box, showing how easy it is to slip once we start. On the flip side, when my friend refused to work out, suggesting just two push-ups got him moving—and that tiny start led him to complete the full workout with me.",
       correctButtonId: 6, // Button 4 (ID 3) is correct in round 4
     },
     {
       roundNumber: 5,
-      hint: "Concpet No. 5 (Don't exceed 500 words)",
+      hint: "When a task feels easy enough to start without an inner battle, you’re more likely to follow through. By keeping the first step almost effortless, you avoid mental exhaustion and leave yourself with enough energy to keep going—or even do more than you planned. When something feels too big, your mind resists. But if you tell yourself, “Just read one page” or “Just do one push-up,” there’s no struggle to begin—and once you start, you often find it easier to continue.",
       correctButtonId: 3, // Button 5 (ID 4) is correct in round 5
     },
-    {
-      roundNumber: 6,
-      hint: "Concpet No. 6 (Don't exceed 500 words)",
-      correctButtonId: 1, // Button 6 (ID 5) is correct in round 6
-    },
-    {
-      roundNumber: 7,
-      hint: "Concpet No. 7 (Don't exceed 500 words)",
-      correctButtonId: 8, // Button 7 (ID 6) is correct in round 7
-    },
-    {
-      roundNumber: 8,
-      hint: "Concpet No. 8 (Don't exceed 500 words)",
-      correctButtonId: 5, // Button 8 (ID 7) is correct in round 8
-    },
-    {
-      roundNumber: 9,
-      hint: "Concpet No. 9 (Don't exceed 500 words)",
-      correctButtonId: 7, // Button 9 (ID 8) is correct in round 9
-    },
-    {
-      roundNumber: 10,
-      hint: "Concpet No. 10 (Don't exceed 500 words)",
-      correctButtonId: 2, // Button 10 (ID 9) is correct in round 10
-    },
+    
+
   ],
 };
 
 // All 10 buttons with their text - you can edit these
 // id: 4, 0, 9, 6, 3, 1, 8, 5, 7, 2 is the correct order
 const ALL_BUTTONS = [
-  { id: 0, text: "Answer 2" },
-  { id: 1, text: "Answer 6" },
-  { id: 2, text: "Answer 10" },
-  { id: 3, text: "Answer 5" },
-  { id: 4, text: "Answer 1" },
-  { id: 5, text: "Answer 8" },
-  { id: 6, text: "Answer 4" },
-  { id: 7, text: "Answer 9" },
-  { id: 8, text: "Answer 7" },
-  { id: 9, text: "Answer 3" },
+  { id: 0, text: "Self-Efficacy Boost" },
+  null,
+  null,
+  { id: 3, text: "Willpower Conservation" },
+  { id: 4, text: "Bypass Resistance" },
+  null,
+  { id: 6, text: "Bonus Reps" },
+ null,                          // null makes a gap in the button layout
+  null,
+  { id: 9, text: "Brain’s Autopilot System" }, // button id 0, 1, 8 and 9 have curve edge
 ];
 
 const Book2 = () => {
@@ -722,7 +699,7 @@ const Book2 = () => {
               {/* Vishal Congratulations Image Section */}
               <div className="w-full bg-gradient-to-br from-green-50 to-yellow-50 flex items-center justify-center p-4 sm:p-6 md:p-8 flex-shrink-0">
                 <img 
-                  src="/VishalPics/VishalCongrats.webp" 
+                  src="/BookPics/pabg.webp" 
                   alt="Congratulations" 
                   className="w-full h-auto max-w-[200px] sm:max-w-[300px] md:max-w-[400px] object-contain rounded-xl sm:rounded-2xl shadow-lg"
                   style={{ filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15))' }}
@@ -863,37 +840,38 @@ const Book2 = () => {
                   />
                   
                   {/* Button Grid Overlay - 5 rows x 2 columns = 10 buttons */}
-                  <div className="absolute inset-0 grid grid-rows-5 grid-cols-2 gap-0">
-                    {ALL_BUTTONS.map((button) => {
-                      const isPopped = poppedButtons.includes(button.id);
-                      
-                      // Don't render popped buttons - they disappear forever, revealing the image
-                      if (isPopped) {
-                        return <div key={button.id} className="pointer-events-none" />;
-                      }
-                      
-                      return (
-                        <button
-                          key={button.id}
-                          onClick={() => handleButtonClick(button.id)}
-                          disabled={isProcessing || wrongButtons.includes(button.id)}
-                          className={`${getButtonStyle(button.id)} 
-                            text-[13.5px] xs:text-[15px] sm:text-[19px] md:text-[22px] font-medium 
-                            transition-all duration-300 
-                            flex items-center justify-center 
-                            border-[0.5px] border-black/70
-                            disabled:cursor-not-allowed
-                            p-1
-                            ${button.id === 0 ? 'rounded-tl-xl' : ''}
-                            ${button.id === 1 ? 'rounded-tr-xl' : ''}
-                            ${button.id === 8 ? 'rounded-bl-xl' : ''}
-                            ${button.id === 9 ? 'rounded-br-xl' : ''}`}
-                        >
-                          <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+              <div className="absolute inset-0 grid grid-rows-5 grid-cols-2 gap-0">
+  {ALL_BUTTONS.map((button, idx) => {
+    if (!button) {
+      // Render an empty cell to keep the grid structure
+      return <div key={idx} />;
+    }
+    const isPopped = poppedButtons.includes(button.id);
+    if (isPopped) {
+      return <div key={button.id} className="pointer-events-none" />;
+    }
+    return (
+      <button
+        key={button.id}
+        onClick={() => handleButtonClick(button.id)}
+        disabled={isProcessing || wrongButtons.includes(button.id)}
+        className={`${getButtonStyle(button.id)} 
+          text-[13.5px] xs:text-[15px] sm:text-[19px] md:text-[22px] lg:text-[15px] font-medium 
+          transition-all duration-300 
+          flex items-center justify-center 
+          border-[0.5px] border-black/70
+          disabled:cursor-not-allowed
+          p-1
+          ${button.id === 0 ? 'rounded-tl-xl' : ''}
+          ${button.id === 1 ? 'rounded-tr-xl' : ''}
+          ${button.id === 8 ? 'rounded-bl-xl' : ''}
+          ${button.id === 9 ? 'rounded-br-xl' : ''}`}
+      >
+        <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
+      </button>
+    );
+  })}
+</div>
                 </div>
               </div>
             </div>

@@ -67,74 +67,66 @@ const createConfetti = () => {
 // Buttons that are answered correctly disappear FOREVER and never come back in future rounds
 
 const GAME_DATA = {
-  imagePath: "/BookPics/MiniHabits.webp", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
+  imagePath: "/BookPics/pabg.webp", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
   rounds: [
     {
       roundNumber: 1,
-      hint: "Concpet No. 1 (Don't exceed 500 words)",
+      hint: "List all the people around you and checking one thing: do they give you energy or take it away? Some people help you grow quietly. Others create confusion and delay. Progress begins when you consciously choose who deserves your time and trust.",
       correctButtonId: 4, // Button 1 (ID 4) is correct in round 1
     },
     {
       roundNumber: 2,
-      hint: "Concpet No. 2 (Don't exceed 500 words)",
+      hint: "Use this before deepening any relationship. Ask: Does this person support my future or pull me into old habits? This filter protects your dreams. Not everyone needs to be removed—some just need less access.",
       correctButtonId: 0, // Button 2 (ID 0) is correct in round 2
     },
     {
       roundNumber: 3,
-      hint: "Concpet No. 3 (Don't exceed 500 words)",
-      correctButtonId: 9, // Button 3 (ID 9) is correct in round 3
+      hint: "One right person can change everything. A good “who” brings ideas, confidence, and momentum. Instead of adding effort, they multiply results. Success often comes not from working harder, but from choosing better partners.",
+      correctButtonId: 8, // Button 3 (ID 9) is correct in round 3
     },
     {
       roundNumber: 4,
-      hint: "Concpet No. 4 (Don't exceed 500 words)",
+      hint: "When you find the right person first, the method becomes simple. When you start with “how,” you feel stuck. The right person who carries experience shortens your struggle.",
       correctButtonId: 6, // Button 4 (ID 6) is correct in round 4
     },
     {
       roundNumber: 5,
-      hint: "Concpet No. 5 (Don't exceed 500 words)",
+      hint: "It appears when you hesitate to delegate, fearing mistakes. But control slows growth. Trust, even if imperfect, builds capability in others. Long-term success comes from letting people learn, not from holding everything tightly.",
       correctButtonId: 3, // Button 5 (ID 4) is correct in round 5
     },
     {
       roundNumber: 6,
-      hint: "Concpet No. 6 (Don't exceed 500 words)",
+      hint: "Most people ask, “How will I do this?” and feel tired even before starting. the better question is “Who can do it?”. Instead of struggling alone, find the right person who already knows how. Life becomes lighter when we stop proving our capability and start trusting collaboration.",
       correctButtonId: 1, // Button 6 (ID 5) is correct in round 6
     },
     {
       roundNumber: 7,
-      hint: "Concpet No. 7 (Don't exceed 500 words)",
-      correctButtonId: 8, // Button 7 (ID 6) is correct in round 7
+      hint: "Each person is born with a natural gift. It is the work that gives you joy and energy. When you focus only on this, and allow others to handle the rest, your results improve without stress. Success comes faster when you stop doing what drains you.",
+      correctButtonId: 7, // Button 7 (ID 6) is correct in round 7
     },
-    {
-      roundNumber: 8,
-      hint: "Concpet No. 8 (Don't exceed 500 words)",
-      correctButtonId: 5, // Button 8 (ID 7) is correct in round 8
-    },
+  
     {
       roundNumber: 9,
-      hint: "Concpet No. 9 (Don't exceed 500 words)",
-      correctButtonId: 7, // Button 9 (ID 8) is correct in round 9
+      hint: "Many people believe success means doing everything themselves. The book teaches that growth comes through teaming up, not control. When you allow capable people to contribute, they feel respected and you feel free. Progress becomes shared, not heavy.",
+      correctButtonId: 2, // Button 9 (ID 8) is correct in round 9
     },
-    {
-      roundNumber: 10,
-      hint: "Concpet No. 10 (Don't exceed 500 words)",
-      correctButtonId: 2, // Button 10 (ID 9) is correct in round 10
-    },
+    
   ],
 };
 
 // All 10 buttons with their text - you can edit these
-// id: 4, 0, 9, 6, 3, 1, 8, 5, 7, 2 is the correct order
+
 const ALL_BUTTONS = [
-  { id: 0, text: "Answer 2" },
-  { id: 1, text: "Answer 6" },
-  { id: 2, text: "Answer 10" },
-  { id: 3, text: "Answer 5" },
-  { id: 4, text: "Answer 1" },
-  { id: 5, text: "Answer 8" },
-  { id: 6, text: "Answer 4" },
-  { id: 7, text: "Answer 9" },
-  { id: 8, text: "Answer 7" },
-  { id: 9, text: "Answer 3" },
+  { id: 0, text: "Who Relationship Filter" },
+  { id: 1, text: "Who Not How" },
+  { id: 2, text: "Colaboration Over Control" },
+  { id: 3, text: "Trust Gap" },
+  { id: 4, text: "Who Audit" },
+  null,                                     // null makes a gap in the button layout
+  { id: 6, text: "Who Before How" },
+  { id: 7, text: "Unique Ability" },
+  { id: 8, text: "Who Multiplier Effect" }, // button id 0, 1, 8 and 9 have curve edge 
+  null,
 ];
 
 const Book1 = () => {
@@ -722,7 +714,7 @@ const Book1 = () => {
               {/* Vishal Congratulations Image Section */}
               <div className="w-full bg-gradient-to-br from-green-50 to-yellow-50 flex items-center justify-center p-4 sm:p-6 md:p-8 flex-shrink-0">
                 <img 
-                  src="/VishalPics/VishalCongrats.webp" 
+                  src="/BookPics/DanSullivan.webp" 
                   alt="Congratulations" 
                   className="w-full h-auto max-w-[200px] sm:max-w-[300px] md:max-w-[400px] object-contain rounded-xl sm:rounded-2xl shadow-lg"
                   style={{ filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15))' }}
@@ -737,10 +729,10 @@ const Book1 = () => {
                 
                 <div className="space-y-2 sm:space-y-3">
                   <p className="text-base sm:text-xl md:text-2xl font-bold text-gray-800">
-                    Thank you for helping Vishal!
+                    Thank you for helping the needy!
                   </p>
                   <p className="text-sm sm:text-lg md:text-xl text-gray-700">
-                    This is the book he wishes you should read
+                    Dan Sullivan and Dr. Benjamin Hardy appreciate your effort in completing the game based on their book "Who Not How".
                   </p>
                 </div>
                 
@@ -754,7 +746,7 @@ const Book1 = () => {
                 {/* Additional Info */}
                 <div className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-600 max-w-2xl px-4">
                   <p>
-                    Thank you for playing Hint Pe Hint and helping Vishal. Your correct answers have not only earned you Charity Coins but have also made a positive impact!
+                    Your correct answers have not only earned you Charity Coins but have also made a positive impact!
                   </p>
                   <p className="font-semibold text-green-600 text-base sm:text-lg">
                     Your knowledge helped the needy one! Keep it up!
@@ -863,37 +855,38 @@ const Book1 = () => {
                   />
                   
                   {/* Button Grid Overlay - 5 rows x 2 columns = 10 buttons */}
-                  <div className="absolute inset-0 grid grid-rows-5 grid-cols-2 gap-0">
-                    {ALL_BUTTONS.map((button) => {
-                      const isPopped = poppedButtons.includes(button.id);
-                      
-                      // Don't render popped buttons - they disappear forever, revealing the image
-                      if (isPopped) {
-                        return <div key={button.id} className="pointer-events-none" />;
-                      }
-                      
-                      return (
-                        <button
-                          key={button.id}
-                          onClick={() => handleButtonClick(button.id)}
-                          disabled={isProcessing || wrongButtons.includes(button.id)}
-                          className={`${getButtonStyle(button.id)} 
-                            text-[13.5px] xs:text-[15px] sm:text-[19px] md:text-[22px] font-medium 
-                            transition-all duration-300 
-                            flex items-center justify-center 
-                            border-[0.5px] border-black/70
-                            disabled:cursor-not-allowed
-                            p-1
-                            ${button.id === 0 ? 'rounded-tl-xl' : ''}
-                            ${button.id === 1 ? 'rounded-tr-xl' : ''}
-                            ${button.id === 8 ? 'rounded-bl-xl' : ''}
-                            ${button.id === 9 ? 'rounded-br-xl' : ''}`}
-                        >
-                          <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+               <div className="absolute inset-0 grid grid-rows-5 grid-cols-2 gap-0">
+  {ALL_BUTTONS.map((button, idx) => {
+    if (!button) {
+      // Render an empty cell to keep the grid structure
+      return <div key={idx} />;
+    }
+    const isPopped = poppedButtons.includes(button.id);
+    if (isPopped) {
+      return <div key={button.id} className="pointer-events-none" />;
+    }
+    return (
+      <button
+        key={button.id}
+        onClick={() => handleButtonClick(button.id)}
+        disabled={isProcessing || wrongButtons.includes(button.id)}
+        className={`${getButtonStyle(button.id)} 
+          text-[13.5px] xs:text-[15px] sm:text-[19px] md:text-[20px] lg:text-[15px] font-medium 
+          transition-all duration-300 
+          flex items-center justify-center 
+          border-[0.5px] border-black/70
+          disabled:cursor-not-allowed
+          p-1
+          ${button.id === 0 ? 'rounded-tl-xl' : ''}
+          ${button.id === 1 ? 'rounded-tr-xl' : ''}
+          ${button.id === 8 ? 'rounded-bl-xl' : ''}
+          ${button.id === 9 ? 'rounded-br-xl' : ''}`}
+      >
+        <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
+      </button>
+    );
+  })}
+</div>
                 </div>
               </div>
             </div>

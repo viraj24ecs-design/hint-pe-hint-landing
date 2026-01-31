@@ -62,8 +62,8 @@ const LandingPage = () => {
   // 12 Books array - customize titles, images, and routes here
   const books = [
     { id: 1, title: "How To Bring Self-Discipline To Exercise", image: "/BookPics/How-To-Bring-Self-Discipline-To-Exercise.jpg", route: "/game/trial-book" },
-    { id: 2, title: "Book 1", image: "", route: "/books/book1" },
-    { id: 3, title: "Book 2", image: "", route: "/books/book2" },
+    { id: 2, title: "Who Not How", image: "/BookPics/who_not_how.webp", route: "/books/book1" },
+    { id: 3, title: "Mini Habits", image: "/BookPics/MiniHabits.webp", route: "/books/book2" },
     { id: 4, title: "Book 3", image: "", route: "/books/book3" },
     { id: 5, title: "Book 4", image: "", route: "/books/book4" },
     { id: 6, title: "Book 5", image: "", route: "/books/book5" },

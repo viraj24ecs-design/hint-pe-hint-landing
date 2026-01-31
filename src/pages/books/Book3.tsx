@@ -132,17 +132,17 @@ const ALL_BUTTONS = [
   { id: 4, text: "Answer 1" },
   { id: 5, text: "Answer 8" },
   { id: 6, text: "Answer 4" },
-  { id: 7, text: "Answer 9" },
+ null,
   { id: 8, text: "Answer 7" },
   { id: 9, text: "Answer 3" },
 ];
 
-const Book3 = () => {
+const Book2 = () => {
   const { user, logout, updateBookProgress, updateCoins, refreshUser } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const bookId = "Book3";
+  const bookId = "Book2";
   const currentProgress = user?.bookProgress?.trialBook || 0;
 
   // Game state
@@ -863,37 +863,38 @@ const Book3 = () => {
                   />
                   
                   {/* Button Grid Overlay - 5 rows x 2 columns = 10 buttons */}
-                  <div className="absolute inset-0 grid grid-rows-5 grid-cols-2 gap-0">
-                    {ALL_BUTTONS.map((button) => {
-                      const isPopped = poppedButtons.includes(button.id);
-                      
-                      // Don't render popped buttons - they disappear forever, revealing the image
-                      if (isPopped) {
-                        return <div key={button.id} className="pointer-events-none" />;
-                      }
-                      
-                      return (
-                        <button
-                          key={button.id}
-                          onClick={() => handleButtonClick(button.id)}
-                          disabled={isProcessing || wrongButtons.includes(button.id)}
-                          className={`${getButtonStyle(button.id)} 
-                            text-[13.5px] xs:text-[15px] sm:text-[19px] md:text-[22px] font-medium 
-                            transition-all duration-300 
-                            flex items-center justify-center 
-                            border-[0.5px] border-black/70
-                            disabled:cursor-not-allowed
-                            p-1
-                            ${button.id === 0 ? 'rounded-tl-xl' : ''}
-                            ${button.id === 1 ? 'rounded-tr-xl' : ''}
-                            ${button.id === 8 ? 'rounded-bl-xl' : ''}
-                            ${button.id === 9 ? 'rounded-br-xl' : ''}`}
-                        >
-                          <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
+              <div className="absolute inset-0 grid grid-rows-5 grid-cols-2 gap-0">
+  {ALL_BUTTONS.map((button, idx) => {
+    if (!button) {
+      // Render an empty cell to keep the grid structure
+      return <div key={idx} />;
+    }
+    const isPopped = poppedButtons.includes(button.id);
+    if (isPopped) {
+      return <div key={button.id} className="pointer-events-none" />;
+    }
+    return (
+      <button
+        key={button.id}
+        onClick={() => handleButtonClick(button.id)}
+        disabled={isProcessing || wrongButtons.includes(button.id)}
+        className={`${getButtonStyle(button.id)} 
+          text-[13.5px] xs:text-[15px] sm:text-[19px] md:text-[22px] lg:text-[15px] font-medium 
+          transition-all duration-300 
+          flex items-center justify-center 
+          border-[0.5px] border-black/70
+          disabled:cursor-not-allowed
+          p-1
+          ${button.id === 0 ? 'rounded-tl-xl' : ''}
+          ${button.id === 1 ? 'rounded-tr-xl' : ''}
+          ${button.id === 8 ? 'rounded-bl-xl' : ''}
+          ${button.id === 9 ? 'rounded-br-xl' : ''}`}
+      >
+        <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
+      </button>
+    );
+  })}
+</div>
                 </div>
               </div>
             </div>
@@ -980,4 +981,4 @@ const Book3 = () => {
   );
 };
 
-export default Book3;
+export default Book2;
