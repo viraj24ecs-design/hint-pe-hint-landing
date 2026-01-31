@@ -67,27 +67,27 @@ const createConfetti = () => {
 // Buttons that are answered correctly disappear FOREVER and never come back in future rounds
 
 const GAME_DATA = {
-  imagePath: "/BookPics/Rich-Dad-Poor-Dad.png", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
+  imagePath: "/BookPics/MiniHabits.webp", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
   rounds: [
     {
       roundNumber: 1,
       hint: "Concpet No. 1 (Don't exceed 500 words)",
-      correctButtonId: 4, // Button 1 (ID 0) is correct in round 1
+      correctButtonId: 4, // Button 1 (ID 4) is correct in round 1
     },
     {
       roundNumber: 2,
       hint: "Concpet No. 2 (Don't exceed 500 words)",
-      correctButtonId: 0, // Button 2 (ID 1) is correct in round 2
+      correctButtonId: 0, // Button 2 (ID 0) is correct in round 2
     },
     {
       roundNumber: 3,
       hint: "Concpet No. 3 (Don't exceed 500 words)",
-      correctButtonId: 9, // Button 3 (ID 2) is correct in round 3
+      correctButtonId: 9, // Button 3 (ID 9) is correct in round 3
     },
     {
       roundNumber: 4,
       hint: "Concpet No. 4 (Don't exceed 500 words)",
-      correctButtonId: 6, // Button 4 (ID 3) is correct in round 4
+      correctButtonId: 6, // Button 4 (ID 6) is correct in round 4
     },
     {
       roundNumber: 5,
