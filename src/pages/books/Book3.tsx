@@ -66,12 +66,56 @@ const createConfetti = () => {
 // ... and so on
 // Buttons that are answered correctly disappear FOREVER and never come back in future rounds
 
+
+
+
+
+
+
+
+
+// All 10 buttons with their text - you can edit these
+// id: 4, 0, 9, 6, 3, 1, 8, 5, 7, 2 is the correct order
+const ALL_BUTTONS = [
+  { id: 0, text: "Answer 2" },
+  { id: 1, text: "Answer 6" },
+  { id: 2, text: "Answer 10" },
+  { id: 3, text: "Answer 5" },
+  { id: 4, text: "Answer 1" },
+  { id: 5, text: "Answer 8" },
+  { id: 6, text: "Answer 4" },
+ null,
+  { id: 8, text: "Answer 7" },
+  { id: 9, text: "Answer 3" },
+];
+
+const Book3 = () => {
+  const { user, logout, updateBookProgress, updateCoins, refreshUser } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const bookId = "Book3";
+  const currentProgress = user?.bookProgress?.trialBook || 0;
+
+  const API_BASE_URL = import.meta.env.PROD ? "" : "http://localhost:5001";
+  const [msg, setMsg] = useState<string>("Loading...");
+
+    useEffect(() => {
+    fetch(`${API_BASE_URL}/api/sandesh`)
+      .then((res) => res.json())
+      .then((data) => setMsg(data.sandesh ?? "No message found"))
+      .catch(() => setMsg("Unable to fetch message"));
+  }, []);
+
+
+  // Game Data and State Management
+
 const GAME_DATA = {
   imagePath: "/How-To-Bring-Self-Discipline-To-Exercise.jpg", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
   rounds: [
     {
       roundNumber: 1,
-      hint: "Concpet No. 1 (Don't exceed 500 words)",
+      hint: msg,
       correctButtonId: 4, // Button 1 (ID 0) is correct in round 1
     },
     {
@@ -122,28 +166,6 @@ const GAME_DATA = {
   ],
 };
 
-// All 10 buttons with their text - you can edit these
-// id: 4, 0, 9, 6, 3, 1, 8, 5, 7, 2 is the correct order
-const ALL_BUTTONS = [
-  { id: 0, text: "Answer 2" },
-  { id: 1, text: "Answer 6" },
-  { id: 2, text: "Answer 10" },
-  { id: 3, text: "Answer 5" },
-  { id: 4, text: "Answer 1" },
-  { id: 5, text: "Answer 8" },
-  { id: 6, text: "Answer 4" },
- null,
-  { id: 8, text: "Answer 7" },
-  { id: 9, text: "Answer 3" },
-];
-
-const Book2 = () => {
-  const { user, logout, updateBookProgress, updateCoins, refreshUser } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const bookId = "Book2";
-  const currentProgress = user?.bookProgress?.trialBook || 0;
 
   // Game state
   const [currentRound, setCurrentRound] = useState(0);
@@ -981,4 +1003,4 @@ const Book2 = () => {
   );
 };
 
-export default Book2;
+export default Book3;

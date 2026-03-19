@@ -7,7 +7,7 @@ const authRoutes = require('./routes/auth.cjs');
 
 const app = express();
 
-// CORS Configuration - MUST be before other middleware
+// CORS Configuration - MUST be before routes
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl)
@@ -29,6 +29,49 @@ app.use(cors({
 
 // Body parser middleware
 app.use(express.json());
+
+const sandeshSchema = new mongoose.Schema({
+  content: String,
+});
+const Sandesh = mongoose.model('Sandesh', sandeshSchema, 'sandeshTest');
+let fallbackSandesh = 'No message found';
+
+// Route to GET the data for Display page
+app.get('/api/sandesh', async (req, res) => {
+  try {
+    if (mongoose.connection.readyState === 1) {
+      const data = await Sandesh.findOne();
+      const sandesh = data ? data.content : fallbackSandesh;
+      return res.json({ sandesh });
+    }
+
+    return res.json({ sandesh: fallbackSandesh, source: 'memory' });
+  } catch (err) {
+    return res.json({ sandesh: fallbackSandesh, source: 'memory' });
+  }
+});
+
+// Route to UPDATE the data from Edit page
+app.post('/api/sandesh', async (req, res) => {
+  try {
+    const { newSandesh } = req.body || {};
+
+    if (typeof newSandesh !== 'string' || !newSandesh.trim()) {
+      return res.status(400).json({ error: 'newSandesh is required' });
+    }
+
+    fallbackSandesh = newSandesh;
+
+    if (mongoose.connection.readyState === 1) {
+      await Sandesh.findOneAndUpdate({}, { content: newSandesh }, { upsert: true });
+      return res.status(200).json({ message: 'Updated Successfully', source: 'mongodb' });
+    }
+
+    return res.status(200).json({ message: 'Updated in memory (MongoDB unavailable)', source: 'memory' });
+  } catch (err) {
+    return res.status(200).json({ message: 'Updated in memory (MongoDB unavailable)', source: 'memory' });
+  }
+});
 
 // Test route
 app.get('/api/test', (req, res) => {
@@ -56,7 +99,7 @@ mongoose.connect(MONGODB_URI)
   });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📡 API available at http://localhost:${PORT}/api`);
