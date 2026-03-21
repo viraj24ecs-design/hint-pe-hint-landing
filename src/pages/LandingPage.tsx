@@ -23,6 +23,7 @@ const LandingPage = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<"left" | "right">("right"); // Track swipe direction
   const [dynamicBooks, setDynamicBooks] = useState<Book[]>(books);
+  const [booksLoading, setBooksLoading] = useState(true);
   const navigate = useNavigate();
 
   // Fetch dynamic book titles and cover images from API
@@ -33,15 +34,17 @@ const LandingPage = () => {
         try {
           const res = await fetch(`${API_BASE_URL}/api/bookmeta?bookId=book${i}`);
           const data = await res.json();
-          if (data.bookTitle) {
-            updated[i] = { ...updated[i], title: data.bookTitle };
-          }
-          if (data.coverImage) {
-            updated[i] = { ...updated[i], image: data.coverImage };
-          }
-        } catch { /* keep defaults */ }
+          updated[i] = {
+            ...updated[i],
+            title: data.bookTitle || `Book ${i}`,
+            image: data.coverImage || "",
+          };
+        } catch {
+          updated[i] = { ...updated[i], title: `Book ${i}` };
+        }
       }
       setDynamicBooks(updated);
+      setBooksLoading(false);
     };
     fetchMeta();
   }, []);
@@ -205,6 +208,12 @@ const LandingPage = () => {
         <div className="w-full max-w-4xl">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-8">Choose Your Book</h2>
 
+          {booksLoading ? (
+            <div className="flex items-center justify-center py-16">
+              <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+            </div>
+          ) : (
+            <>
           {/* Books Carousel Container */}
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4">
             {/* Previous Button */}
@@ -279,6 +288,8 @@ const LandingPage = () => {
               />
             ))}
           </div>
+          </>
+          )}
         </div>
       </main>
 
