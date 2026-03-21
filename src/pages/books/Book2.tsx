@@ -71,27 +71,27 @@ const GAME_DATA = {
   rounds: [
     {
       roundNumber: 1,
-      hint: "Our brain resists big, overwhelming goals, but it’s surprisingly easy to nudge it into action with tiny steps. When you break a huge task into something almost effortless—like reading one page, rolling out a yoga mat, or writing a single paragraph—you lower the mental resistance and make starting feel doable, which often leads to real momentum.",
+      hint: "",
       correctButtonId: 4, // Button 1 (ID 0) is correct in round 1
     },
     {
       roundNumber: 2,
-      hint: "Setting a small intention and actually following through—like getting up at the first alarm or helping out at home despite being tired—creates a quiet but powerful sense of achievement. That simple joy you feel after completing even a tiny planned task is a reminder that deciding and doing, no matter how small, builds confidence and momentum.",
+      hint: "",
       correctButtonId: 0, // Button 2 (ID 1) is correct in round 2
     },
     {
       roundNumber: 3,
-      hint: " While driving home, I noticed that even without consciously thinking about each move, I still followed signals, took the right turns, and parked safely, all on autopilot while my mind wandered. Later, when a calendar notification popped up, I unlocked my phone but instinctively opened WhatsApp instead—another small reminder of how much of our daily behaviour runs on habit rather than intention.",
+      hint: "",
       correctButtonId: 9, // Button 3 (ID 2) is correct in round 3
     },
     {
       roundNumber: 4,
-      hint: "During Diwali, I planned to eat just one piece of Kaju Katli but ended up finishing the entire box, showing how easy it is to slip once we start. On the flip side, when my friend refused to work out, suggesting just two push-ups got him moving—and that tiny start led him to complete the full workout with me.",
+      hint: "",
       correctButtonId: 6, // Button 4 (ID 3) is correct in round 4
     },
     {
       roundNumber: 5,
-      hint: "When a task feels easy enough to start without an inner battle, you’re more likely to follow through. By keeping the first step almost effortless, you avoid mental exhaustion and leave yourself with enough energy to keep going—or even do more than you planned. When something feels too big, your mind resists. But if you tell yourself, “Just read one page” or “Just do one push-up,” there’s no struggle to begin—and once you start, you often find it easier to continue.",
+      hint: "",
       correctButtonId: 3, // Button 5 (ID 4) is correct in round 5
     },
 
@@ -102,16 +102,16 @@ const GAME_DATA = {
 // All 10 buttons with their text - you can edit these
 // id: 4, 0, 9, 6, 3, 1, 8, 5, 7, 2 is the correct order
 const ALL_BUTTONS = [
-  { id: 0, text: "Self-Efficacy Boost" },
-  { id: 1, text: "Answer 2" },
-  { id: 2, text: "Answer 3" },
-  { id: 3, text: "Willpower Conservation" },
-  { id: 4, text: "Bypass Resistance" },
-  { id: 5, text: "Answer 6" },
-  { id: 6, text: "Bonus Reps" },
-  { id: 7, text: "Answer 8" },
-  { id: 8, text: "Answer 9" },
-  { id: 9, text: "Brain’s Autopilot System" }, // button id 0, 1, 8 and 9 have curve edge
+  { id: 0, text: "" },
+  { id: 1, text: "" },
+  { id: 2, text: "" },
+  { id: 3, text: "" },
+  { id: 4, text: "" },
+  { id: 5, text: "" },
+  { id: 6, text: "" },
+  { id: 7, text: "" },
+  { id: 8, text: "" },
+  { id: 9, text: "" }, // button id 0, 1, 8 and 9 have curve edge
 ];
 
 const Book2 = () => {

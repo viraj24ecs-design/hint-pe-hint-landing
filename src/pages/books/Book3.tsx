@@ -77,16 +77,16 @@ const createConfetti = () => {
 // All 10 buttons with their text - you can edit these
 // id: 4, 0, 9, 6, 3, 1, 8, 5, 7, 2 is the correct order
 const ALL_BUTTONS = [
-  { id: 0, text: "Answer 2" },
-  { id: 1, text: "Answer 6" },
-  { id: 2, text: "Answer 10" },
-  { id: 3, text: "Answer 5" },
-  { id: 4, text: "Answer 1" },
-  { id: 5, text: "Answer 8" },
-  { id: 6, text: "Answer 4" },
-  { id: 7, text: "Answer 7" },
-  { id: 8, text: "Answer 9" },
-  { id: 9, text: "Answer 3" },
+  { id: 0, text: "" },
+  { id: 1, text: "" },
+  { id: 2, text: "" },
+  { id: 3, text: "" },
+  { id: 4, text: "" },
+  { id: 5, text: "" },
+  { id: 6, text: "" },
+  { id: 7, text: "" },
+  { id: 8, text: "" },
+  { id: 9, text: "" },
 ];
 
 const Book3 = () => {
@@ -126,42 +126,42 @@ const Book3 = () => {
       },
       {
         roundNumber: 3,
-        hint: "Concpet No. 3 (Don't exceed 500 words)",
+        hint: "",
         correctButtonId: 9, // Button 3 (ID 2) is correct in round 3
       },
       {
         roundNumber: 4,
-        hint: "Concpet No. 4 (Don't exceed 500 words)",
+        hint: "",
         correctButtonId: 6, // Button 4 (ID 3) is correct in round 4
       },
       {
         roundNumber: 5,
-        hint: "Concpet No. 5 (Don't exceed 500 words)",
+        hint: "",
         correctButtonId: 3, // Button 5 (ID 4) is correct in round 5
       },
       {
         roundNumber: 6,
-        hint: "Concpet No. 6 (Don't exceed 500 words)",
+        hint: "",
         correctButtonId: 1, // Button 6 (ID 5) is correct in round 6
       },
       {
         roundNumber: 7,
-        hint: "Concpet No. 7 (Don't exceed 500 words)",
+        hint: "",
         correctButtonId: 8, // Button 7 (ID 6) is correct in round 7
       },
       {
         roundNumber: 8,
-        hint: "Con  cpet No. 8 (Don't exceed 500 words)",
+        hint: "",
         correctButtonId: 5, // Button 8 (ID 7) is correct in round 8
       },
       {
         roundNumber: 9,
-        hint: "Concpet No. 9 (Don't exceed 500 words)",
+        hint: "",
         correctButtonId: 7, // Button 9 (ID 8) is correct in round 9
       },
       {
         roundNumber: 10,
-        hint: "Concpet No. 10 (Don't exceed 500 words)",
+        hint: "",
         correctButtonId: 2, // Button 10 (ID 9) is correct in round 10
       },
     ],
@@ -176,7 +176,7 @@ const Book3 = () => {
   const [dynamicAnswers, setDynamicAnswers] = useState<string[]>([]);
   const [dynamicCorrectBtnIds, setDynamicCorrectBtnIds] = useState<number[]>([]);
   const [decoyEnabled, setDecoyEnabled] = useState(false);
-  const [dynamicDecoys, setDynamicDecoys] = useState<{text: string; position: number}[]>([]);
+  const [dynamicDecoys, setDynamicDecoys] = useState<{ text: string; position: number }[]>([]);
   const [dynamicGameBgImage, setDynamicGameBgImage] = useState<string>("");
 
   // Fetch conLimit and book data on mount
@@ -195,14 +195,14 @@ const Book3 = () => {
         setDecoyEnabled(data.decoyEnabled ?? false);
         setDynamicDecoys(data.decoys ?? []);
       })
-      .catch(() => {});
+      .catch(() => { });
 
     fetch(`${API_BASE_URL}/api/bookmeta?bookId=book3`)
       .then((res) => res.json())
       .then((data) => {
         if (data.gameBgImage) setDynamicGameBgImage(data.gameBgImage);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Build effective game data: API values override hardcoded ones

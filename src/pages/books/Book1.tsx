@@ -71,43 +71,43 @@ const GAME_DATA = {
   rounds: [
     {
       roundNumber: 1,
-      hint: "List all the people around you and checking one thing: do they give you energy or take it away? Some people help you grow quietly. Others create confusion and delay. Progress begins when you consciously choose who deserves your time and trust.",
+      hint: "",
       correctButtonId: 4, // Button 1 (ID 4) is correct in round 1
     },
     {
       roundNumber: 2,
-      hint: "Use this before deepening any relationship. Ask: Does this person support my future or pull me into old habits? This filter protects your dreams. Not everyone needs to be removed—some just need less access.",
+      hint: "",
       correctButtonId: 0, // Button 2 (ID 0) is correct in round 2
     },
     {
       roundNumber: 3,
-      hint: "One right person can change everything. A good “who” brings ideas, confidence, and momentum. Instead of adding effort, they multiply results. Success often comes not from working harder, but from choosing better partners.",
+      hint: "",
       correctButtonId: 8, // Button 3 (ID 9) is correct in round 3
     },
     {
       roundNumber: 4,
-      hint: "When you find the right person first, the method becomes simple. When you start with “how,” you feel stuck. The right person who carries experience shortens your struggle.",
+      hint: "",
       correctButtonId: 6, // Button 4 (ID 6) is correct in round 4
     },
     {
       roundNumber: 5,
-      hint: "It appears when you hesitate to delegate, fearing mistakes. But control slows growth. Trust, even if imperfect, builds capability in others. Long-term success comes from letting people learn, not from holding everything tightly.",
+      hint: "",
       correctButtonId: 3, // Button 5 (ID 4) is correct in round 5
     },
     {
       roundNumber: 6,
-      hint: "Most people ask, “How will I do this?” and feel tired even before starting. the better question is “Who can do it?”. Instead of struggling alone, find the right person who already knows how. Life becomes lighter when we stop proving our capability and start trusting collaboration.",
+      hint: "",
       correctButtonId: 1, // Button 6 (ID 5) is correct in round 6
     },
     {
       roundNumber: 7,
-      hint: "Each person is born with a natural gift. It is the work that gives you joy and energy. When you focus only on this, and allow others to handle the rest, your results improve without stress. Success comes faster when you stop doing what drains you.",
+      hint: "",
       correctButtonId: 7, // Button 7 (ID 6) is correct in round 7
     },
 
     {
       roundNumber: 9,
-      hint: "Many people believe success means doing everything themselves. The book teaches that growth comes through teaming up, not control. When you allow capable people to contribute, they feel respected and you feel free. Progress becomes shared, not heavy.",
+      hint: "",
       correctButtonId: 2, // Button 9 (ID 8) is correct in round 9
     },
 
@@ -117,16 +117,16 @@ const GAME_DATA = {
 // All 10 buttons with their text - you can edit these
 
 const ALL_BUTTONS = [
-  { id: 0, text: "Who Relationship Filter" },
-  { id: 1, text: "Who Not How" },
-  { id: 2, text: "Colaboration Over Control" },
-  { id: 3, text: "Trust Gap" },
-  { id: 4, text: "Who Audit" },
-  { id: 5, text: "Answer 6" },
-  { id: 6, text: "Who Before How" },
-  { id: 7, text: "Unique Ability" },
-  { id: 8, text: "Who Multiplier Effect" }, // button id 0, 1, 8 and 9 have curve edge 
-  { id: 9, text: "Answer 10" },
+  { id: 0, text: "" },
+  { id: 1, text: "" },
+  { id: 2, text: "" },
+  { id: 3, text: "" },
+  { id: 4, text: "" },
+  { id: 5, text: "" },
+  { id: 6, text: "" },
+  { id: 7, text: "" },
+  { id: 8, text: "" }, // button id 0, 1, 8 and 9 have curve edge 
+  { id: 9, text: "" },
 ];
 
 const Book1 = () => {
@@ -146,7 +146,7 @@ const Book1 = () => {
   const [dynamicAnswers, setDynamicAnswers] = useState<string[]>([]);
   const [dynamicCorrectBtnIds, setDynamicCorrectBtnIds] = useState<number[]>([]);
   const [decoyEnabled, setDecoyEnabled] = useState(false);
-  const [dynamicDecoys, setDynamicDecoys] = useState<{text: string; position: number}[]>([]);
+  const [dynamicDecoys, setDynamicDecoys] = useState<{ text: string; position: number }[]>([]);
   const [dynamicGameBgImage, setDynamicGameBgImage] = useState<string>("");
 
   // Fetch conLimit and book data on mount
@@ -165,14 +165,14 @@ const Book1 = () => {
         setDecoyEnabled(data.decoyEnabled ?? false);
         setDynamicDecoys(data.decoys ?? []);
       })
-      .catch(() => {});
+      .catch(() => { });
 
     fetch(`${API_BASE_URL}/api/bookmeta?bookId=book1`)
       .then((res) => res.json())
       .then((data) => {
         if (data.gameBgImage) setDynamicGameBgImage(data.gameBgImage);
       })
-      .catch(() => {});
+      .catch(() => { });
   }, []);
 
   // Build effective game data: API values override hardcoded ones
