@@ -27,15 +27,14 @@ export default function EditPage() {
   };
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="min-h-screen p-6 mx-auto">
       <h1 className="text-2xl font-bold mb-4">Edit Message</h1>
-      <form onSubmit={handleSubmit} className="flex gap-2 items-center">
-        <input
-          type="text"
+      <form onSubmit={handleSubmit} className="flex gap-4 flex-col items-start">
+        <textarea
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          className="border rounded px-3 py-2"
-          placeholder="Enter new message"
+          className="border rounded px-5 py-3 h-64 w-full resize-none"
+          placeholder="Enter concept paragraph"
         />
         <button type="submit" className="border rounded px-3 py-2">
           Update Database

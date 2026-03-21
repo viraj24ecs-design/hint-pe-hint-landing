@@ -73,6 +73,63 @@ app.post('/api/sandesh', async (req, res) => {
   }
 });
 
+// ConLimit model - per-book concept round limiter
+const conLimitSchema = new mongoose.Schema({
+  bookId: { type: String, required: true, unique: true },
+  conLimit: { type: Number, required: true, min: 1, max: 10, default: 10 },
+});
+const ConLimit = mongoose.model('ConLimit', conLimitSchema, 'conLimits');
+
+// Route to GET conLimit for a book
+app.get('/api/conlimit', async (req, res) => {
+  try {
+    const { bookId } = req.query;
+    if (!bookId) {
+      return res.status(400).json({ error: 'bookId query param is required' });
+    }
+
+    if (mongoose.connection.readyState === 1) {
+      const doc = await ConLimit.findOne({ bookId });
+      return res.json({ conLimit: doc?.conLimit ?? 10 });
+    }
+
+    return res.json({ conLimit: 10, source: 'fallback' });
+  } catch (err) {
+    console.error('GET /api/conlimit error:', err.message);
+    return res.json({ conLimit: 10, source: 'fallback' });
+  }
+});
+
+// Route to SET conLimit for a book
+app.post('/api/conlimit', async (req, res) => {
+  try {
+    const { bookId, conLimit } = req.body || {};
+
+    if (!bookId || typeof bookId !== 'string') {
+      return res.status(400).json({ error: 'bookId is required' });
+    }
+
+    const limit = Number(conLimit);
+    if (!Number.isInteger(limit) || limit < 1 || limit > 10) {
+      return res.status(400).json({ error: 'conLimit must be an integer between 1 and 10' });
+    }
+
+    if (mongoose.connection.readyState === 1) {
+      await ConLimit.findOneAndUpdate(
+        { bookId },
+        { conLimit: limit },
+        { upsert: true }
+      );
+      return res.status(200).json({ message: 'Updated successfully', bookId, conLimit: limit });
+    }
+
+    return res.status(200).json({ message: 'MongoDB unavailable', source: 'memory' });
+  } catch (err) {
+    console.error('POST /api/conlimit error:', err.message);
+    return res.status(500).json({ error: 'Failed to update conLimit' });
+  }
+});
+
 // Test route
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Backend is working!' });

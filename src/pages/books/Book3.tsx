@@ -35,7 +35,7 @@ const preloadImages = [
   "/VishalPics/VishalSad.webp",
 ];
 
-const preload = ()=> {
+const preload = () => {
   preloadImages.forEach((src) => {
     const img = new Image();
     img.src = src;
@@ -47,7 +47,7 @@ const createConfetti = () => {
   const confettiCount = 100; // 2x increase from 50 to 100
   const confetti = [];
   const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff1493'];
-  
+
   for (let i = 0; i < confettiCount; i++) {
     confetti.push({
       id: i,
@@ -84,8 +84,8 @@ const ALL_BUTTONS = [
   { id: 4, text: "Answer 1" },
   { id: 5, text: "Answer 8" },
   { id: 6, text: "Answer 4" },
- null,
-  { id: 8, text: "Answer 7" },
+  { id: 7, text: "Answer 7" },
+  { id: 8, text: "Answer 9" },
   { id: 9, text: "Answer 3" },
 ];
 
@@ -99,8 +99,9 @@ const Book3 = () => {
 
   const API_BASE_URL = import.meta.env.PROD ? "" : "http://localhost:5001";
   const [msg, setMsg] = useState<string>("Loading...");
+  const [msg2, setMsg2] = useState<string>("Loading...");
 
-    useEffect(() => {
+  useEffect(() => {
     fetch(`${API_BASE_URL}/api/sandesh`)
       .then((res) => res.json())
       .then((data) => setMsg(data.sandesh ?? "No message found"))
@@ -110,77 +111,87 @@ const Book3 = () => {
 
   // Game Data and State Management
 
-const GAME_DATA = {
-  imagePath: "/How-To-Bring-Self-Discipline-To-Exercise.jpg", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
-  rounds: [
-    {
-      roundNumber: 1,
-      hint: msg,
-      correctButtonId: 4, // Button 1 (ID 0) is correct in round 1
-    },
-    {
-      roundNumber: 2,
-      hint: "Concpet No. 2 (Don't exceed 500 words)",
-      correctButtonId: 0, // Button 2 (ID 1) is correct in round 2
-    },
-    {
-      roundNumber: 3,
-      hint: "Concpet No. 3 (Don't exceed 500 words)",
-      correctButtonId: 9, // Button 3 (ID 2) is correct in round 3
-    },
-    {
-      roundNumber: 4,
-      hint: "Concpet No. 4 (Don't exceed 500 words)",
-      correctButtonId: 6, // Button 4 (ID 3) is correct in round 4
-    },
-    {
-      roundNumber: 5,
-      hint: "Concpet No. 5 (Don't exceed 500 words)",
-      correctButtonId: 3, // Button 5 (ID 4) is correct in round 5
-    },
-    {
-      roundNumber: 6,
-      hint: "Concpet No. 6 (Don't exceed 500 words)",
-      correctButtonId: 1, // Button 6 (ID 5) is correct in round 6
-    },
-    {
-      roundNumber: 7,
-      hint: "Concpet No. 7 (Don't exceed 500 words)",
-      correctButtonId: 8, // Button 7 (ID 6) is correct in round 7
-    },
-    {
-      roundNumber: 8,
-      hint: "Concpet No. 8 (Don't exceed 500 words)",
-      correctButtonId: 5, // Button 8 (ID 7) is correct in round 8
-    },
-    {
-      roundNumber: 9,
-      hint: "Concpet No. 9 (Don't exceed 500 words)",
-      correctButtonId: 7, // Button 9 (ID 8) is correct in round 9
-    },
-    {
-      roundNumber: 10,
-      hint: "Concpet No. 10 (Don't exceed 500 words)",
-      correctButtonId: 2, // Button 10 (ID 9) is correct in round 10
-    },
-  ],
-};
+  const GAME_DATA = {
+    imagePath: "/How-To-Bring-Self-Discipline-To-Exercise.jpg", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
+    rounds: [
+      {
+        roundNumber: 1,
+        hint: msg,
+        correctButtonId: 4, // Button 1 (ID 0) is correct in round 1
+      },
+      {
+        roundNumber: 2,
+        hint: msg2,
+        correctButtonId: 0, // Button 2 (ID 1) is correct in round 2
+      },
+      {
+        roundNumber: 3,
+        hint: "Concpet No. 3 (Don't exceed 500 words)",
+        correctButtonId: 9, // Button 3 (ID 2) is correct in round 3
+      },
+      {
+        roundNumber: 4,
+        hint: "Concpet No. 4 (Don't exceed 500 words)",
+        correctButtonId: 6, // Button 4 (ID 3) is correct in round 4
+      },
+      {
+        roundNumber: 5,
+        hint: "Concpet No. 5 (Don't exceed 500 words)",
+        correctButtonId: 3, // Button 5 (ID 4) is correct in round 5
+      },
+      {
+        roundNumber: null,
+        hint: null,
+        correctButtonId: null, // Button 6 (ID 5) is correct in round 6
+      },
+      {
+        roundNumber: null,
+        hint: null,
+        correctButtonId: null, // Button 7 (ID 6) is correct in round 7
+      },
+      {
+        roundNumber: null,
+        hint: null,
+        correctButtonId: null, // Button 8 (ID 7) is correct in round 8
+      },
+      {
+        roundNumber: null,
+        hint: null,
+        correctButtonId: null, // Button 9 (ID 8) is correct in round 9
+      },
+      {
+        roundNumber: null,
+        hint: null,
+        correctButtonId: null, // Button 10 (ID 9) is correct in round 10
+      },
+    ],
+  };
 
 
   // Game state
+    const [conLimit, setConLimit] = useState(10);
+
+  // Fetch conLimit for this book from API
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/conlimit?bookId=book3`)
+      .then((res) => res.json())
+      .then((data) => setConLimit(data.conLimit ?? 10))
+      .catch(() => setConLimit(10));
+  }, []);
+
   const [currentRound, setCurrentRound] = useState(0);
   const [poppedButtons, setPoppedButtons] = useState<number[]>([]); // Buttons that have disappeared forever
   const [wrongButtons, setWrongButtons] = useState<number[]>([]); // Buttons marked as wrong in current round
   const [isProcessing, setIsProcessing] = useState(false); // Prevent clicks during animation
   const [gameCompleted, setGameCompleted] = useState(false);
   const [clickedButtonId, setClickedButtonId] = useState<number | null>(null); // Instant feedback on click
-  
+
   // Temporary coins tracking (frontend only during gameplay)
   const [tempCoinsEarned, setTempCoinsEarned] = useState(0); // Coins earned in this session
   const [displayCoins, setDisplayCoins] = useState(user?.charityCoins ?? 0); // What user sees in UI
   const [isCountingCoins, setIsCountingCoins] = useState(false); // For wobble/glow animation
   const [coinGlowColor, setCoinGlowColor] = useState<'green' | 'red' | null>(null); // Glow color
-  
+
   // Sync displayCoins with user's actual coins from backend
   useEffect(() => {
     if (user?.charityCoins !== undefined) {
@@ -193,14 +204,14 @@ const GAME_DATA = {
     const isPositive = change > 0;
     setCoinGlowColor(isPositive ? 'green' : 'red');
     setIsCountingCoins(true);
-    
+
     const startValue = displayCoins;
     const endValue = Math.max(0, displayCoins + change);
     const duration = 850; // 0.85 seconds (between 0.7 and 1 second)
     const steps = 30; // Number of animation frames
     const stepDuration = duration / steps;
     const increment = (endValue - startValue) / steps;
-    
+
     let currentStep = 0;
     const timer = setInterval(() => {
       currentStep++;
@@ -217,13 +228,13 @@ const GAME_DATA = {
       }
     }, stepDuration);
   };
-  
+
   // Animation states
   const [showConfetti, setShowConfetti] = useState(false);
   const [showVignette, setShowVignette] = useState(false);
   const [correctButtonId, setCorrectButtonId] = useState<number | null>(null);
   const [shakingButtonId, setShakingButtonId] = useState<number | null>(null);
-  
+
   // Dialog states
   const [showWelcomeDialog, setShowWelcomeDialog] = useState(true); // Welcome popup on game start
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
@@ -231,19 +242,19 @@ const GAME_DATA = {
   const [showExitWarning, setShowExitWarning] = useState(false);
   const [animatedCoins, setAnimatedCoins] = useState(0); // For count-up animation
   const [isSavingCoins, setIsSavingCoins] = useState(false); // Prevent multiple clicks on "Back to Book Selection"
-  
+
   // Scroll tracking for hint box
   const [scrollPosition, setScrollPosition] = useState(0);
   const [scrollThumbHeight, setScrollThumbHeight] = useState(33); // percentage
   const hintRef = useRef<HTMLParagraphElement>(null);
-  
+
   // Handle scroll event for custom scrollbar
   const handleHintScroll = (e: React.UIEvent<HTMLParagraphElement>) => {
     const element = e.currentTarget;
     const scrollTop = element.scrollTop;
     const scrollHeight = element.scrollHeight;
     const clientHeight = element.clientHeight;
-    
+
     if (scrollHeight > clientHeight) {
       const scrollPercent = (scrollTop / (scrollHeight - clientHeight)) * 100;
       const thumbHeight = (clientHeight / scrollHeight) * 100;
@@ -251,7 +262,7 @@ const GAME_DATA = {
       setScrollThumbHeight(thumbHeight);
     }
   };
-  
+
   // Lock body scroll during game session to prevent accidental refresh
   useEffect(() => {
     if (!gameCompleted) {
@@ -263,13 +274,13 @@ const GAME_DATA = {
       document.body.style.top = '0';
       document.body.style.left = '0';
       document.documentElement.style.overflow = 'hidden';
-      
+
       // Prevent pull-to-refresh on touch devices
       const preventPullToRefresh = (e: TouchEvent) => {
         // Allow scrolling inside the hint paragraph
         const target = e.target as HTMLElement;
         const isInsideHintBox = target.closest('[data-hint-scroll]');
-        
+
         if (!isInsideHintBox) {
           // If not inside hint box, prevent all touch move
           if (e.touches.length === 1) {
@@ -277,26 +288,26 @@ const GAME_DATA = {
           }
         }
       };
-      
+
       // Prevent overscroll/bounce effect
       const preventOverscroll = (e: TouchEvent) => {
         const target = e.target as HTMLElement;
         const scrollableElement = target.closest('[data-hint-scroll]') as HTMLElement;
-        
+
         if (scrollableElement) {
           const { scrollTop, scrollHeight, clientHeight } = scrollableElement;
           const touchY = e.touches[0].clientY;
           const atTop = scrollTop <= 0;
           const atBottom = scrollTop + clientHeight >= scrollHeight;
-          
+
           // Store touch start position
           (scrollableElement as any)._touchStartY = touchY;
         }
       };
-      
+
       document.addEventListener('touchmove', preventPullToRefresh, { passive: false });
       document.addEventListener('touchstart', preventOverscroll, { passive: true });
-      
+
       return () => {
         document.removeEventListener('touchmove', preventPullToRefresh);
         document.removeEventListener('touchstart', preventOverscroll);
@@ -319,7 +330,7 @@ const GAME_DATA = {
       document.documentElement.style.overflow = '';
     }
   }, [gameCompleted]);
-  
+
   // Guest user state
 
   const isGuest = !user;
@@ -347,7 +358,7 @@ const GAME_DATA = {
     // Prevent multiple clicks
     if (isSavingCoins) return;
     setIsSavingCoins(true);
-    
+
     if (!isGuest && tempCoinsEarned !== 0) {
       try {
         // Save all coins earned in this session to backend
@@ -387,7 +398,7 @@ const GAME_DATA = {
       const steps = 60; // 60 frames for smooth animation
       const increment = tempCoinsEarned / steps;
       const stepDuration = duration / steps;
-      
+
       let currentStep = 0;
       const timer = setInterval(() => {
         currentStep++;
@@ -398,7 +409,7 @@ const GAME_DATA = {
           setAnimatedCoins(Math.floor(increment * currentStep));
         }
       }, stepDuration);
-      
+
       return () => clearInterval(timer);
     }
   }, [gameCompleted, tempCoinsEarned]);
@@ -449,16 +460,16 @@ const GAME_DATA = {
     if (isCorrect) {
       // Play success sound
       playSound('correct');
-      
+
       // Show button as green
       setClickedButtonId(null);
       setCorrectButtonId(buttonId);
-      
+
       // Trigger confetti after 300ms
       setTimeout(() => {
         setShowConfetti(true);
       }, 300);
-      
+
       // Pop button after animation (but don't auto-move to next round)
       setTimeout(() => {
         setPoppedButtons(prev => [...prev, buttonId]);
@@ -516,8 +527,8 @@ const GAME_DATA = {
         title: "", // Empty title to prevent it from showing above
         description: (
           <div className="flex items-center gap-4 -ml-8">
-            <img 
-              src="/VishalPics/VishalIncorrectAns.webp" 
+            <img
+              src="/VishalPics/VishalIncorrectAns.webp"
               alt="Incorrect"
               className="w-44 h-44 object-contain flex-shrink-0"
             />
@@ -542,7 +553,7 @@ const GAME_DATA = {
       setShowVignette(true);
       setShakingButtonId(buttonId);
       setWrongButtons(prev => [...prev, buttonId]);
-      
+
       // Remove effects after 1 second
       setTimeout(() => {
         setShowVignette(false);
@@ -553,12 +564,12 @@ const GAME_DATA = {
   };
 
   const moveToNextRound = async () => {
-    if (currentRound < GAME_DATA.rounds.length - 1) {
+    if (currentRound < conLimit - 1) {
       // Move to next round
       setCurrentRound(currentRound + 1);
       setWrongButtons([]); // Reset wrong buttons for new round
       setIsProcessing(false);
-      
+
       // Reset scroll position for hint paragraph
       setScrollPosition(0);
       if (hintRef.current) {
@@ -567,14 +578,14 @@ const GAME_DATA = {
 
       // Update progress only for logged-in users
       if (!isGuest) {
-        const newProgress = Math.min(100, ((currentRound + 1) / GAME_DATA.rounds.length) * 100);
+        const newProgress = Math.min(100, ((currentRound + 1) / conLimit) * 100);
         await updateBookProgress(bookId, newProgress);
       }
     } else {
       // Game completed - just show completion screen
       // Coins will be saved when user clicks "Back to Book Selection"
       setGameCompleted(true);
-      
+
       if (!isGuest) {
         try {
           // Update progress to 100%
@@ -583,7 +594,7 @@ const GAME_DATA = {
           console.error('❌ Error updating progress:', error);
         }
       }
-      
+
       // Game is now completed - congratulations screen will show automatically
     }
   };
@@ -593,18 +604,18 @@ const GAME_DATA = {
     if (clickedButtonId === buttonId) {
       return "bg-black text-white border-black";
     }
-    
+
     // Check if this is the correct button being shown as green
     if (correctButtonId === buttonId) {
       return "bg-green-500 text-white border-green-600 animate-pulse";
     }
-    
+
     // Check if this button was marked as wrong
     if (wrongButtons.includes(buttonId)) {
       const isShaking = shakingButtonId === buttonId;
       return `bg-red-500 text-white border-red-600 ${isShaking ? 'animate-shake' : ''}`;
     }
-    
+
     return "bg-white border-2 border-gray-800 hover:bg-gray-100";
   };
 
@@ -621,17 +632,17 @@ const GAME_DATA = {
             <X className="h-5 w-5" />
             <span className="sr-only">Close</span>
           </button>
-          
+
           <div className="flex flex-col sm:flex-row">
             {/* Left side - Image */}
             <div className="w-full sm:w-1/2 bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-6">
-              <img 
-                src="/VishalPics/VishalSad.webp" 
-                alt="Vishal needs help" 
+              <img
+                src="/VishalPics/VishalSad.webp"
+                alt="Vishal needs help"
                 className="w-full h-auto max-w-[250px] object-contain"
               />
             </div>
-            
+
             {/* Right side - Text */}
             <div className="w-full sm:w-1/2 p-6 sm:p-8 flex flex-col justify-center space-y-4">
               <div>
@@ -645,8 +656,8 @@ const GAME_DATA = {
                   If you win this game there is a small surprise for you in the end!
                 </p>
               </div>
-              
-              <Button 
+
+              <Button
                 onClick={() => setShowWelcomeDialog(false)}
                 className="w-full sm:w-auto"
                 size="lg"
@@ -657,17 +668,17 @@ const GAME_DATA = {
           </div>
         </DialogContent>
       </Dialog>
-      
+
       {/* Red Vignette Effect for Wrong Answer */}
       {showVignette && (
-        <div 
+        <div
           className="fixed inset-0 pointer-events-none z-50 animate-vignette"
           style={{
             background: 'radial-gradient(circle, transparent 30%, rgba(220, 38, 38, 0.6) 100%)',
           }}
         />
       )}
-      
+
       {/* Confetti Animation for Correct Answer */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-40 overflow-hidden">
@@ -686,14 +697,14 @@ const GAME_DATA = {
           ))}
         </div>
       )}
-      
+
       {/* Fixed Header - Compact */}
       <header className="bg-background border-b shadow-sm flex-shrink-0">
         <div className="container mx-auto px-2 sm:px-4 py-2 flex justify-between items-center">
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Back Button */}
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={handleBack}
               className="flex items-center p-1 sm:p-2"
@@ -704,13 +715,13 @@ const GAME_DATA = {
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Charity Coins Display - Compact with animation */}
-            <div 
+            <div
               className={`flex items-center gap-1 sm:gap-2 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg transition-all duration-300 z-[60]
                 ${isCountingCoins ? 'animate-coin-pulse' : ''}
-                ${coinGlowColor === 'green' 
-                  ? 'bg-gradient-to-r from-lime-400 to-emerald-400 shadow-[0_0_25px_rgba(132,204,22,0.9)]' 
-                  : coinGlowColor === 'red' 
-                    ? 'bg-gradient-to-r from-red-400 to-red-600 shadow-[0_0_25px_rgba(239,68,68,0.9)]' 
+                ${coinGlowColor === 'green'
+                  ? 'bg-gradient-to-r from-lime-400 to-emerald-400 shadow-[0_0_25px_rgba(132,204,22,0.9)]'
+                  : coinGlowColor === 'red'
+                    ? 'bg-gradient-to-r from-red-400 to-red-600 shadow-[0_0_25px_rgba(239,68,68,0.9)]'
                     : 'bg-gradient-to-r from-yellow-400 to-yellow-600'}`}
             >
               <Coins className="w-3 h-3 sm:w-5 sm:h-5" />
@@ -729,12 +740,12 @@ const GAME_DATA = {
             <div className="flex justify-between items-center mb-1">
               <h3 className="text-xs sm:text-sm font-semibold">Progress</h3>
               <span className="text-xs sm:text-sm font-bold text-primary">
-                {isGuest ? Math.round(((currentRound + 1) / GAME_DATA.rounds.length) * 100) : currentProgress}%
+                {isGuest ? Math.round(((currentRound + 1) / conLimit) * 100) : currentProgress}%
               </span>
             </div>
-            <Progress 
-              value={isGuest ? ((currentRound + 1) / GAME_DATA.rounds.length) * 100 : currentProgress} 
-              className="h-1 sm:h-2" 
+            <Progress
+              value={isGuest ? ((currentRound + 1) / conLimit) * 100 : currentProgress}
+              className="h-1 sm:h-2"
             />
           </div>
 
@@ -743,20 +754,20 @@ const GAME_DATA = {
             <div className="flex-1 flex flex-col overflow-y-auto overflow-x-hidden">
               {/* Vishal Congratulations Image Section */}
               <div className="w-full bg-gradient-to-br from-green-50 to-yellow-50 flex items-center justify-center p-4 sm:p-6 md:p-8 flex-shrink-0">
-                <img 
-                  src="/VishalPics/VishalCongrats.webp" 
-                  alt="Congratulations" 
+                <img
+                  src="/VishalPics/VishalCongrats.webp"
+                  alt="Congratulations"
                   className="w-full h-auto max-w-[200px] sm:max-w-[300px] md:max-w-[400px] object-contain rounded-xl sm:rounded-2xl shadow-lg"
                   style={{ filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15))' }}
                 />
               </div>
-              
+
               {/* Content Section - Scrollable */}
               <div className="px-4 py-4 sm:px-6 sm:py-6 md:p-8 flex flex-col items-center text-center space-y-3 sm:space-y-4 md:space-y-5">
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-green-600">
                   🎉 Congratulations! 🎉
                 </h2>
-                
+
                 <div className="space-y-2 sm:space-y-3">
                   <p className="text-base sm:text-xl md:text-2xl font-bold text-gray-800">
                     Thank you for helping Vishal!
@@ -765,14 +776,14 @@ const GAME_DATA = {
                     This is the book he wishes you should read
                   </p>
                 </div>
-                
+
                 {/* Animated Coins Counter */}
                 <div className="py-2 sm:py-4 md:py-6">
                   <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-600">
                     You earned {animatedCoins} Charity Coins!
                   </p>
                 </div>
-                
+
                 {/* Additional Info */}
                 <div className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-600 max-w-2xl px-4">
                   <p>
@@ -789,7 +800,7 @@ const GAME_DATA = {
                     <p className="text-sm sm:text-base text-gray-700 mb-3">
                       💡 <span className="font-semibold">Sign up now</span> to save your coins and track your progress!
                     </p>
-                    <Button 
+                    <Button
                       size="lg"
                       className="w-full bg-yellow-500 hover:bg-yellow-600"
                       onClick={() => {
@@ -800,24 +811,24 @@ const GAME_DATA = {
                     </Button>
                   </div>
                 )}
-                
+
                 {/* Amazon Link */}
                 <div className="pt-3 sm:pt-4 md:pt-6">
                   <p className="text-sm sm:text-base text-gray-700 mb-2 sm:mb-3">
                     Click on this affiliated link to buy this book
                   </p>
-                  <a 
-                    href="https://www.amazon.com" 
-                    target="_blank" 
+                  <a
+                    href="https://www.amazon.com"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800 underline text-base sm:text-lg md:text-xl font-medium"
                   >
                     Amazon Link
                   </a>
                 </div>
-                
+
                 {/* Continue Button */}
-                <Button 
+                <Button
                   size="lg"
                   className="mt-4 sm:mt-6 px-8 sm:px-10 md:px-12 py-6 text-base sm:text-lg"
                   onClick={handleBackToBooks}
@@ -837,22 +848,22 @@ const GAME_DATA = {
                 </h2>
                 <div className="bg-card border-2 border-primary rounded-lg p-3 sm:p-4 md:p-5 shadow-lg">
                   <div className="relative">
-                    <p 
-                       ref={hintRef}
-                       onScroll={handleHintScroll}
-                       data-hint-scroll
-                       className="text-sm sm:text-base md:text-lg leading-relaxed break-words max-h-[18vh] overflow-y-auto pr-4 sm:pr-2 overscroll-contain touch-pan-y text-justify font-sfpro"
-                       style={{
-                         scrollbarWidth: 'thin',
-                         scrollbarColor: '#374151 #e5e7eb',
-                         WebkitOverflowScrolling: 'touch',
-                         overscrollBehavior: 'contain'
-                       }}>
+                    <p
+                      ref={hintRef}
+                      onScroll={handleHintScroll}
+                      data-hint-scroll
+                      className="text-sm sm:text-base md:text-lg leading-relaxed break-words max-h-[18vh] overflow-y-auto pr-4 sm:pr-2 overscroll-contain touch-pan-y text-justify font-sfpro"
+                      style={{
+                        scrollbarWidth: 'thin',
+                        scrollbarColor: '#374151 #e5e7eb',
+                        WebkitOverflowScrolling: 'touch',
+                        overscrollBehavior: 'contain'
+                      }}>
                       {GAME_DATA.rounds[currentRound].hint}
                     </p>
                     {/* Dynamic scroll indicator bar for mobile */}
                     <div className="absolute right-0 top-0 bottom-0 w-2 bg-gray-300 rounded-full sm:hidden">
-                      <div 
+                      <div
                         className="w-full bg-gray-800 rounded-full transition-all duration-100"
                         style={{
                           height: `${scrollThumbHeight}%`,
@@ -867,9 +878,9 @@ const GAME_DATA = {
 
               {/* Image Reveal Box with Buttons - 2:3 Aspect Ratio (Portrait) - Auto-scales to fit screen */}
               <div className="flex-1 flex items-center justify-center px-2 sm:px-4 pb-2 min-h-0 w-full overflow-hidden">
-                <div 
-                  className="relative border border-black rounded-2xl shadow-lg overflow-hidden" 
-                  style={{ 
+                <div
+                  className="relative border border-black rounded-2xl shadow-lg overflow-hidden"
+                  style={{
                     aspectRatio: '2/3',
                     height: '100%',
                     maxHeight: '100%',
@@ -878,29 +889,29 @@ const GAME_DATA = {
                   }}
                 >
                   {/* Background Image */}
-                  <img 
+                  <img
                     src={GAME_DATA.imagePath}
                     alt="Game Image"
                     className="absolute inset-0 w-full h-full object-cover"
                   />
-                  
+
                   {/* Button Grid Overlay - 5 rows x 2 columns = 10 buttons */}
-              <div className="absolute inset-0 grid grid-rows-5 grid-cols-2 gap-0">
-  {ALL_BUTTONS.map((button, idx) => {
-    if (!button) {
-      // Render an empty cell to keep the grid structure
-      return <div key={idx} />;
-    }
-    const isPopped = poppedButtons.includes(button.id);
-    if (isPopped) {
-      return <div key={button.id} className="pointer-events-none" />;
-    }
-    return (
-      <button
-        key={button.id}
-        onClick={() => handleButtonClick(button.id)}
-        disabled={isProcessing || wrongButtons.includes(button.id)}
-        className={`${getButtonStyle(button.id)} 
+                  <div className="absolute inset-0 grid grid-rows-5 grid-cols-2 gap-0">
+                    {ALL_BUTTONS.map((button, idx) => {
+                      if (!button) {
+                        // Render an empty cell to keep the grid structure
+                        return <div key={idx} />;
+                      }
+                      const isPopped = poppedButtons.includes(button.id);
+                      if (isPopped) {
+                        return <div key={button.id} className="pointer-events-none" />;
+                      }
+                      return (
+                        <button
+                          key={button.id}
+                          onClick={() => handleButtonClick(button.id)}
+                          disabled={isProcessing || wrongButtons.includes(button.id)}
+                          className={`${getButtonStyle(button.id)} 
           text-[13.5px] xs:text-[15px] sm:text-[19px] md:text-[22px] lg:text-[15px] font-medium 
           transition-all duration-300 
           flex items-center justify-center 
@@ -911,12 +922,12 @@ const GAME_DATA = {
           ${button.id === 1 ? 'rounded-tr-xl' : ''}
           ${button.id === 8 ? 'rounded-bl-xl' : ''}
           ${button.id === 9 ? 'rounded-br-xl' : ''}`}
-      >
-        <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
-      </button>
-    );
-  })}
-</div>
+                        >
+                          <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
@@ -934,7 +945,7 @@ const GAME_DATA = {
                 Congratulations! You've earned <span className="font-bold text-yellow-600">{tempCoinsEarned} Charity Coins</span>
               </p>
               <p>
-                Would you like to log in to save these coins to your account? 
+                Would you like to log in to save these coins to your account?
                 If you don't have an account, you can sign up now!
               </p>
             </AlertDialogDescription>
@@ -988,8 +999,8 @@ const GAME_DATA = {
       </AlertDialog>
 
       {/* Auth Dialog */}
-      <AuthDialog 
-        open={showAuthDialog} 
+      <AuthDialog
+        open={showAuthDialog}
         onOpenChange={setShowAuthDialog}
         onSuccess={() => {
           setShowAuthDialog(false);

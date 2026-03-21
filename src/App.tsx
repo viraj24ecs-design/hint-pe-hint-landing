@@ -23,6 +23,7 @@ import Book10 from "./pages/books/Book10";
 import Book11 from "./pages/books/Book11";
 import Display_Page from "./pages/testing/display_page";
 import Edit_Page from "./pages/testing/edit_page";
+import EditPageOne from "./pages/testing/edit_page_one";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/books/book11" element={<Book11 />} />
             <Route path="/testing/display_page" element={<Display_Page />} />
             <Route path="/testing/edit_page" element={<Edit_Page />} />
+            <Route path="/testing/edit_page_one" element={<EditPageOne />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

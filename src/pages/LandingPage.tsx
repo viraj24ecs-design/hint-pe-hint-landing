@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { books } from "@/data/books";
 
 const LandingPage = () => {
   const { user, isLoggedIn, logout } = useAuth();
@@ -59,22 +60,6 @@ const LandingPage = () => {
   const maxCoins = 10000;
   const progressPercentage = (userCoins / maxCoins) * 100;
 
-  // 12 Books array - customize titles, images, and routes here
-  const books = [
-    { id: 1, title: "How To Bring Self-Discipline To Exercise", image: "/BookPics/How-To-Bring-Self-Discipline-To-Exercise.jpg", route: "/game/trial-book" },
-    { id: 2, title: "Who Not How", image: "/BookPics/who_not_how.webp", route: "/books/book1" },
-    { id: 3, title: "Mini Habits", image: "/BookPics/MiniHabits.webp", route: "/books/book2" },
-    { id: 4, title: "Book 3", image: "", route: "/books/book3" },
-    { id: 5, title: "Book 4", image: "", route: "/books/book4" },
-    { id: 6, title: "Book 5", image: "", route: "/books/book5" },
-    { id: 7, title: "Book 6", image: "", route: "/books/book6" },
-    { id: 8, title: "Book 7", image: "", route: "/books/book7" },
-    { id: 9, title: "Book 8", image: "", route: "/books/book8" },
-    { id: 10, title: "Book 9", image: "", route: "/books/book9" },
-    { id: 11, title: "Book 10", image: "", route: "/books/book10" },
-    { id: 12, title: "Book 11", image: "", route: "/books/book11" },
-  ];
-
   // Show 3 books at a time
   const visibleBooks = books.slice(currentIndex, currentIndex + 3);
 
@@ -98,15 +83,15 @@ const LandingPage = () => {
       <header className="border-b">
         <div className="container mx-auto px-2 sm:px-4 py-2 flex justify-between items-center">
           <h1 className="text-sm sm:text-xl font-bold">Hint Pe Hint</h1>
-          
+
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Charity Coins Display */}
-            <button 
+            <button
               onClick={() => setShowCoinsDialog(true)}
               className="flex items-center gap-1 sm:gap-2 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-full shadow-lg hover:scale-105 transition-transform"
             >
-              <img 
-                src="https://img.icons8.com/emoji/48/coin-emoji.png" 
+              <img
+                src="https://img.icons8.com/emoji/48/coin-emoji.png"
                 alt="coin"
                 className="w-3 h-3 sm:w-6 sm:h-6"
               />
@@ -114,12 +99,12 @@ const LandingPage = () => {
                 {isLoggedIn ? user?.charityCoins ?? 0 : "???"}
               </span>
             </button>
-            
+
             {/* Login Button or User Profile */}
             {!isLoggedIn ? (
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowAuthDialog(true)}
                 className="text-xs sm:text-sm"
               >
@@ -128,9 +113,9 @@ const LandingPage = () => {
             ) : (
               <Popover open={showProfilePopover} onOpenChange={setShowProfilePopover}>
                 <PopoverTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="relative h-8 w-8 sm:h-10 sm:w-10 rounded-full p-0"
                   >
                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
@@ -164,7 +149,7 @@ const LandingPage = () => {
                         </div>
                         <span className="text-sm font-medium">{user?.username}</span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between p-2 bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-lg">
                         <div className="flex items-center gap-2">
                           <CoinsIcon className="w-4 h-4 text-yellow-600" />
@@ -175,8 +160,8 @@ const LandingPage = () => {
                     </div>
 
                     {/* Logout Button */}
-                    <Button 
-                      variant="destructive" 
+                    <Button
+                      variant="destructive"
                       className="w-full"
                       onClick={handleLogout}
                     >
@@ -195,7 +180,7 @@ const LandingPage = () => {
       <main className="flex-1 flex items-center justify-center px-2 sm:px-4 py-4">
         <div className="w-full max-w-4xl">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center mb-4 sm:mb-8">Choose Your Book</h2>
-          
+
           {/* Books Carousel Container */}
           <div className="flex items-center justify-center gap-1 sm:gap-2 md:gap-4">
             {/* Previous Button */}
@@ -215,9 +200,8 @@ const LandingPage = () => {
                 <button
                   key={`${book.id}-${currentIndex}-${direction}`}
                   onClick={() => handleBookClick(book.route)}
-                  className={`flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-3 md:p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all duration-200 w-[100px] sm:w-[140px] md:w-[180px] bg-white animate-in fade-in ${
-                    direction === "right" ? "slide-in-from-right-10" : "slide-in-from-left-10"
-                  }`}
+                  className={`flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-3 md:p-4 border-2 border-gray-300 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all duration-200 w-[100px] sm:w-[140px] md:w-[180px] bg-white animate-in fade-in ${direction === "right" ? "slide-in-from-right-10" : "slide-in-from-left-10"
+                    }`}
                   style={{
                     animationDuration: "400ms",
                     animationDelay: `${index * 100}ms`,
@@ -227,8 +211,8 @@ const LandingPage = () => {
                   {/* Book Image - 2:3 Aspect Ratio */}
                   <div className="w-full aspect-[2/3] bg-gray-200 rounded flex items-center justify-center overflow-hidden flex-shrink-0">
                     {book.image ? (
-                      <img 
-                        src={book.image} 
+                      <img
+                        src={book.image}
                         alt={book.title}
                         className="w-full h-full object-contain"
                       />
@@ -236,12 +220,12 @@ const LandingPage = () => {
                       <span className="text-gray-400 text-xs sm:text-sm">Book Cover</span>
                     )}
                   </div>
-                  
+
                   {/* Book Title - Multi-line with auto-scaling text */}
                   <p className="text-[0.65rem] sm:text-sm font-semibold text-center w-full px-0.5 sm:px-1 leading-tight line-clamp-3 break-words"
-                     style={{
-                       fontSize: book.title.length > 20 ? 'clamp(0.6rem, 2vw, 0.75rem)' : book.title.length > 15 ? 'clamp(0.65rem, 2vw, 0.8rem)' : 'clamp(0.7rem, 2vw, 0.875rem)'
-                     }}
+                    style={{
+                      fontSize: book.title.length > 20 ? 'clamp(0.6rem, 2vw, 0.75rem)' : book.title.length > 15 ? 'clamp(0.65rem, 2vw, 0.8rem)' : 'clamp(0.7rem, 2vw, 0.875rem)'
+                    }}
                   >
                     {book.title}
                   </p>
@@ -266,9 +250,8 @@ const LandingPage = () => {
             {Array.from({ length: books.length - 2 }).map((_, index) => (
               <div
                 key={index}
-                className={`h-2 w-2 rounded-full transition-all duration-200 ${
-                  index === currentIndex ? "bg-blue-500 w-6" : "bg-gray-300"
-                }`}
+                className={`h-2 w-2 rounded-full transition-all duration-200 ${index === currentIndex ? "bg-blue-500 w-6" : "bg-gray-300"
+                  }`}
               />
             ))}
           </div>
@@ -299,7 +282,7 @@ const LandingPage = () => {
               <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-orange-600">
                 💰 Charity Coins
               </h2>
-              
+
               <div className="space-y-1 sm:space-y-2 max-w-2xl mx-auto px-2">
                 <p className="text-base sm:text-xl md:text-2xl font-semibold text-gray-800">
                   1 Charity Coin = ₹0.75
@@ -327,7 +310,7 @@ const LandingPage = () => {
                     {/* Background Bar */}
                     <div className="absolute top-1/2 left-0 right-0 h-3 sm:h-4 bg-gray-300 rounded-full transform -translate-y-1/2">
                       {/* Active Progress Bar */}
-                      <div 
+                      <div
                         className="h-full bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 rounded-full transition-all duration-500"
                         style={{ width: `${progressPercentage}%` }}
                       />
@@ -337,12 +320,12 @@ const LandingPage = () => {
                     {coinLevels.map((level, index) => {
                       const position = (level.coins / maxCoins) * 100;
                       const isUnlocked = userCoins >= level.coins;
-                      
+
                       return (
                         <div
                           key={level.name}
                           className="absolute transform -translate-x-1/2"
-                          style={{ 
+                          style={{
                             left: `${position}%`,
                             top: '50%',
                             transform: 'translate(-50%, -50%)'
@@ -359,12 +342,11 @@ const LandingPage = () => {
                           </div>
 
                           {/* Big Dot */}
-                          <div 
-                            className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 sm:border-4 transition-all duration-300 ${
-                              isUnlocked 
-                                ? 'bg-gradient-to-br from-yellow-400 to-orange-500 border-white shadow-lg scale-110' 
+                          <div
+                            className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 sm:border-4 transition-all duration-300 ${isUnlocked
+                                ? 'bg-gradient-to-br from-yellow-400 to-orange-500 border-white shadow-lg scale-110'
                                 : 'bg-gray-300 border-gray-400'
-                            }`}
+                              }`}
                           >
                             {isUnlocked && (
                               <div className="w-full h-full flex items-center justify-center text-white text-[10px] sm:text-xs font-bold">

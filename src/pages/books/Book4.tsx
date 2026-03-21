@@ -146,6 +146,17 @@ const Book2 = () => {
   const currentProgress = user?.bookProgress?.trialBook || 0;
 
   // Game state
+    const API_BASE_URL = import.meta.env.PROD ? "" : "http://localhost:5001";
+  const [conLimit, setConLimit] = useState(10);
+
+  // Fetch conLimit for this book from API
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/conlimit?bookId=book4`)
+      .then((res) => res.json())
+      .then((data) => setConLimit(data.conLimit ?? 10))
+      .catch(() => setConLimit(10));
+  }, []);
+
   const [currentRound, setCurrentRound] = useState(0);
   const [poppedButtons, setPoppedButtons] = useState<number[]>([]); // Buttons that have disappeared forever
   const [wrongButtons, setWrongButtons] = useState<number[]>([]); // Buttons marked as wrong in current round
@@ -531,7 +542,7 @@ const Book2 = () => {
   };
 
   const moveToNextRound = async () => {
-    if (currentRound < GAME_DATA.rounds.length - 1) {
+    if (currentRound < conLimit - 1) {
       // Move to next round
       setCurrentRound(currentRound + 1);
       setWrongButtons([]); // Reset wrong buttons for new round
@@ -545,7 +556,7 @@ const Book2 = () => {
 
       // Update progress only for logged-in users
       if (!isGuest) {
-        const newProgress = Math.min(100, ((currentRound + 1) / GAME_DATA.rounds.length) * 100);
+        const newProgress = Math.min(100, ((currentRound + 1) / conLimit) * 100);
         await updateBookProgress(bookId, newProgress);
       }
     } else {
@@ -707,11 +718,11 @@ const Book2 = () => {
             <div className="flex justify-between items-center mb-1">
               <h3 className="text-xs sm:text-sm font-semibold">Progress</h3>
               <span className="text-xs sm:text-sm font-bold text-primary">
-                {isGuest ? Math.round(((currentRound + 1) / GAME_DATA.rounds.length) * 100) : currentProgress}%
+                {isGuest ? Math.round(((currentRound + 1) / conLimit) * 100) : currentProgress}%
               </span>
             </div>
             <Progress 
-              value={isGuest ? ((currentRound + 1) / GAME_DATA.rounds.length) * 100 : currentProgress} 
+              value={isGuest ? ((currentRound + 1) / conLimit) * 100 : currentProgress} 
               className="h-1 sm:h-2" 
             />
           </div>
