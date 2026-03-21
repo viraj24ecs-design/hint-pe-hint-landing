@@ -130,6 +130,75 @@ app.post('/api/conlimit', async (req, res) => {
   }
 });
 
+// BookData model - per-book game content (hints, answers, correctButtonIds)
+const bookDataSchema = new mongoose.Schema({
+  bookId: { type: String, required: true, unique: true },
+  hints: [{ type: String, default: '' }],
+  answers: [{ type: String, default: '' }],
+  correctButtonIds: [{ type: Number, default: 0 }],
+  decoyEnabled: { type: Boolean, default: false },
+  decoys: [{ text: { type: String, default: '' }, position: { type: Number, default: 0 } }],
+});
+const BookData = mongoose.model('BookData', bookDataSchema, 'bookData');
+
+// Route to GET book data
+app.get('/api/bookdata', async (req, res) => {
+  try {
+    const { bookId } = req.query;
+    if (!bookId) {
+      return res.status(400).json({ error: 'bookId query param is required' });
+    }
+
+    if (mongoose.connection.readyState === 1) {
+      const doc = await BookData.findOne({ bookId });
+      if (!doc) {
+        return res.json({ bookId, hints: [], answers: [], correctButtonIds: [], decoyEnabled: false, decoys: [] });
+      }
+      return res.json({
+        bookId: doc.bookId,
+        hints: doc.hints,
+        answers: doc.answers,
+        correctButtonIds: doc.correctButtonIds,
+        decoyEnabled: doc.decoyEnabled ?? false,
+        decoys: doc.decoys ?? [],
+      });
+    }
+
+    return res.json({ bookId, hints: [], answers: [], correctButtonIds: [], decoyEnabled: false, decoys: [], source: 'fallback' });
+  } catch (err) {
+    console.error('GET /api/bookdata error:', err.message);
+    return res.json({ bookId: req.query.bookId, hints: [], answers: [], correctButtonIds: [], source: 'fallback' });
+  }
+});
+
+// Route to SET book data
+app.post('/api/bookdata', async (req, res) => {
+  try {
+    const { bookId, hints, answers, correctButtonIds, decoyEnabled, decoys } = req.body || {};
+
+    if (!bookId || typeof bookId !== 'string') {
+      return res.status(400).json({ error: 'bookId is required' });
+    }
+    if (!Array.isArray(hints) || !Array.isArray(answers) || !Array.isArray(correctButtonIds)) {
+      return res.status(400).json({ error: 'hints, answers, and correctButtonIds must be arrays' });
+    }
+
+    if (mongoose.connection.readyState === 1) {
+      await BookData.findOneAndUpdate(
+        { bookId },
+        { hints, answers, correctButtonIds, decoyEnabled: !!decoyEnabled, decoys: decoys || [] },
+        { upsert: true }
+      );
+      return res.status(200).json({ message: 'Saved successfully', bookId });
+    }
+
+    return res.status(200).json({ message: 'MongoDB unavailable', source: 'memory' });
+  } catch (err) {
+    console.error('POST /api/bookdata error:', err.message);
+    return res.status(500).json({ error: 'Failed to save book data' });
+  }
+});
+
 // Test route
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Backend is working!' });

@@ -169,6 +169,71 @@ const Book3 = () => {
 
 
   // Game state
+  const [conLimit, setConLimit] = useState(10);
+
+  // Dynamic game data from API (overrides hardcoded GAME_DATA and ALL_BUTTONS)
+  const [dynamicHints, setDynamicHints] = useState<string[]>([]);
+  const [dynamicAnswers, setDynamicAnswers] = useState<string[]>([]);
+  const [dynamicCorrectBtnIds, setDynamicCorrectBtnIds] = useState<number[]>([]);
+  const [decoyEnabled, setDecoyEnabled] = useState(false);
+  const [dynamicDecoys, setDynamicDecoys] = useState<{text: string; position: number}[]>([]);
+
+  // Fetch conLimit and book data on mount
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/conlimit?bookId=book3`)
+      .then((res) => res.json())
+      .then((data) => setConLimit(data.conLimit ?? 10))
+      .catch(() => setConLimit(10));
+
+    fetch(`${API_BASE_URL}/api/bookdata?bookId=book3`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.hints?.length) setDynamicHints(data.hints);
+        if (data.answers?.length) setDynamicAnswers(data.answers);
+        if (data.correctButtonIds?.length) setDynamicCorrectBtnIds(data.correctButtonIds);
+        setDecoyEnabled(data.decoyEnabled ?? false);
+        setDynamicDecoys(data.decoys ?? []);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Build effective game data: API values override hardcoded ones
+  const getHint = (roundIndex: number) => {
+    if (dynamicHints.length > roundIndex && dynamicHints[roundIndex]) {
+      return dynamicHints[roundIndex];
+    }
+    return GAME_DATA.rounds[roundIndex]?.hint ?? "";
+  };
+
+  const getCorrectButtonId = (roundIndex: number) => {
+    if (dynamicCorrectBtnIds.length > roundIndex) {
+      return dynamicCorrectBtnIds[roundIndex];
+    }
+    return GAME_DATA.rounds[roundIndex]?.correctButtonId ?? 0;
+  };
+
+  const getButtonText = (buttonId: number) => {
+    if (dynamicAnswers.length > 0 && dynamicCorrectBtnIds.length > 0) {
+      const conceptIndex = dynamicCorrectBtnIds.indexOf(buttonId);
+      if (conceptIndex !== -1 && dynamicAnswers[conceptIndex]) {
+        return dynamicAnswers[conceptIndex];
+      }
+    }
+    if (decoyEnabled && dynamicDecoys.length > 0) {
+      const decoy = dynamicDecoys.find(d => d.position === buttonId);
+      if (decoy?.text) return decoy.text;
+    }
+    const btn = ALL_BUTTONS.find(b => b.id === buttonId);
+    return btn ? btn.text : `Answer ${buttonId + 1}`;
+  };
+
+  const isButtonVisible = (buttonId: number) => {
+    if (dynamicCorrectBtnIds.length === 0) return true;
+    if (dynamicCorrectBtnIds.includes(buttonId)) return true;
+    if (decoyEnabled && dynamicDecoys.some(d => d.position === buttonId)) return true;
+    return false;
+  };
+
   const [currentRound, setCurrentRound] = useState(0);
   const [poppedButtons, setPoppedButtons] = useState<number[]>([]); // Buttons that have disappeared forever
   const [wrongButtons, setWrongButtons] = useState<number[]>([]); // Buttons marked as wrong in current round
@@ -430,7 +495,7 @@ const Book3 = () => {
     // INSTANT FEEDBACK: Show black background with white text immediately
     setClickedButtonId(buttonId);
 
-    const correctBtnId = GAME_DATA.rounds[currentRound].correctButtonId;
+    const correctBtnId = getCorrectButtonId(currentRound);
     const isCorrect = buttonId === correctBtnId;
 
     // Prevent further clicks during animation
@@ -554,7 +619,7 @@ const Book3 = () => {
   };
 
   const moveToNextRound = async () => {
-    if (currentRound < GAME_DATA.rounds.length - 1) {
+    if (currentRound < conLimit - 1) {
       // Move to next round
       setCurrentRound(currentRound + 1);
       setWrongButtons([]); // Reset wrong buttons for new round
@@ -568,7 +633,7 @@ const Book3 = () => {
 
       // Update progress only for logged-in users
       if (!isGuest) {
-        const newProgress = Math.min(100, ((currentRound + 1) / GAME_DATA.rounds.length) * 100);
+        const newProgress = Math.min(100, ((currentRound + 1) / conLimit) * 100);
         await updateBookProgress(bookId, newProgress);
       }
     } else {
@@ -730,11 +795,11 @@ const Book3 = () => {
             <div className="flex justify-between items-center mb-1">
               <h3 className="text-xs sm:text-sm font-semibold">Progress</h3>
               <span className="text-xs sm:text-sm font-bold text-primary">
-                {isGuest ? Math.round(((currentRound + 1) / GAME_DATA.rounds.length) * 100) : currentProgress}%
+                {isGuest ? Math.round(((currentRound + 1) / conLimit) * 100) : currentProgress}%
               </span>
             </div>
             <Progress
-              value={isGuest ? ((currentRound + 1) / GAME_DATA.rounds.length) * 100 : currentProgress}
+              value={isGuest ? ((currentRound + 1) / conLimit) * 100 : currentProgress}
               className="h-1 sm:h-2"
             />
           </div>
@@ -849,7 +914,7 @@ const Book3 = () => {
                         WebkitOverflowScrolling: 'touch',
                         overscrollBehavior: 'contain'
                       }}>
-                      {GAME_DATA.rounds[currentRound].hint}
+                      {getHint(currentRound)}
                     </p>
                     {/* Dynamic scroll indicator bar for mobile */}
                     <div className="absolute right-0 top-0 bottom-0 w-2 bg-gray-300 rounded-full sm:hidden">
@@ -887,13 +952,9 @@ const Book3 = () => {
 
                   {/* Button Grid Overlay - 5 rows x 2 columns = 10 buttons */}
                   <div className="absolute inset-0 grid grid-rows-5 grid-cols-2 gap-0">
-                    {ALL_BUTTONS.map((button, idx) => {
-                      if (!button) {
-                        // Render an empty cell to keep the grid structure
-                        return <div key={idx} />;
-                      }
+                    {ALL_BUTTONS.map((button) => {
                       const isPopped = poppedButtons.includes(button.id);
-                      if (isPopped) {
+                      if (isPopped || !isButtonVisible(button.id)) {
                         return <div key={button.id} className="pointer-events-none" />;
                       }
                       return (
@@ -913,7 +974,7 @@ const Book3 = () => {
           ${button.id === 8 ? 'rounded-bl-xl' : ''}
           ${button.id === 9 ? 'rounded-br-xl' : ''}`}
                         >
-                          <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{button.text}</span>
+                          <span className="text-center leading-[1.1] px-1 overflow-hidden font-sfpro" style={{ wordBreak: 'keep-all', overflowWrap: 'break-word', hyphens: 'none' }}>{getButtonText(button.id)}</span>
                         </button>
                       );
                     })}
