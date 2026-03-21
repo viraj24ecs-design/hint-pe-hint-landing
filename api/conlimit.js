@@ -96,7 +96,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ message: 'Updated successfully', bookId, conLimit: limit });
     } catch (err) {
       console.error('POST /api/conlimit error:', err.message);
-      return res.status(500).json({ error: 'Failed to update conLimit' });
+      return res.status(500).json({ error: `Failed to update conLimit: ${err.message}` });
     }
   }
 
