@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { books } from "@/data/books";
+import { useState, useRef, useEffect } from "react";
+import { books, Book } from "@/data/books";
 
 const API_BASE_URL = import.meta.env.PROD ? "" : "http://localhost:5001";
 
@@ -21,6 +21,32 @@ export default function EditPageOne() {
   const [conLimitValue, setConLimitValue] = useState<string>("");
   const [status, setStatus] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Dynamic book data from API (titles + cover images)
+  const [dynamicBooks, setDynamicBooks] = useState<Book[]>(books);
+  const [booksLoading, setBooksLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMeta = async () => {
+      const updated = [...books];
+      for (let i = 1; i < books.length; i++) {
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/bookmeta?bookId=book${i}`);
+          const data = await res.json();
+          updated[i] = {
+            ...updated[i],
+            title: data.bookTitle || `Book ${i}`,
+            image: data.coverImage || "",
+          };
+        } catch {
+          updated[i] = { ...updated[i], title: `Book ${i}` };
+        }
+      }
+      setDynamicBooks(updated);
+      setBooksLoading(false);
+    };
+    fetchMeta();
+  }, []);
 
   // Concept editor state
   const [concepts, setConcepts] = useState<ConceptData[]>([]);
@@ -263,7 +289,7 @@ export default function EditPageOne() {
 
   // ─── VIEW 4: Book Metadata Editor ─────────────────────────────
   if (view === "meta" && selectedBook !== null) {
-    const book = books[selectedBook];
+    const book = dynamicBooks[selectedBook];
 
     return (
       <div className="min-h-screen p-4 sm:p-6 pb-24">
@@ -413,7 +439,7 @@ export default function EditPageOne() {
 
   // ─── VIEW 3: Concept Editor ────────────────────────────────────
   if (view === "editor" && selectedBook !== null) {
-    const book = books[selectedBook];
+    const book = dynamicBooks[selectedBook];
     const decoySlotCount = 10 - concepts.length; // available decoy slots
 
     return (
@@ -573,7 +599,7 @@ export default function EditPageOne() {
 
   // ─── VIEW 2: ConLimit Input ────────────────────────────────────
   if (view === "conlimit" && selectedBook !== null) {
-    const book = books[selectedBook];
+    const book = dynamicBooks[selectedBook];
     return (
       <div className="min-h-screen p-6">
         <button
@@ -626,10 +652,15 @@ export default function EditPageOne() {
   return (
     <div className="min-h-screen p-6">
       <h1 className="text-2xl font-bold mb-6">Set Concept Limits</h1>
+      {booksLoading ? (
+        <div className="flex items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500"></div>
+        </div>
+      ) : (
       <div className="flex flex-col gap-3 max-w-xl">
-        {books.slice(1).map((book, i) => {
-          const bookNum = i + 1; // Book 1, Book 2, ...
-          const actualIndex = i + 1; // index in the books array
+        {dynamicBooks.slice(1).map((book, i) => {
+          const bookNum = i + 1;
+          const actualIndex = i + 1;
           return (
           <button
             key={book.id}
@@ -650,6 +681,7 @@ export default function EditPageOne() {
           );
         })}
       </div>
+      )}
     </div>
   );
 }
