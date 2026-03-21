@@ -799,7 +799,7 @@ const Book1 = () => {
               {/* Vishal Congratulations Image Section */}
               <div className="w-full bg-gradient-to-br from-green-50 to-yellow-50 flex items-center justify-center p-4 sm:p-6 md:p-8 flex-shrink-0">
                 <img
-                  src="/BookPics/DanSullivan.webp"
+                  src={dynamicGameBgImage || GAME_DATA.imagePath}
                   alt="Congratulations"
                   className="w-full h-auto max-w-[200px] sm:max-w-[300px] md:max-w-[400px] object-contain rounded-xl sm:rounded-2xl shadow-lg"
                   style={{ filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15))' }}
