@@ -112,7 +112,7 @@ const Book3 = () => {
   // Game Data and State Management
 
   const GAME_DATA = {
-    imagePath: "/How-To-Bring-Self-Discipline-To-Exercise.jpg", // Single image for entire game (2:3 aspect ratio, 1024x1536px) - served from public folder
+    imagePath: "", // Dynamic from API — set via edit_page_one.tsx
     rounds: [
       {
         roundNumber: 1,
@@ -818,8 +818,7 @@ const Book3 = () => {
               {/* Vishal Congratulations Image Section */}
               <div className="w-full bg-gradient-to-br from-green-50 to-yellow-50 flex items-center justify-center p-4 sm:p-6 md:p-8 flex-shrink-0">
                 <img
-                  src="/VishalPics/VishalCongrats.webp"
-                  alt="Congratulations"
+                  src={dynamicGameBgImage || GAME_DATA.imagePath} alt="Congratulations"
                   className="w-full h-auto max-w-[200px] sm:max-w-[300px] md:max-w-[400px] object-contain rounded-xl sm:rounded-2xl shadow-lg"
                   style={{ filter: 'drop-shadow(0 10px 25px rgba(0, 0, 0, 0.15))' }}
                 />

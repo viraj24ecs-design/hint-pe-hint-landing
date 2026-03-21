@@ -67,7 +67,7 @@ const createConfetti = () => {
 // Buttons that are answered correctly disappear FOREVER and never come back in future rounds
 
 const GAME_DATA = {
-  imagePath: "/BookPics/pabg.png", // Single image for entire game (2:3 aspect ratio, 1024x1536px) or (828x1280) - served from public folder
+  imagePath: "", // Dynamic from API — set via edit_page_one.tsx
   rounds: [
     {
       roundNumber: 1,
