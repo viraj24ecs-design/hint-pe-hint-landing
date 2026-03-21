@@ -140,45 +140,35 @@ const Book3 = () => {
         correctButtonId: 3, // Button 5 (ID 4) is correct in round 5
       },
       {
-        roundNumber: null,
-        hint: null,
-        correctButtonId: null, // Button 6 (ID 5) is correct in round 6
+        roundNumber: 6,
+        hint: "Concpet No. 6 (Don't exceed 500 words)",
+        correctButtonId: 1, // Button 6 (ID 5) is correct in round 6
       },
       {
-        roundNumber: null,
-        hint: null,
-        correctButtonId: null, // Button 7 (ID 6) is correct in round 7
+        roundNumber: 7,
+        hint: "Concpet No. 7 (Don't exceed 500 words)",
+        correctButtonId: 8, // Button 7 (ID 6) is correct in round 7
       },
       {
-        roundNumber: null,
-        hint: null,
-        correctButtonId: null, // Button 8 (ID 7) is correct in round 8
+        roundNumber: 8,
+        hint: "Con  cpet No. 8 (Don't exceed 500 words)",
+        correctButtonId: 5, // Button 8 (ID 7) is correct in round 8
       },
       {
-        roundNumber: null,
-        hint: null,
-        correctButtonId: null, // Button 9 (ID 8) is correct in round 9
+        roundNumber: 9,
+        hint: "Concpet No. 9 (Don't exceed 500 words)",
+        correctButtonId: 7, // Button 9 (ID 8) is correct in round 9
       },
       {
-        roundNumber: null,
-        hint: null,
-        correctButtonId: null, // Button 10 (ID 9) is correct in round 10
+        roundNumber: 10,
+        hint: "Concpet No. 10 (Don't exceed 500 words)",
+        correctButtonId: 2, // Button 10 (ID 9) is correct in round 10
       },
     ],
   };
 
 
   // Game state
-    const [conLimit, setConLimit] = useState(10);
-
-  // Fetch conLimit for this book from API
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/conlimit?bookId=book3`)
-      .then((res) => res.json())
-      .then((data) => setConLimit(data.conLimit ?? 10))
-      .catch(() => setConLimit(10));
-  }, []);
-
   const [currentRound, setCurrentRound] = useState(0);
   const [poppedButtons, setPoppedButtons] = useState<number[]>([]); // Buttons that have disappeared forever
   const [wrongButtons, setWrongButtons] = useState<number[]>([]); // Buttons marked as wrong in current round
@@ -564,7 +554,7 @@ const Book3 = () => {
   };
 
   const moveToNextRound = async () => {
-    if (currentRound < conLimit - 1) {
+    if (currentRound < GAME_DATA.rounds.length - 1) {
       // Move to next round
       setCurrentRound(currentRound + 1);
       setWrongButtons([]); // Reset wrong buttons for new round
@@ -578,7 +568,7 @@ const Book3 = () => {
 
       // Update progress only for logged-in users
       if (!isGuest) {
-        const newProgress = Math.min(100, ((currentRound + 1) / conLimit) * 100);
+        const newProgress = Math.min(100, ((currentRound + 1) / GAME_DATA.rounds.length) * 100);
         await updateBookProgress(bookId, newProgress);
       }
     } else {
@@ -740,11 +730,11 @@ const Book3 = () => {
             <div className="flex justify-between items-center mb-1">
               <h3 className="text-xs sm:text-sm font-semibold">Progress</h3>
               <span className="text-xs sm:text-sm font-bold text-primary">
-                {isGuest ? Math.round(((currentRound + 1) / conLimit) * 100) : currentProgress}%
+                {isGuest ? Math.round(((currentRound + 1) / GAME_DATA.rounds.length) * 100) : currentProgress}%
               </span>
             </div>
             <Progress
-              value={isGuest ? ((currentRound + 1) / conLimit) * 100 : currentProgress}
+              value={isGuest ? ((currentRound + 1) / GAME_DATA.rounds.length) * 100 : currentProgress}
               className="h-1 sm:h-2"
             />
           </div>
