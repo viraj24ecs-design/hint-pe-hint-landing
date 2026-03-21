@@ -28,7 +28,7 @@ app.use(cors({
 }));
 
 // Body parser middleware
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 const sandeshSchema = new mongoose.Schema({
   content: String,
@@ -196,6 +196,73 @@ app.post('/api/bookdata', async (req, res) => {
   } catch (err) {
     console.error('POST /api/bookdata error:', err.message);
     return res.status(500).json({ error: 'Failed to save book data' });
+  }
+});
+
+// BookMeta model - per-book metadata (title, cover image, game bg image)
+const bookMetaSchema = new mongoose.Schema({
+  bookId: { type: String, required: true, unique: true },
+  bookTitle: { type: String, default: '' },
+  coverImage: { type: String, default: '' },
+  gameBgImage: { type: String, default: '' },
+});
+const BookMeta = mongoose.model('BookMeta', bookMetaSchema, 'bookMeta');
+
+// Route to GET book meta
+app.get('/api/bookmeta', async (req, res) => {
+  try {
+    const { bookId } = req.query;
+    if (!bookId) {
+      return res.status(400).json({ error: 'bookId query param is required' });
+    }
+
+    if (mongoose.connection.readyState === 1) {
+      const doc = await BookMeta.findOne({ bookId });
+      if (!doc) {
+        return res.json({ bookId, bookTitle: '', coverImage: '', gameBgImage: '' });
+      }
+      return res.json({
+        bookId: doc.bookId,
+        bookTitle: doc.bookTitle ?? '',
+        coverImage: doc.coverImage ?? '',
+        gameBgImage: doc.gameBgImage ?? '',
+      });
+    }
+
+    return res.json({ bookId, bookTitle: '', coverImage: '', gameBgImage: '', source: 'fallback' });
+  } catch (err) {
+    console.error('GET /api/bookmeta error:', err.message);
+    return res.json({ bookId: req.query.bookId, bookTitle: '', coverImage: '', gameBgImage: '', source: 'fallback' });
+  }
+});
+
+// Route to SET book meta
+app.post('/api/bookmeta', async (req, res) => {
+  try {
+    const { bookId, bookTitle, coverImage, gameBgImage } = req.body || {};
+
+    if (!bookId || typeof bookId !== 'string') {
+      return res.status(400).json({ error: 'bookId is required' });
+    }
+
+    const updateObj = {};
+    if (typeof bookTitle === 'string') updateObj.bookTitle = bookTitle;
+    if (typeof coverImage === 'string') updateObj.coverImage = coverImage;
+    if (typeof gameBgImage === 'string') updateObj.gameBgImage = gameBgImage;
+
+    if (mongoose.connection.readyState === 1) {
+      await BookMeta.findOneAndUpdate(
+        { bookId },
+        updateObj,
+        { upsert: true }
+      );
+      return res.status(200).json({ message: 'Saved successfully', bookId });
+    }
+
+    return res.status(200).json({ message: 'MongoDB unavailable', source: 'memory' });
+  } catch (err) {
+    console.error('POST /api/bookmeta error:', err.message);
+    return res.status(500).json({ error: `Failed to save book meta: ${err.message}` });
   }
 });
 

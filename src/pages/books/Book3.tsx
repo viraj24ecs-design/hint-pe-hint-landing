@@ -177,6 +177,7 @@ const Book3 = () => {
   const [dynamicCorrectBtnIds, setDynamicCorrectBtnIds] = useState<number[]>([]);
   const [decoyEnabled, setDecoyEnabled] = useState(false);
   const [dynamicDecoys, setDynamicDecoys] = useState<{text: string; position: number}[]>([]);
+  const [dynamicGameBgImage, setDynamicGameBgImage] = useState<string>("");
 
   // Fetch conLimit and book data on mount
   useEffect(() => {
@@ -193,6 +194,13 @@ const Book3 = () => {
         if (data.correctButtonIds?.length) setDynamicCorrectBtnIds(data.correctButtonIds);
         setDecoyEnabled(data.decoyEnabled ?? false);
         setDynamicDecoys(data.decoys ?? []);
+      })
+      .catch(() => {});
+
+    fetch(`${API_BASE_URL}/api/bookmeta?bookId=book3`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.gameBgImage) setDynamicGameBgImage(data.gameBgImage);
       })
       .catch(() => {});
   }, []);
@@ -945,7 +953,7 @@ const Book3 = () => {
                 >
                   {/* Background Image */}
                   <img
-                    src={GAME_DATA.imagePath}
+                    src={dynamicGameBgImage || GAME_DATA.imagePath}
                     alt="Game Image"
                     className="absolute inset-0 w-full h-full object-cover"
                   />

@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthDialog from "@/components/AuthDialog";
 import { User, LogOut, Coins as CoinsIcon, ChevronLeft, ChevronRight, X } from "lucide-react";
@@ -11,7 +11,9 @@ import {
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { books } from "@/data/books";
+import { books, Book } from "@/data/books";
+
+const API_BASE_URL = import.meta.env.PROD ? "" : "http://localhost:5001";
 
 const LandingPage = () => {
   const { user, isLoggedIn, logout } = useAuth();
@@ -20,7 +22,29 @@ const LandingPage = () => {
   const [showCoinsDialog, setShowCoinsDialog] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState<"left" | "right">("right"); // Track swipe direction
+  const [dynamicBooks, setDynamicBooks] = useState<Book[]>(books);
   const navigate = useNavigate();
+
+  // Fetch dynamic book titles and cover images from API
+  useEffect(() => {
+    const fetchMeta = async () => {
+      const updated = [...books];
+      for (let i = 1; i < books.length; i++) {
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/bookmeta?bookId=book${i}`);
+          const data = await res.json();
+          if (data.bookTitle) {
+            updated[i] = { ...updated[i], title: data.bookTitle };
+          }
+          if (data.coverImage) {
+            updated[i] = { ...updated[i], image: data.coverImage };
+          }
+        } catch { /* keep defaults */ }
+      }
+      setDynamicBooks(updated);
+    };
+    fetchMeta();
+  }, []);
 
   const handleAuthSuccess = () => {
     setShowAuthDialog(false);
@@ -61,7 +85,7 @@ const LandingPage = () => {
   const progressPercentage = (userCoins / maxCoins) * 100;
 
   // Show 3 books at a time
-  const visibleBooks = books.slice(currentIndex, currentIndex + 3);
+  const visibleBooks = dynamicBooks.slice(currentIndex, currentIndex + 3);
 
   const handlePrevious = () => {
     setDirection("left"); // Swipe back = slide from left
@@ -70,7 +94,7 @@ const LandingPage = () => {
 
   const handleNext = () => {
     setDirection("right"); // Swipe forward = slide from right
-    setCurrentIndex((prev) => Math.min(books.length - 3, prev + 1));
+    setCurrentIndex((prev) => Math.min(dynamicBooks.length - 3, prev + 1));
   };
 
   const handleBookClick = (route: string) => {
@@ -238,7 +262,7 @@ const LandingPage = () => {
               variant="outline"
               size="icon"
               onClick={handleNext}
-              disabled={currentIndex >= books.length - 3}
+              disabled={currentIndex >= dynamicBooks.length - 3}
               className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-full flex-shrink-0"
             >
               <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />
@@ -247,7 +271,7 @@ const LandingPage = () => {
 
           {/* Carousel Indicator */}
           <div className="flex justify-center gap-1 sm:gap-2 mt-4 sm:mt-6">
-            {Array.from({ length: books.length - 2 }).map((_, index) => (
+            {Array.from({ length: dynamicBooks.length - 2 }).map((_, index) => (
               <div
                 key={index}
                 className={`h-2 w-2 rounded-full transition-all duration-200 ${index === currentIndex ? "bg-blue-500 w-6" : "bg-gray-300"

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { books } from "@/data/books";
 
 const API_BASE_URL = import.meta.env.PROD ? "" : "http://localhost:5001";
@@ -15,8 +15,8 @@ interface DecoyData {
 }
 
 export default function EditPageOne() {
-  // View state: "list" | "conlimit" | "editor"
-  const [view, setView] = useState<"list" | "conlimit" | "editor">("list");
+  // View state: "list" | "conlimit" | "editor" | "meta"
+  const [view, setView] = useState<"list" | "conlimit" | "editor" | "meta">("list");
   const [selectedBook, setSelectedBook] = useState<number | null>(null);
   const [conLimitValue, setConLimitValue] = useState<string>("");
   const [status, setStatus] = useState("");
@@ -30,6 +30,16 @@ export default function EditPageOne() {
   // Decoy state
   const [decoyEnabled, setDecoyEnabled] = useState(false);
   const [decoys, setDecoys] = useState<DecoyData[]>([]);
+
+  // Meta state
+  const [metaTitle, setMetaTitle] = useState("");
+  const [coverImagePreview, setCoverImagePreview] = useState<string>("");
+  const [gameBgImagePreview, setGameBgImagePreview] = useState<string>("");
+  const [metaStatus, setMetaStatus] = useState("");
+  const [isMetaSaving, setIsMetaSaving] = useState(false);
+  const [imageError, setImageError] = useState("");
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const bgInputRef = useRef<HTMLInputElement>(null);
 
   const handleBookClick = async (bookIndex: number) => {
     setSelectedBook(bookIndex);
@@ -162,13 +172,244 @@ export default function EditPageOne() {
         throw new Error(data.error || "Failed to save");
       }
 
-      setEditorStatus("✅ All concepts saved successfully!");
+      // After saving concepts, load meta data and go to meta view
+      setIsLoading(true);
+      try {
+        const metaRes = await fetch(`${API_BASE_URL}/api/bookmeta?bookId=book${selectedBook}`);
+        const metaData = await metaRes.json();
+        setMetaTitle(metaData.bookTitle ?? "");
+        setCoverImagePreview(metaData.coverImage ?? "");
+        setGameBgImagePreview(metaData.gameBgImage ?? "");
+      } catch {
+        setMetaTitle("");
+        setCoverImagePreview("");
+        setGameBgImagePreview("");
+      } finally {
+        setIsLoading(false);
+      }
+      setMetaStatus("");
+      setImageError("");
+      setView("meta");
     } catch (err: any) {
       setEditorStatus(`❌ ${err.message || "Save failed"}`);
     } finally {
       setIsSaving(false);
     }
   };
+
+  // ─── Image validation: must be webp, 828×1280 ──────────────────
+  const validateAndSetImage = (
+    file: File,
+    setter: (val: string) => void
+  ) => {
+    setImageError("");
+
+    // Check file type
+    if (file.type !== "image/webp") {
+      setImageError("❌ Only .webp images are allowed.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+
+      // Validate dimensions
+      const img = new Image();
+      img.onload = () => {
+        if (img.width !== 828 || img.height !== 1280) {
+          setImageError(`❌ Image must be exactly 828×1280. Got ${img.width}×${img.height}.`);
+          return;
+        }
+        setter(dataUrl);
+      };
+      img.onerror = () => {
+        setImageError("❌ Could not read image.");
+      };
+      img.src = dataUrl;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleSaveMeta = async () => {
+    if (selectedBook === null) return;
+    setIsMetaSaving(true);
+    setMetaStatus("");
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/bookmeta`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          bookId: `book${selectedBook}`,
+          bookTitle: metaTitle,
+          coverImage: coverImagePreview,
+          gameBgImage: gameBgImagePreview,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to save");
+      }
+
+      setMetaStatus("✅ Book metadata saved successfully!");
+    } catch (err: any) {
+      setMetaStatus(`❌ ${err.message || "Save failed"}`);
+    } finally {
+      setIsMetaSaving(false);
+    }
+  };
+
+  // ─── VIEW 4: Book Metadata Editor ─────────────────────────────
+  if (view === "meta" && selectedBook !== null) {
+    const book = books[selectedBook];
+
+    return (
+      <div className="min-h-screen p-4 sm:p-6 pb-24">
+        <button
+          onClick={() => setView("editor")}
+          className="mb-4 text-blue-600 hover:text-blue-800 font-medium"
+        >
+          ← Back to Concepts
+        </button>
+
+        <h1 className="text-2xl font-bold mb-1">
+          Book {selectedBook}: {book.title}
+        </h1>
+        <p className="text-gray-500 mb-6 text-sm">
+          Set the book title, cover image (Landing Page), and game background image.
+        </p>
+
+        {isLoading ? (
+          <p className="text-gray-500">Loading...</p>
+        ) : (
+          <div className="flex flex-col gap-8 max-w-2xl">
+            {/* Book Title */}
+            <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6">
+              <h2 className="text-lg font-bold mb-3 text-blue-700">Book Title</h2>
+              <input
+                type="text"
+                value={metaTitle}
+                onChange={(e) => setMetaTitle(e.target.value)}
+                className="border rounded w-full px-3 py-2 text-sm"
+                placeholder="Enter book title (shown on Landing Page)..."
+              />
+            </div>
+
+            {/* Cover Image */}
+            <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6">
+              <h2 className="text-lg font-bold mb-1 text-blue-700">Book Cover Image</h2>
+              <p className="text-xs text-gray-500 mb-3">
+                Displayed on the Landing Page. Must be 828×1280 (.webp only).
+              </p>
+
+              <div
+                onClick={() => coverInputRef.current?.click()}
+                className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition-colors min-h-[200px]"
+              >
+                {coverImagePreview ? (
+                  <img
+                    src={coverImagePreview}
+                    alt="Cover preview"
+                    className="max-h-[300px] object-contain rounded"
+                  />
+                ) : (
+                  <div className="text-center text-gray-400">
+                    <p className="text-3xl mb-2">📷</p>
+                    <p className="text-sm">Click to upload cover image</p>
+                    <p className="text-xs mt-1">828×1280, .webp only</p>
+                  </div>
+                )}
+              </div>
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept=".webp,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) validateAndSetImage(file, setCoverImagePreview);
+                }}
+              />
+              {coverImagePreview && (
+                <button
+                  onClick={() => setCoverImagePreview("")}
+                  className="mt-2 text-xs text-red-500 hover:text-red-700"
+                >
+                  Remove Image
+                </button>
+              )}
+            </div>
+
+            {/* Game BG Image */}
+            <div className="border-2 border-gray-200 rounded-lg p-4 sm:p-6">
+              <h2 className="text-lg font-bold mb-1 text-blue-700">Book Game BG Image</h2>
+              <p className="text-xs text-gray-500 mb-3">
+                Background image used in the game. Must be 828×1280 (.webp only).
+              </p>
+
+              <div
+                onClick={() => bgInputRef.current?.click()}
+                className="border-2 border-dashed border-gray-300 rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition-colors min-h-[200px]"
+              >
+                {gameBgImagePreview ? (
+                  <img
+                    src={gameBgImagePreview}
+                    alt="Game BG preview"
+                    className="max-h-[300px] object-contain rounded"
+                  />
+                ) : (
+                  <div className="text-center text-gray-400">
+                    <p className="text-3xl mb-2">🖼️</p>
+                    <p className="text-sm">Click to upload game BG image</p>
+                    <p className="text-xs mt-1">828×1280, .webp only</p>
+                  </div>
+                )}
+              </div>
+              <input
+                ref={bgInputRef}
+                type="file"
+                accept=".webp,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) validateAndSetImage(file, setGameBgImagePreview);
+                }}
+              />
+              {gameBgImagePreview && (
+                <button
+                  onClick={() => setGameBgImagePreview("")}
+                  className="mt-2 text-xs text-red-500 hover:text-red-700"
+                >
+                  Remove Image
+                </button>
+              )}
+            </div>
+
+            {/* Error display */}
+            {imageError && (
+              <p className="text-red-600 text-sm font-medium bg-red-50 border border-red-200 rounded px-3 py-2">
+                {imageError}
+              </p>
+            )}
+
+            {/* Save button */}
+            <div className="sticky bottom-4 bg-white border-t pt-4">
+              <button
+                onClick={handleSaveMeta}
+                disabled={isMetaSaving}
+                className="w-full border rounded px-6 py-3 bg-green-600 text-white hover:bg-green-700 transition-colors font-bold text-lg disabled:opacity-50"
+              >
+                {isMetaSaving ? "Saving..." : "Save Book Metadata"}
+              </button>
+              {metaStatus && <p className="text-sm mt-2 text-center">{metaStatus}</p>}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   // ─── VIEW 3: Concept Editor ────────────────────────────────────
   if (view === "editor" && selectedBook !== null) {
@@ -320,7 +561,7 @@ export default function EditPageOne() {
                 disabled={isSaving}
                 className="w-full border rounded px-6 py-3 bg-green-600 text-white hover:bg-green-700 transition-colors font-bold text-lg disabled:opacity-50"
               >
-                {isSaving ? "Saving..." : "Save All Concepts"}
+                {isSaving ? "Saving..." : "Save & Next → Book Metadata"}
               </button>
               {editorStatus && <p className="text-sm mt-2 text-center">{editorStatus}</p>}
             </div>
